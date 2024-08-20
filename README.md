@@ -9,11 +9,14 @@ Projeto de Engenharia de Software. Unima Afya - AL
     - Para oferecer aos leitores ferramentas para organizar suas listas de leitura de
       forma costumizada além de mecanismos de recomendação e descoberta de novos livros.
     - Ferramenta que visa melhorar e criar habitos.
+    - Segundo o Doutor Pierluigi Piazzi, a prática da leitura está defasada com a modernização
+      dos ambientes. Com isso, vienhemos com a proposta de enriquecimento cultural e literário.
   1.3. Who?
     - Leitores que buscam organizar seus hábitos de leitura e também descobrir
       novos livros (Público Leitor no geral).
+    - Criadores: Lucas Zonzini, Caio Renato, Caio Gabriel, Murilo Barros, Rafael Antonio.
   1.4. Where?
-    - Ambiente Web responsivo => (Mobile e Desktop).
+    - Ambiente Web responsivo => (Mobile( IOS & Android ) e Desktop).
   1.5. When?
     - 11/2024
   2.1 How?
