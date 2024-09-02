@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+import { ColorFour, ColorOne, ColorTwo } from "../../assets/Colors";
 const Reset = createGlobalStyle`
 
 :root {
@@ -56,15 +57,15 @@ table {
 ::-webkit-scrollbar {
     width: 6px;
 	height: 4px;
-    background: red;
+    background: ${ColorOne};
 }
 ::-webkit-scrollbar-thumb {
-    background: red;
+    background: ${ColorTwo};
 	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-corner {
-	background-color: red;
+	background-color: ${ColorFour};
 }
 
 `

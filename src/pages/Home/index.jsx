@@ -1,19 +1,18 @@
 import styled from "styled-components"
-import { ColorOne, White } from "../../assets/Colors"
+import { ColorFour, ColorOne} from "../../assets/Colors"
 
 const HomeStyle = styled.main`
     background-color: ${ColorOne};
-    width: 100vw;
-    height: 100vh;
+    padding: 3rem;
     h1 {
-        color: ${White};
+        color: ${ColorFour};
     }
 `
 
 const Home = () => {
     return (
         <HomeStyle>
-            <h1>Ola! teste</h1>
+            <h1></h1>
         </HomeStyle>
     )
 }
