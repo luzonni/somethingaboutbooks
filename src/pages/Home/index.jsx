@@ -12,7 +12,7 @@ const HomeStyle = styled.main`
 const Home = () => {
     return (
         <HomeStyle>
-            <h1></h1>
+            <h1>home</h1>
         </HomeStyle>
     )
 }

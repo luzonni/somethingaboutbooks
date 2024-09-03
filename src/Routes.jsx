@@ -3,6 +3,7 @@ import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Reset from "./components/Reset"
 import MyHeader from "./components/MyHeader"
+import NotFound from "./pages/NotFound"
 
 function AppRoutes() {
   return (
@@ -12,7 +13,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Home />}/>
         <Route path="/login" element={<Login />}/>
-        <Route path="*" element={<Home />}/>
+        <Route path="*" element={<NotFound />}/>
       </Routes>
       {/* Footer */}
     </BrowserRouter>
