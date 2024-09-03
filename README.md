@@ -40,4 +40,3 @@ Projeto de Engenharia de Software. Unima Afya - AL
     - Caio Gabriel
     - Caio Renato
     - Murilo Barros
-    - Rafael Antonio
