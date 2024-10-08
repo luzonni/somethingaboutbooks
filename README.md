@@ -13,7 +13,7 @@ Projeto de Engenharia de Software. Unima Afya - AL
   1.3. Who?
     - Leitores que buscam organizar seus hábitos de leitura e também descobrir
       novos livros (Público Leitor no geral).
-    - Criadores: Lucas Zonzini, Caio Renato, Caio Gabriel, Murilo Barros, Rafael Antonio.
+    - Criadores: Lucas Zonzini, Caio Renato, Caio Gabriel e Murilo Barros.
   1.4. Where?
     - Ambiente Web responsivo => (Mobile( IOS & Android ) e Desktop).
   1.5. When?
@@ -31,7 +31,6 @@ Projeto de Engenharia de Software. Unima Afya - AL
     - Back-End: [
         - Caio Gabriel
         - Murilo Barros
-        - Rafael Antonio
       ]
   2.2 How Much?
     -Free
