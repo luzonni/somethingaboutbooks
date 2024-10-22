@@ -1,11 +1,11 @@
 import styled from "styled-components"
-import { ColorFour, ColorOne} from "../../assets/Colors"
+import { Gray } from "../../assets/Colors"
 
 const HomeStyle = styled.main`
-    background-color: ${ColorOne};
+    background-color: ${Gray};
     padding: 3rem;
     h1 {
-        color: ${ColorFour};
+        color: ${Gray};
     }
 `
 

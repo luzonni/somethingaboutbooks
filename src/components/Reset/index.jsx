@@ -1,5 +1,5 @@
 import { createGlobalStyle } from "styled-components";
-import { ColorFour, ColorOne, ColorTwo } from "../../assets/Colors";
+import { White } from "../../assets/Colors";
 const Reset = createGlobalStyle`
 
 :root {
@@ -36,7 +36,6 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
-	background: red;
 }
 ol, ul {
 	list-style: none;
@@ -57,15 +56,15 @@ table {
 ::-webkit-scrollbar {
     width: 6px;
 	height: 4px;
-    background: ${ColorOne};
+    background: ${White};
 }
 ::-webkit-scrollbar-thumb {
-    background: ${ColorTwo};
+    background: ${White};
 	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-corner {
-	background-color: ${ColorFour};
+	background-color: ${White};
 }
 
 `

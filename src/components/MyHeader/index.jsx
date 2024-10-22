@@ -1,12 +1,12 @@
 import styled from "styled-components"
-import { ColorFour, ColorTwo } from "../../assets/Colors"
 import { NavLink } from "react-router-dom"
+import { DarkRed, Gray } from "../../assets/Colors"
 
 const NavegationStyle = styled.nav`
     display: flex;
     justify-content: space-between;
     padding: 0 2rem;
-    background-color: ${ColorTwo};
+    background-color: ${Gray};
 `
 
 const LogoStyle = styled.div`
@@ -23,7 +23,7 @@ const NavStyle = styled.ul`
     .item__link {
         text-decoration: none;
         font-size: 1.5rem;
-        color: ${ColorFour};
+        color: ${DarkRed};
     }
 `
 

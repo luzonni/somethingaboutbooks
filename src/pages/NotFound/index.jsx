@@ -1,10 +1,10 @@
 import styled from "styled-components"
-import { ColorFour, ColorOne } from "../../assets/Colors"
+import { Gray } from "../../assets/Colors"
 import { MdError } from "react-icons/md";
 
 
 const NotFoundStyle = styled.main`
-    background-color: ${ColorOne};
+    background-color: ${Gray};
     display: flex;
     flex-direction: column;
     height: 80vh;
@@ -13,7 +13,7 @@ const NotFoundStyle = styled.main`
     gap: 1rem;
     h1 {
         font-size: 5rem;
-        color: ${ColorFour};
+        color: ${Gray};
     }
     img {
         width: 30%;
