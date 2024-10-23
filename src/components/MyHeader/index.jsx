@@ -34,7 +34,7 @@ const MyHeader = () => {
                 <img src="/imgs/logo.png" alt="Logo Site" />
             </LogoStyle>
             <NavStyle>
-                <li><NavLink className="item__link" to="/" >Home</NavLink> </li>
+                <li><NavLink className="item__link" to="/" >Home</NavLink></li>
                 <li><NavLink className="item__link" to="/explorer">Explorer</NavLink></li>
                 <li><NavLink className="item__link" to="/mybookcase">My Bookcase</NavLink></li>
                 <li><NavLink className="item__link" to="/login">Login</NavLink></li>

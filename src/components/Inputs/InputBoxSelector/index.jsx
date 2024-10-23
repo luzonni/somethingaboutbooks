@@ -1,12 +1,16 @@
 import styled from "styled-components"
-import { DarkRed, White } from "../../../assets/Colors"
+import { DarkGray, DarkRed, White } from "../../../assets/Colors"
 
 const InputBoxSelectorStyle = styled.div`
     display: flex;
     align-items: center;
     gap: 0.5rem;
     flex-direction: row;
-    font-size: 1.25rem;
+    
+    label {
+        color: ${DarkGray};
+        font-size: 1.25rem;
+    }
 
     input[type="checkbox"] {
         -webkit-appearance: none;

@@ -1,12 +1,12 @@
 import styled from "styled-components"
 import { Black, DarkGray, DarkRed, Gray } from "../../assets/Colors"
-import InputBoxSelector from "../../components/Inputs/InputBoxSelector"
 import InputText from "../../components/Inputs/InputText"
+import InputBoxSelector from "../../components/Inputs/InputBoxSelector"
 import InputButton from "../../components/Inputs/InputButton"
-import { FaTag } from "react-icons/fa6"
 import { NavLink } from "react-router-dom"
+import { FaTag } from "react-icons/fa6"
 
-const StyleLogin = styled.main`
+const StyleSignUp = styled.main`
     width: 100%;
     height: 100vh;
     display: flex;
@@ -52,12 +52,14 @@ const StyleLogin = styled.main`
         align-items: center;
         background-color: ${Gray};
         span {
-            width: 20rem;
-            height: 20rem;
-            background-color: ${DarkRed};
-            border-radius: 50%;
-            animation: rotate-triangle 30s linear infinite;
-            box-shadow: 0 0 4rem RGB(0, 0, 0, 0.5);
+            width: 0; 
+            height: 0; 
+            border-left: 10rem solid RGB(0, 0, 0, 0);
+            border-right: 10rem solid RGB(0, 0, 0, 0);
+            border-bottom: 17rem solid ${DarkRed};
+            filter: drop-shadow(0 0 4rem RGB(0, 0, 0, 0.5));
+            animation: rotate-triangle 10s linear infinite;
+            transform-origin: 50% 65%;
         }
     }
     @keyframes rotate-triangle {
@@ -66,7 +68,9 @@ const StyleLogin = styled.main`
         }
         50% {
             transform: rotate(180deg);
-            border-radius: 0;
+            border-left: 2rem solid RGB(0, 0, 0, 0);
+            border-right: 2rem solid RGB(0, 0, 0, 0);
+            border-bottom: 3rem solid ${DarkRed};
         }
         100%{
             transform: rotate(360deg);
@@ -76,9 +80,12 @@ const StyleLogin = styled.main`
 
 
 
-const Login = () => {
+const SignUp = () => {
     return (
-        <StyleLogin>
+        <StyleSignUp>
+            <div className="container__drawing">
+                <span></span>
+            </div>
             <div className="container__input">
                 <h1>Bem-vindo de volta!</h1>
                 <h3>Bem-vindo de volta! Coloque suas informações</h3>
@@ -90,11 +97,8 @@ const Login = () => {
                 </form>
                 <p>Não possui uma conta ou cadastro? <NavLink className="singup" to="/signup">Cadastre-se</NavLink></p>
             </div>
-            <div className="container__drawing">
-                <span></span>
-            </div>
-        </StyleLogin>
+        </StyleSignUp>
     )
 }
 
-export default Login
+export default SignUp
