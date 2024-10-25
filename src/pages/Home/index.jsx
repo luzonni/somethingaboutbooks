@@ -1,18 +1,26 @@
 import styled from "styled-components"
-import { Gray } from "../../assets/Colors"
+import { Black } from "../../assets/Colors"
 
 const HomeStyle = styled.main`
-    background-color: ${Gray};
-    padding: 3rem;
+    width: 100%;
+    background-color: red;
     h1 {
-        color: ${Gray};
+        color: ${Black};
+    }
+    .backgroundImage {
+        width: 100%;
+        height: 20rem;
+        background-image: url("imgs/background.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 `
 
 const Home = () => {
     return (
         <HomeStyle>
-            <h1>home</h1>
+            <div className="backgroundImage"></div>
+            
         </HomeStyle>
     )
 }

@@ -1,10 +1,9 @@
 import styled from "styled-components"
 import { Black, DarkGray, DarkRed, Gray } from "../../assets/Colors"
-import InputText from "../../components/Inputs/InputText"
-import InputBoxSelector from "../../components/Inputs/InputBoxSelector"
-import InputButton from "../../components/Inputs/InputButton"
 import { NavLink } from "react-router-dom"
 import { FaTag } from "react-icons/fa6"
+import { useState } from "react"
+import { InputButton, InputDate, InputPassword, InputSelect, InputText } from "../../components/Inputs"
 
 const StyleSignUp = styled.main`
     width: 100%;
@@ -39,9 +38,13 @@ const StyleSignUp = styled.main`
             color: ${Black};
             font-weight: bold;
         }
-        .singup {
+        .linkTo {
             color: ${DarkRed};
             text-transform: uppercase;
+        }
+        .form_group {
+            display: flex;
+            gap: 1rem;
         }
     }
     .container__drawing {
@@ -81,21 +84,34 @@ const StyleSignUp = styled.main`
 
 
 const SignUp = () => {
+    const [userName, setUserName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [birthday, setBirthday] = useState("")
+    const [gender, setGender] = useState("")
+
     return (
         <StyleSignUp>
             <div className="container__drawing">
-                <span></span>
+                <span/>
             </div>
             <div className="container__input">
-                <h1>Bem-vindo de volta!</h1>
-                <h3>Bem-vindo de volta! Coloque suas informações</h3>
-                <form className="form__login">
-                    <InputText label={"Email"}/>
-                    <InputText label={"Password"}/>
-                    <InputBoxSelector label={"Lembrar de mim!"}/>
-                    <InputButton label={"Entrar"} icon={<FaTag/>}/>
+                <h1>Seja bem-vindo!</h1>
+                <h3>Preencha suas informações abaixo:</h3>
+                <form className="form__login" onSubmit={e => e.preventDefault()}>
+                    <div className="form_group">
+                        <InputText label={"Username"}/>
+                        <InputText label={"Email"}/>
+                    </div>
+                    <div className="form_group">
+                        <InputPassword label={"Senha"}/>
+                        <InputPassword label={"Repetir senha"}/>
+                    </div>
+                    <InputDate label={"Nascimento"} />
+                    <InputSelect label={"sexo"} list_select={["Masculino", "Feminino", "Helicopiteru"]} />
+                    <InputButton label={"Cadastrar"} icon={<FaTag/>}/>
                 </form>
-                <p>Não possui uma conta ou cadastro? <NavLink className="singup" to="/signup">Cadastre-se</NavLink></p>
+                <p>Já possui cadastro? <NavLink className="linkTo" to="/login">Entre</NavLink></p>
             </div>
         </StyleSignUp>
     )

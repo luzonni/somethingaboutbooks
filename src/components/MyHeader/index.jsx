@@ -1,44 +1,44 @@
 import styled from "styled-components"
-import { NavLink } from "react-router-dom"
-import { DarkRed, Gray } from "../../assets/Colors"
+import LoginTab from "./LoginTab"
+import { Gray } from "../../assets/Colors"
+import { GiHamburgerMenu } from "react-icons/gi";
+import { IoMdClose } from "react-icons/io";
+
+
 
 const NavegationStyle = styled.nav`
     display: flex;
     justify-content: space-between;
     padding: 0 2rem;
     background-color: ${Gray};
+    align-items: center;
+    button {
+        background: none;
+        border: none;
+    }
 `
 
 const LogoStyle = styled.div`
-    padding: 1rem;
+    padding: 0.5rem;
     img {
-        width: 3rem;
+        width: 6rem;
     }
 `
 
-const NavStyle = styled.ul`
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    .item__link {
-        text-decoration: none;
-        font-size: 1.5rem;
-        color: ${DarkRed};
-    }
-`
-
-const MyHeader = () => {
+const MyHeader = ({handleMenu, isOpen}) => {
     return (
         <NavegationStyle>
+            <button onClick={() => {handleMenu()}}>
+                {isOpen ? 
+                    <IoMdClose size={"3rem"} />
+                    :
+                    <GiHamburgerMenu size={"3rem"} />
+                }
+            </button>
             <LogoStyle>
                 <img src="/imgs/logo.png" alt="Logo Site" />
             </LogoStyle>
-            <NavStyle>
-                <li><NavLink className="item__link" to="/" >Home</NavLink></li>
-                <li><NavLink className="item__link" to="/explorer">Explorer</NavLink></li>
-                <li><NavLink className="item__link" to="/mybookcase">My Bookcase</NavLink></li>
-                <li><NavLink className="item__link" to="/login">Login</NavLink></li>
-            </NavStyle>
+            <LoginTab/>
         </NavegationStyle>
     )
 }

@@ -1,10 +1,8 @@
 import styled from "styled-components"
 import { Black, DarkGray, DarkRed, Gray } from "../../assets/Colors"
-import InputBoxSelector from "../../components/Inputs/InputBoxSelector"
-import InputText from "../../components/Inputs/InputText"
-import InputButton from "../../components/Inputs/InputButton"
 import { FaTag } from "react-icons/fa6"
 import { NavLink } from "react-router-dom"
+import { InputButton, InputCheckBox, InputText } from "../../components/Inputs"
 
 const StyleLogin = styled.main`
     width: 100%;
@@ -79,13 +77,13 @@ const StyleLogin = styled.main`
 const Login = () => {
     return (
         <StyleLogin>
-            <div className="container__input">
+            <div className="container__input" onSubmit={e => e.preventDefault()}>
                 <h1>Bem-vindo de volta!</h1>
                 <h3>Bem-vindo de volta! Coloque suas informações</h3>
-                <form className="form__login">
+                <form className="form__login" >
                     <InputText label={"Email"}/>
                     <InputText label={"Password"}/>
-                    <InputBoxSelector label={"Lembrar de mim!"}/>
+                    <InputCheckBox label={"Lembrar de mim!"}/>
                     <InputButton label={"Entrar"} icon={<FaTag/>}/>
                 </form>
                 <p>Não possui uma conta ou cadastro? <NavLink className="singup" to="/signup">Cadastre-se</NavLink></p>
