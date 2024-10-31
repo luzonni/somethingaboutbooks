@@ -5,6 +5,8 @@ import Reset from "./components/Reset"
 import NotFound from "./pages/NotFound"
 import DefaultPage from "./pages/DefaultPage"
 import SignUp from "./pages/SignUp"
+import Hub from "./pages/Hub/Hub.jsx"
+import Pomodoro from "./pages/Pomodoro/Pomodoro.jsx"
 
 function AppRoutes() {
   return (
@@ -14,6 +16,8 @@ function AppRoutes() {
         <Route path="/" element={<DefaultPage />}>
           <Route index element={<Home />}/>
           <Route path="" element/>
+          <Route path="/hub" element={<Hub />}/>
+          <Route path="/pomodoro" element={<Pomodoro />}/>
           <Route path="*" element={<NotFound />}/>
         </Route>
         <Route path="/login" element={<Login />}/>
