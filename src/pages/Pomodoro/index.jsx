@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './PomodoroStyle.css';
+import styles from "./Pomodoro.module.css"
 
 
 const Pomodoro = () => {
@@ -25,31 +25,31 @@ const Pomodoro = () => {
   };
 
   return (
-    <div className="container">
-      <div className="content">
-        <div className="book-info">
-          <img src="https://m.media-amazon.com/images/I/819js3EQwbL._AC_UF1000,1000_QL80_.jpg" alt="Book Cover" className="book-cover" />
-          <div className="timer">
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <div className={styles.bookInfo}>
+          <img src="https://m.media-amazon.com/images/I/819js3EQwbL._AC_UF1000,1000_QL80_.jpg" alt="Book Cover" className={styles.bookCover} />
+          <div className={styles.timer}>
             <h1>{formatTime(time)}</h1>
             <p>Pág. 67</p>
           </div>
         </div>
 
-        <div className="controls">
+        <div className={styles.controls}>
           <button onClick={() => setIsRunning(!isRunning)}>
             {isRunning ? 'Pausar' : 'Iniciar'}
           </button>
           <button onClick={() => setTime(0)}>Resetar</button>
         </div>
 
-        <div className="progress-bar"> {/* fazer a progress bar com JS dps */}
-          <span className="circle completed">1</span>
-          <span className="circle completed">2</span>
-          <span className="circle completed">3</span>
-          <span className="circle active">4</span>
-          <span className="circle">5</span>
-          <span className="circle">6</span>
-          <span className="circle">7</span>
+        <div className={styles.progressBar}> {/* fazer a progress bar com JS dps */}
+          <span className={styles.circle + styles.completed}>1</span>
+          <span className={styles.circle + styles.completed}>2</span>
+          <span className={styles.circle + styles.completed}>3</span>
+          <span className={styles.circle + styles.active}>4</span>
+          <span className={styles.circle}>5</span>
+          <span className={styles.circle}>6</span>
+          <span className={styles.circle}>7</span>
         </div>
       </div>
     </div>
