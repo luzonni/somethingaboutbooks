@@ -6,6 +6,7 @@ import NotFound from "./pages/NotFound"
 import DefaultPage from "./pages/DefaultPage"
 import SignUp from "./pages/SignUp"
 import Pomodoro from "./pages/Pomodoro"
+import UserConfig from "./pages/UserConfig"
 
 function AppRoutes() {
   return (
@@ -16,6 +17,7 @@ function AppRoutes() {
           <Route index element={<Home />}/>
           <Route path="" element/>
           <Route path="/pomodoro" element={<Pomodoro />}/>
+          <Route path="/userconfig" element={<UserConfig />}/>
           <Route path="*" element={<NotFound />}/>
         </Route>
         <Route path="/login" element={<Login />}/>
