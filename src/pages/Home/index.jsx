@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { Black } from "../../assets/Colors"
-
+// teste do renatos
 const HomeStyle = styled.main`
     width: 100%;
     background-color: red;
