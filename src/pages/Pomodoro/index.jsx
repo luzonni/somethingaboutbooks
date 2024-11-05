@@ -43,10 +43,10 @@ const Pomodoro = () => {
         </div>
 
         <div className={styles.progressBar}> {/* fazer a progress bar com JS dps */}
-          <span className={styles.circle + styles.completed}>1</span>
-          <span className={styles.circle + styles.completed}>2</span>
-          <span className={styles.circle + styles.completed}>3</span>
-          <span className={styles.circle + styles.active}>4</span>
+          <span className={styles.circle}>1</span>
+          <span className={styles.circle}>2</span>
+          <span className={styles.circle}>3</span>
+          <span className={styles.circle}>4</span>
           <span className={styles.circle}>5</span>
           <span className={styles.circle}>6</span>
           <span className={styles.circle}>7</span>
