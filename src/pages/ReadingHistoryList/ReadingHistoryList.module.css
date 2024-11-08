@@ -1,0 +1,97 @@
+.pageContainer {
+    background-color: #f4f4f9;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.userIcon {
+    background-color: #555;
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.readingList {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.subtitle {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.listGroup {
+    margin: 0;
+}
+
+.listItem {
+    background-color: #e9ecef;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    padding: 10px;
+}
+
+.listItem:hover {
+    background-color: #d0d4da;
+}
+
+.footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.footer a {
+    color: #666;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between; /* Adiciona espaçamento máximo entre o título e o nome do usuário */
+    align-items: center;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.userIcon {
+    background-color: #555;
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: #fff;
+    font-size: 14px;
+    margin-left: auto; /* Garante que o nome do usuário fique alinhado à direita */
+}

@@ -8,6 +8,7 @@ import SignUp from "./pages/SignUp";
 import Pomodoro from "./pages/Pomodoro";
 import UserConfig from "./pages/UserConfig";
 import PreConfigs from "./pages/PreConfigs";
+import ReadingHistoryList from "./pages/ReadingHistoryList";
 
 function AppRoutes() {
   return (
@@ -19,6 +20,7 @@ function AppRoutes() {
           <Route path="/pomodoro" element={<Pomodoro />} />
           <Route path="/userconfig" element={<UserConfig />} />
           <Route path="/preuserconfigs" element={<PreConfigs />} />
+          <Route path="/readinghistorylist" element={<ReadingHistoryList />} /> {/* Corrigido aqui */}
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/login" element={<Login />} />
