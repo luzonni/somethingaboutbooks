@@ -1,3 +1,82 @@
 .container {
-    background-color: red;
+    background-color: #d3d3d3;
+    padding: 20px;
+}
+
+.accountInfo, .privateInfo {
+    background-color: #3a3a3a;
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.card {
+    background-color: #585858;
+    color: white;
+    border: none;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.accountCard {
+    flex-direction: row;
+    align-items: start;
+}
+
+.profileImg {
+    width: 100px;
+    border-radius: 10px;
+    margin-right: 20px;
+}
+
+.accountDetails {
+    flex-grow: 1;
+}
+
+.profileDescription {
+    font-size: 0.9rem;
+}
+
+.infoTable {
+    width: 100%;
+    color: white;
+    border-spacing: 0;
+}
+
+.infoTable td {
+    padding: 8px 0;
+}
+
+.privateInfoText {
+    font-size: 0.85rem;
+    color: #ccc;
+    margin-top: 10px;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btnEdit, .btnUndo {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+.btnEdit:hover, .btnUndo:hover {
+    background-color: #e43c3c;
 }
