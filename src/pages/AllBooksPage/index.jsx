@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./AllBooksPage.module.css";
 
 const fetchBooks = async () => {
-  // Simulated API response
+  // Simulacao da API, so alimentar pelo ID
   return [
     { id: 1, title: "O Hobbit", cover: "link-to-cover1.jpg" },
     { id: 2, title: "A Medida", cover: "link-to-cover2.jpg" },
@@ -15,7 +15,7 @@ const fetchBooks = async () => {
     { id: 8, title: "Livro 8", cover: "link-to-cover8.jpg" },
     { id: 8, title: "Livro 8", cover: "link-to-cover8.jpg" },
 
-    // Add more book objects to simulate data
+    // Pode colocar mais coisas, para alimentar a Shelf
   ];
 };
 
