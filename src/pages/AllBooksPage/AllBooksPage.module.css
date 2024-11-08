@@ -1,0 +1,64 @@
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 20px; /* Make the title larger */
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #f0f0f5; /* Light background for contrast */
+    border-radius: 10px; /* Rounded edges for a softer look */
+    position: relative; 
+    display: inline-block; 
+  }
+  
+  /* Decorative underline */
+  .title::after {
+    content: "";
+    display: block;
+    width: 60%; /* Adjust width as needed */
+    height: 3px;
+    background-color: #383838; /* Blue color for underline */
+    margin: 8px auto 0; /* Center underline and add spacing */
+    border-radius: 2px;
+  }
+  
+  .shelf {
+    display: flex;
+    justify-content: space-around;
+    background-color: #e0e0e0; /* Light gray background for each shelf */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px; /* Rounded corners for each shelf */
+  }
+  
+  .card {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cover {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .bookTitle {
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+  }
+  
