@@ -1,4 +1,4 @@
-# 📚 somethingaboutbooks
+# 📚 SAB PROJECT (SomethingAboutBooks)
 Projeto de Engenharia de Software desenvolvido pela turma de Engenharia de Software da Unima Afya - AL.
 
 ---
