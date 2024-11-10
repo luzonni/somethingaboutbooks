@@ -1,5 +1,7 @@
 # 📚 SAB PROJECT (SomethingAboutBooks)
-Projeto de Engenharia de Software desenvolvido pela turma de Engenharia de Software da Unima Afya - AL.
+![logo](https://github.com/user-attachments/assets/8edb2e03-4288-4f63-ad62-fca9771247ac)
+
+Projeto de Engenharia de Software desenvolvido pela turma de Ciencia da Computacao da Unima Afya - AL.
 
 ---
 
