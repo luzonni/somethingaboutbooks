@@ -2,6 +2,7 @@ import styled from "styled-components"
 import { Link } from "react-router-dom"
 
 const ListCardStyle = styled.section`
+    width: 100%;
     h1 {
         padding: 2rem 2rem 0 2rem;
         font-weight: bold;

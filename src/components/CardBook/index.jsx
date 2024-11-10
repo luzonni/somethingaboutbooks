@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { IoIosStar } from "react-icons/io";
+import Stars from "../Stars";
 
 const CardBookStyle = styled.section`
     display: flex;
@@ -49,22 +49,6 @@ const RowCardBookStyle = styled.div`
             font-weight: 300;
             font-size: 1rem;
         }
-        .star-rating {
-            position: relative;
-            display: inline-block;
-            font-size: 24px;
-            color: #ccc;
-        }
-        .stars {
-            color: #e36065;
-            position: absolute;
-            top: 0;
-            left: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            width: 100%;
-            transition: width 0.3s ease;
-        }
     }
 `
 
@@ -85,17 +69,13 @@ export const CardBook = ({thumb, title, content, isNew}) => {
 }
 
 export const RowCardBook = ({thumb, title, author, gener, stars}) => { 
-    const maxStars = 5;
-    const starPercentage = (stars / maxStars) * 100;
     return (
         <RowCardBookStyle>
             <img src={thumb} alt={title} />
             <div className="content">
                 <h3>{title}</h3>
                 <p>{author} - {gener}</p>
-                <div className="star-rating">
-                    <span className="stars" style={{width:starPercentage}}><IoIosStar/><IoIosStar/><IoIosStar/><IoIosStar/><IoIosStar/></span>
-                </div>
+                <Stars stars={stars}/>
             </div>
         </RowCardBookStyle>
     )
