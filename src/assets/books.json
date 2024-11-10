@@ -1,0 +1,47 @@
+[
+    {
+        "thumb":"https://m.media-amazon.com/images/I/91M9xPIf10L._AC_UF1000,1000_QL80_.jpg",
+        "title":"O Hobbit",
+        "content":"Cap 1",
+        "author": "J. R. R. Tolkien",
+        "gener": "Romance",
+        "stars": 5,
+        "isNew":true
+    },
+    {
+        "thumb":"https://m.media-amazon.com/images/I/91g9Dvtf+jL._AC_UF1000,1000_QL80_.jpg",
+        "title":"IT: A Coisa",
+        "content":"Cap 1",
+        "author": "Stephen King",
+        "gener": "Terror",
+        "stars": 4.5,
+        "isNew":true
+    },
+    {
+        "thumb":"https://m.media-amazon.com/images/I/71yJLhQekBL._AC_UF1000,1000_QL80_.jpg",
+        "title":"Narnia",
+        "content":"Cap 3",
+        "author": "C. S. Lewis",
+        "gener": "Fantasia",
+        "stars":3,
+        "isNew":false
+    },
+    {
+        "thumb":"https://m.media-amazon.com/images/I/71aSbmu4MzL._AC_UF1000,1000_QL80_.jpg",
+        "title":"O Fim Da Infância",
+        "content":"Cap 2",
+        "author": "Arthur C. Clarke",
+        "gener": "Ficção científica",
+        "stars": 4,
+        "isNew":true
+    },
+    {
+        "thumb":"https://m.media-amazon.com/images/I/71spFy89VXL._AC_UF1000,1000_QL80_.jpg",
+        "title":"Café com Deus Pai",
+        "content":"Cap 1",
+        "author": "Junior Rostirola",
+        "gener": "Literatura cristã",
+        "stars": 3.5,
+        "isNew":true
+    }
+]
