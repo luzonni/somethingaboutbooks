@@ -1,7 +1,7 @@
 # 📚 SAB PROJECT (SomethingAboutBooks)
-![logo](https://github.com/user-attachments/assets/8edb2e03-4288-4f63-ad62-fca9771247ac)
+<img width="300" alt="Screen Shot 2024-11-10 at 18 27 25" src="https://github.com/user-attachments/assets/9add98d2-1b72-49ff-838d-cd5a30e8b6f2">
 
-Projeto de Engenharia de Software desenvolvido pela turma de Ciencia da Computacao da Unima Afya - AL.
+##Projeto de Engenharia de Software desenvolvido pela turma de Ciencia da Computacao da Unima Afya - AL.
 
 ---
 
