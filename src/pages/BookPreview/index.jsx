@@ -15,7 +15,7 @@ function BookPreview() {
             className="me-4"
           />
           <div className={`${styles.detalhesLivro}`}>
-            <h2 className="fw-bold">O Hobbit</h2>
+            <h2 className="fw-bold h3 text-decoration-underline">O Hobbit</h2>
             <p>
               <span className="text-warning">★★★★☆</span> | tags: fantasia
             </p>
@@ -31,16 +31,16 @@ function BookPreview() {
             </div>
           </div>
         </section>
-
+        <hr className="divisor" />
         {/* Informações do Autor */}
         <section className={`${styles.informacaoAutor} d-flex align-items-start mb-5`}>
           <img
-            src="https://via.placeholder.com/100"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/J._R._R._Tolkien%2C_ca._1925.jpg/220px-J._R._R._Tolkien%2C_ca._1925.jpg"
             alt="Foto do Autor"
             className="me-4"
           />
           <div>
-            <h3 className="fw-bold">Informação do Autor/a</h3>
+            <h2 className="fw-bold h4 text-decoration-underline">Informação do Autor/a</h2>
             <p>
               John Ronald Reuel Tolkien (1892–1973) foi um renomado escritor,
               professor universitário e filólogo britânico, amplamente

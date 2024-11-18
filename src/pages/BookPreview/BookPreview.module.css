@@ -1,99 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 /* Estilo geral para o componente */
+
 .container {
     max-width: 800px;
     margin: auto;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  /* Estilo da capa do livro */
-  img {
+    font-family: 'Roboto', sans-serif;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo das imagens */
+img {
     border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Seção de detalhes do livro */
-  .detalhes-livro h2 {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 175px; /* Define a largura fixa */
+    height: auto; /* Mantém a proporção da imagem */
+}
+
+/* Seção de detalhes do livro */
+.detalhes-livro h2 {
     font-size: 2rem;
     color: #2c3e50;
-  }
-  
-  .detalhes-livro p {
+    margin-bottom: 0.5rem;
+}
+
+.detalhes-livro p {
     font-size: 1rem;
     color: #7f8c8d;
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Botões principais */
-  button {
+    margin-bottom: 0.75rem;
+}
+
+.detalhes-livro span.text-warning {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Botões principais */
+button {
     border-radius: 20px;
     padding: 0.5rem 1rem;
     font-size: 1rem;
-    transition: all 0.3s ease;
-  }
-  
-  button:hover {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+button:hover {
     transform: scale(1.05);
-  }
-  
-  .btn-primary {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
     background-color: #560000;
     border: none;
-  }
-  
-  .btn-secondary {
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #7a0000;
+}
+
+.btn-secondary {
     background-color: #9b59b6;
     border: none;
-  }
-  
-  .btn-light {
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #8e44ad;
+}
+
+.btn-light {
     background-color: #ecf0f1;
     color: #2c3e50;
-  }
-  
-  /* Seção do autor */
-  .informacao-autor img {
+    border: 1px solid #bdc3c7;
+}
+
+.btn-light:hover {
+    background-color: #dfe6e9;
+}
+
+/* Botão Comprar personalizado */
+.botaoComprar {
+    background-color: #e74c3c;
+    border: none;
+    color: #fff;
+}
+
+.botaoComprar:hover {
+    background-color: #c0392b;
+}
+
+/* Seção do autor */
+.informacao-autor img {
     border-radius: 50%;
     border: 2px solid #ecf0f1;
-  }
-  
-  .informacao-autor h3 {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+.informacao-autor h3 {
     font-size: 1.5rem;
     color: #34495e;
-  }
-  
-  /* Abas de navegação */
-  .nav-tabs {
-    border-bottom: 2px solid #ecf0f1;
-  }
-  
-  .nav-link {
+    margin-bottom: 0.5rem;
+}
+
+.informacao-autor p {
     font-size: 1rem;
     color: #7f8c8d;
-    transition: color 0.3s ease;
-  }
-  
-  
-  .nav-link:hover {
+    line-height: 1.6;
+}
+
+/* Abas de navegação */
+.nav-tabs {
+    border-bottom: 2px solid #ecf0f1;
+    margin-bottom: 1rem;
+}
+
+.nav-link {
+    font-size: 1rem;
+    color: #7f8c8d;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-link.active {
+    color: #66ff00;
+    background-color: #2c3e50;
+    border-radius: 8px;
+}
+
+.nav-link:hover {
     color: #34495e;
-  }
-  
-  /* Área de reviews */
-  .reviews h4 {
+}
+
+/* Área de reviews */
+.reviews h4 {
     font-size: 1.25rem;
     color: #2c3e50;
-  }
-  
-  .reviews p {
+    margin-bottom: 0.5rem;
+}
+
+.reviews p {
     font-size: 1rem;
     color: #7f8c8d;
-  }
+    line-height: 1.6;
+}
 
-  .botaoComprar {
-    background-color: #e74c3c; /* Cor vermelha */
-    border: none;
+.divisor {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, #ddd, #333, #ddd);
+    margin: 20px 0;
   }
   
-  .botaoComprar:hover {
-    background-color: #c0392b; /* Tom mais escuro ao passar o mouse */
-  }
-  
+
+/* Ajustes de responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .detalhes-livro h2 {
+        font-size: 1.5rem;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
