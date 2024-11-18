@@ -1,0 +1,96 @@
+import React from "react";
+import ReactDOM from "react-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import styles from "./BookPreview.module.css";
+
+function App() {
+  return (
+    <div>
+      {/* Cabeçalho, ajeitar placeholders   */}
+      <header className="d-flex justify-content-between align-items-center p-3 bg-light">
+        <button className="btn btn-light">
+          <i className="bi bi-list"></i>
+        </button>
+        <h1 className="m-0 fw-bold">SAB</h1>
+        <img
+          src="https://via.placeholder.com/40"
+          alt="Perfil"
+          className="rounded-circle"
+        />
+      </header>
+
+      {/* Conteúdo Principal */}
+      <main className="container my-5">
+        {/* Detalhes do Livro */}
+        <section className="d-flex align-items-start mb-5">
+          <img
+            src="https://via.placeholder.com/150"
+            alt="Capa do Livro"
+            className="me-4"
+          />
+          <div>
+            <h2 className="fw-bold">O Hobbit</h2>
+            <p>
+              <span className="text-warning">★★★★☆</span> | tags: fantasia
+            </p>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce
+              interdum, nulla sit amet dictum hendrerit, ex magna malesuada
+              lacus, sed ultricies justo eros eget nisl.
+            </p>
+            <div className="d-flex gap-2">
+              <button className="btn btn-primary">Comprar</button>
+              <button className="btn btn-secondary">Estilo Kindle</button>
+              <button className="btn btn-light">Lido</button>
+            </div>
+          </div>
+        </section>
+
+        {/* Informações do Autor */}
+        <section className="d-flex align-items-start mb-5">
+          <img
+            src="https://via.placeholder.com/100"
+            alt="Foto do Autor"
+            className="me-4"
+          />
+          <div>
+            <h3 className="fw-bold">Informação do Autor/a</h3>
+            <p>
+              John Ronald Reuel Tolkien (1892–1973) foi um renomado escritor,
+              professor universitário e filólogo britânico, amplamente
+              reconhecido como o pai da alta fantasia moderna.
+            </p>
+          </div>
+        </section>
+
+        {/* Abas */}
+        <section>
+          <ul className="nav nav-tabs mb-3">
+            <li className="nav-item">
+              <button className="nav-link active">Reviews</button>
+            </li>
+            <li className="nav-item">
+              <button className="nav-link">Detalhes</button>
+            </li>
+            <li className="nav-item">
+              <button className="nav-link">Gêneros</button>
+            </li>
+          </ul>
+          <div>
+            <h4 className="fw-bold">O Hobbit (1937)</h4>
+            <p>
+              ★★★★★ | Lido em 14 de outubro de 2024
+            </p>
+            <p>
+              Eu adorei ler O Hobbit. A história é envolvente desde o começo,
+              com Bilbo Bolseiro, um hobbit pacato, sendo inesperadamente
+              arrastado para uma grande aventura.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
