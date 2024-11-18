@@ -11,6 +11,7 @@ import PreConfigs from "./pages/PreConfigs";
 import ReadingHistoryList from "./pages/ReadingHistoryList";
 import AllBooksPage from "./pages/AllBooksPage";
 import UserProfile from "./pages/UserProfile";
+import BookPreview from "./pages/BookPreview";
 
 function AppRoutes() {
   return (
@@ -25,6 +26,7 @@ function AppRoutes() {
           <Route path="/readinghistorylist" element={<ReadingHistoryList />} /> 
           <Route path="/books" element={<AllBooksPage />} />
           <Route path="/user/:username" element={<UserProfile />} />
+          <Route path="/bookpreview" element={<BookPreview />} />
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/login" element={<Login />} />

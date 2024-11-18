@@ -1,30 +1,17 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./BookPreview.module.css";
 
-function App() {
+function BookPreview() {
   return (
     <div>
-      {/* Cabeçalho, ajeitar placeholders   */}
-      <header className="d-flex justify-content-between align-items-center p-3 bg-light">
-        <button className="btn btn-light">
-          <i className="bi bi-list"></i>
-        </button>
-        <h1 className="m-0 fw-bold">SAB</h1>
-        <img
-          src="https://via.placeholder.com/40"
-          alt="Perfil"
-          className="rounded-circle"
-        />
-      </header>
-
+      {/* Retirada do Header alocador  */}
       {/* Conteúdo Principal */}
       <main className="container my-5">
         {/* Detalhes do Livro */}
         <section className="d-flex align-items-start mb-5">
           <img
-            src="https://via.placeholder.com/150"
+            src="https://1.bp.blogspot.com/-wg1tQl6DMtU/XPBwbXQ607I/AAAAAAAAIPM/07cHJP6DZ5Qn2HCveiGmNOMgw4aIBezaQCLcBGAs/s1600/91wNn43pJHL.jpg"
             alt="Capa do Livro"
             className="me-4"
           />
@@ -93,4 +80,4 @@ function App() {
   );
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+export default BookPreview;
