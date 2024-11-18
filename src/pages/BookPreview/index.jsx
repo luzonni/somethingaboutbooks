@@ -4,10 +4,9 @@ import styles from "./BookPreview.module.css";
 
 function BookPreview() {
   return (
-    <div>
-      {/* Retirada do Header alocador  */}
+    <div className={`${styles.container}`}>
       {/* Conteúdo Principal */}
-      <main className="container my-5">
+      <main className="my-5">
         {/* Detalhes do Livro */}
         <section className="d-flex align-items-start mb-5">
           <img
@@ -15,7 +14,7 @@ function BookPreview() {
             alt="Capa do Livro"
             className="me-4"
           />
-          <div>
+          <div className={`${styles.detalhesLivro}`}>
             <h2 className="fw-bold">O Hobbit</h2>
             <p>
               <span className="text-warning">★★★★☆</span> | tags: fantasia
@@ -26,7 +25,7 @@ function BookPreview() {
               lacus, sed ultricies justo eros eget nisl.
             </p>
             <div className="d-flex gap-2">
-              <button className="btn btn-primary">Comprar</button>
+            <button className={`btn ${styles.botaoComprar}`}>Comprar</button>
               <button className="btn btn-secondary">Estilo Kindle</button>
               <button className="btn btn-light">Lido</button>
             </div>
@@ -34,7 +33,7 @@ function BookPreview() {
         </section>
 
         {/* Informações do Autor */}
-        <section className="d-flex align-items-start mb-5">
+        <section className={`${styles.informacaoAutor} d-flex align-items-start mb-5`}>
           <img
             src="https://via.placeholder.com/100"
             alt="Foto do Autor"
@@ -63,11 +62,9 @@ function BookPreview() {
               <button className="nav-link">Gêneros</button>
             </li>
           </ul>
-          <div>
+          <div className={`${styles.reviews}`}>
             <h4 className="fw-bold">O Hobbit (1937)</h4>
-            <p>
-              ★★★★★ | Lido em 14 de outubro de 2024
-            </p>
+            <p>★★★★★ | Lido em 14 de outubro de 2024</p>
             <p>
               Eu adorei ler O Hobbit. A história é envolvente desde o começo,
               com Bilbo Bolseiro, um hobbit pacato, sendo inesperadamente

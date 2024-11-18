@@ -1,0 +1,99 @@
+/* Estilo geral para o componente */
+.container {
+    max-width: 800px;
+    margin: auto;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Estilo da capa do livro */
+  img {
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Seção de detalhes do livro */
+  .detalhes-livro h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+  }
+  
+  .detalhes-livro p {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Botões principais */
+  button {
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  button:hover {
+    transform: scale(1.05);
+  }
+  
+  .btn-primary {
+    background-color: #560000;
+    border: none;
+  }
+  
+  .btn-secondary {
+    background-color: #9b59b6;
+    border: none;
+  }
+  
+  .btn-light {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+  }
+  
+  /* Seção do autor */
+  .informacao-autor img {
+    border-radius: 50%;
+    border: 2px solid #ecf0f1;
+  }
+  
+  .informacao-autor h3 {
+    font-size: 1.5rem;
+    color: #34495e;
+  }
+  
+  /* Abas de navegação */
+  .nav-tabs {
+    border-bottom: 2px solid #ecf0f1;
+  }
+  
+  .nav-link {
+    font-size: 1rem;
+    color: #7f8c8d;
+    transition: color 0.3s ease;
+  }
+  
+  
+  .nav-link:hover {
+    color: #34495e;
+  }
+  
+  /* Área de reviews */
+  .reviews h4 {
+    font-size: 1.25rem;
+    color: #2c3e50;
+  }
+  
+  .reviews p {
+    font-size: 1rem;
+    color: #7f8c8d;
+  }
+
+  .botaoComprar {
+    background-color: #e74c3c; /* Cor vermelha */
+    border: none;
+  }
+  
+  .botaoComprar:hover {
+    background-color: #c0392b; /* Tom mais escuro ao passar o mouse */
+  }
+  
