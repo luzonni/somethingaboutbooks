@@ -22,6 +22,7 @@
   - 👤 Caio Renato
   - 👤 Caio Gabriel
   - 👤 Murilo Barros
+  - 👤 Francisco
 
 ### 4️⃣ Where?
 - **Plataforma**: Ambiente Web responsivo (compatível com **iOS**, **Android** e **Desktop**).
@@ -60,3 +61,4 @@
 - 👤 Caio Gabriel
 - 👤 Caio Renato
 - 👤 Murilo Barros
+- 👤 Francisco
