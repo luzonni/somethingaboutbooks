@@ -84,7 +84,9 @@ const Login = () => {
                     <InputText label={"Email"}/>
                     <InputText label={"Password"}/>
                     <InputCheckBox label={"Lembrar de mim!"}/>
-                    <InputButton label={"Entrar"} icon={<FaTag/>}/>
+                    <NavLink style={{width:"100%", textDecoration:"none"}} to={"/"}>
+                        <InputButton label={"Entrar"} icon={<FaTag/>}/>
+                    </NavLink>
                 </form>
                 <p>Não possui uma conta ou cadastro? <NavLink className="singup" to="/signup">Cadastre-se</NavLink></p>
             </div>

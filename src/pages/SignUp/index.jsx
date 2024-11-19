@@ -109,7 +109,9 @@ const SignUp = () => {
                     </div>
                     <InputDate label={"Nascimento"} />
                     <InputSelect label={"sexo"} list_select={["Masculino", "Feminino", "Helicopiteru"]} />
-                    <InputButton label={"Cadastrar"} icon={<FaTag/>}/>
+                    <NavLink style={{width:"100%", textDecoration:"none"}} to={"/login"}>
+                        <InputButton label={"Cadastrar"} icon={<FaTag/>}/>
+                    </NavLink>
                 </form>
                 <p>Já possui cadastro? <NavLink className="linkTo" to="/login">Entre</NavLink></p>
             </div>
