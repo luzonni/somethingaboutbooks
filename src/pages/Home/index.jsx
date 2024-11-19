@@ -13,15 +13,17 @@ const HomeStyle = styled.main`
     }
     .title {
         text-align: center;
-        font-size: 3rem;
+        font-size: 2.5rem;
         padding: 2rem;
+
     }
     .backgroundImage {
         width: 100%;
-        height: 20rem;
+        height: 26rem;
         background-image: url("imgs/background.jpg");
         background-repeat: no-repeat;
         background-size: cover;
+        background-position: center;
     }
 `
 
@@ -30,9 +32,7 @@ const Home = () => {
         <HomeStyle>
             <div className="backgroundImage"></div>
             <h1 className="title">Encontre o sua proxima historia!</h1>
-            <NavLink to="/books">
-                <Search/>
-            </NavLink>
+            <Search/>
             <ListCards title="Ultimas atualizações">
                 {books.map((card, index) => {
                     return <CardBook key={index} {...card}/>

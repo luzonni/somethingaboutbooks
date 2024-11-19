@@ -3,10 +3,11 @@ import { Link } from "react-router-dom"
 
 const ListCardStyle = styled.section`
     width: 100%;
+    padding: 0 20rem;
     h1 {
         padding: 2rem 2rem 0 2rem;
         font-weight: bold;
-        font-size: 3rem;
+        font-size: 2rem;
     }
     .head {
         display: flex;
@@ -34,7 +35,7 @@ const ListCards = ({title, children}) => {
         <ListCardStyle>
             <div className="head">
                 <h1>{title}</h1>
-                <Link to={"/books"} className="link__mais">ver mais</Link>
+                <Link to={"/books"} className="link__mais" style={{fontSize:"1.5rem"}}>Ver mais</Link>
             </div>
             <div className="list">
                 {children}

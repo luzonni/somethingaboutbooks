@@ -10,6 +10,10 @@ const CardBookStyle = styled.section`
     width: 12rem;
     img {
         max-width: 12rem;
+        transition: 500ms;
+    }
+    img:hover {
+        transform: scale(1.05);
     }
     h2 {
         text-align: center;
@@ -34,6 +38,10 @@ const RowCardBookStyle = styled.div`
     flex-direction: row;
     img {
         width: 6rem;
+        transition: 500ms;
+    }
+    img:hover {
+        transform: scale(1.25);
     }
     .content {
         display: flex;
