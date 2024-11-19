@@ -3,7 +3,8 @@ import { Link } from "react-router-dom"
 
 const ListCardStyle = styled.section`
     width: 100%;
-    padding: 0 20rem;
+    padding: 0 10%;
+    box-sizing: border-box;
     h1 {
         padding: 2rem 2rem 0 2rem;
         font-weight: bold;
