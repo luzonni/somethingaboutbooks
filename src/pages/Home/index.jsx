@@ -4,6 +4,7 @@ import Search from "../../components/Search"
 import ListCards from "../../components/ListCards"
 import { CardBook, RowCardBook } from "../../components/CardBook"
 import books from "../../assets/books.json"
+import { NavLink } from "react-router-dom"
 
 const HomeStyle = styled.main`
     width: 100%;
@@ -29,7 +30,9 @@ const Home = () => {
         <HomeStyle>
             <div className="backgroundImage"></div>
             <h1 className="title">Encontre o sua proxima historia!</h1>
-            <Search/>
+            <NavLink to="/books">
+                <Search/>
+            </NavLink>
             <ListCards title="Ultimas atualizações">
                 {books.map((card, index) => {
                     return <CardBook key={index} {...card}/>
