@@ -20,6 +20,12 @@ img {
 }
 
 /* Seção de detalhes do livro */
+.detalhes-livro {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .detalhes-livro h2 {
     font-size: 2rem;
     color: #2c3e50;

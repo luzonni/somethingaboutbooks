@@ -20,9 +20,10 @@ function BookPreview() {
               <span className="text-warning">★★★★☆</span> | tags: fantasia
             </p>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce
-              interdum, nulla sit amet dictum hendrerit, ex magna malesuada
-              lacus, sed ultricies justo eros eget nisl.
+              Bilbo Bolseiro é um hobbit que leva uma vida confortável e sem 
+              ambições, raramente aventurando-se para além de sua despensa ou sua adega. 
+              Mas seu contentamento é perturbado quando Gandalf, o mago, e uma companhia 
+              de anões batem em sua porta e levam-no para uma expedição.
             </p>
             <div className="d-flex gap-2">
             <button className={`btn ${styles.botaoComprar}`}>Comprar</button>

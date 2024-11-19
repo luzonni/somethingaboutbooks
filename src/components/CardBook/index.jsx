@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import Stars from "../Stars";
+import { NavLink } from "react-router-dom";
 
 const CardBookStyle = styled.section`
     display: flex;
@@ -55,7 +56,9 @@ const RowCardBookStyle = styled.div`
 export const CardBook = ({thumb, title, content, isNew}) => {
     return (
         <CardBookStyle>
-            <img src={thumb} alt={title} />
+            <NavLink to="/bookpreview">
+                <img src={thumb} alt={title} />
+            </NavLink>
             <h2>{title}</h2>
             { (content || isNew ) ? 
                 <div>
@@ -71,7 +74,9 @@ export const CardBook = ({thumb, title, content, isNew}) => {
 export const RowCardBook = ({thumb, title, author, gener, stars}) => { 
     return (
         <RowCardBookStyle>
-            <img src={thumb} alt={title} />
+            <NavLink to="/bookpewview">
+                <img src={thumb} alt={title} />
+            </NavLink>
             <div className="content">
                 <h3>{title}</h3>
                 <p>{author} - {gener}</p>
