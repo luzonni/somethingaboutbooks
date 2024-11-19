@@ -5,11 +5,16 @@ import styled from "styled-components";
 import { useState } from "react";
 import { DarkRed, Gray } from "../../assets/Colors";
 import MyNavLink from "../../components/MyNavLink";
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 
 const MenuStyled = styled.div`
     width: 100%;
     display: flex;
     flex-direction: row;
+    .page {
+        width: 100%;
+        background-color: white;
+    }
 `
 
 const Menu = styled.aside`
@@ -61,11 +66,13 @@ const DefaultPage = () => {
                             <li><MyNavLink to={"/"}>Home</MyNavLink></li>
                             <li><MyNavLink to={"/profile"}>Perfil</MyNavLink></li>
                             <li><MyNavLink to={"/searcg"}>Procurar</MyNavLink></li>
-                            <li><MyNavLink to={"/teste"}>teste</MyNavLink></li>
+                            <li><MyNavLink to={"/pomodoro"}>Pomodoro</MyNavLink></li>
                         </ul>
                     </nav>
                 </Menu>
-                <Outlet />
+                <div className="page">
+                    <Outlet/>
+                </div>
             </MenuStyled>
             <MyFooter/>
         </main>

@@ -10,11 +10,13 @@
   }
   
   .container {
+    width: 100%;
+    background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    margin: 8rem 0;
   }
   
   .header {
@@ -58,7 +60,6 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    margin-top: 20px;
   }
   
   .bookInfo {
@@ -106,7 +107,7 @@
     background-color: #c0392b;
   }
   
-  .progress-bar {
+  .progressBar {
     display: flex;
     justify-content: center;
     margin-top: 30px;
