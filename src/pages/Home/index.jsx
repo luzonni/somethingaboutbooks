@@ -2,8 +2,12 @@ import styled from "styled-components"
 import { White } from "../../assets/Colors"
 import Search from "../../components/Search"
 import BookSection from "../../components/BookSection"
+import { CardBook } from "../../components/CardBook"
+import ListCards from "../../components/ListCards"
 import { getBooksByGenre, getTrendingBooks } from "../../api/openLibrary"
+import { useLibrary } from "../../context/LibraryContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
+import { byRecent } from "../../services/library"
 
 const HomeStyle = styled.div`
     width: 100%;
@@ -29,6 +33,9 @@ const HomeStyle = styled.div`
 `
 
 const Home = () => {
+    const { entries } = useLibrary()
+    const reading = entries.filter((entry) => entry.shelf === "reading").sort(byRecent("updatedAt"))
+
     useDocumentTitle("")
 
     return (
@@ -37,6 +44,11 @@ const Home = () => {
                 <h1>Encontre a sua próxima história!</h1>
                 <Search />
             </div>
+            {reading.length > 0 && (
+                <ListCards title="Continue lendo" moreLink="/readinghistorylist">
+                    {reading.map((book) => <CardBook key={book.id} book={book} />)}
+                </ListCards>
+            )}
             <BookSection
                 title="Em alta nesta semana"
                 moreLink="/books"
