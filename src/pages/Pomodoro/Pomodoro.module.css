@@ -1,124 +1,264 @@
 .container {
-    width: 100%;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 8rem 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+  gap: 2rem;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 12px;
+  background-color: #f0eee2;
+}
+
+.mode,
+.modeActive {
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.mode {
+  background: none;
+}
+
+.mode:hover {
+  background-color: #e5e2d2;
+}
+
+.modeActive {
+  background-color: #620000;
+  color: #f5f5f5;
+}
+
+.ring {
+  position: relative;
+  width: min(20rem, 80vw);
+  aspect-ratio: 1;
+}
+
+.ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring circle {
+  fill: none;
+  stroke-width: 10;
+}
+
+.ringTrack {
+  stroke: #f0eee2;
+}
+
+.ringFocus,
+.ringBreak {
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s linear;
+}
+
+.ringFocus {
+  stroke: #e36065;
+}
+
+.ringBreak {
+  stroke: #2e7d4f;
+}
+
+.timer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer h1 {
+  font-size: clamp(3rem, 12vw, 4.5rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: #620000;
+}
+
+.timer p {
+  color: #6b6b6b;
+  font-size: 1.125rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.primary {
+  border: none;
+  background-color: #620000;
+  color: #f5f5f5;
+}
+
+.primary:hover {
+  background-color: #7a0000;
+}
+
+.secondary {
+  border: 1px solid #d9d5c7;
+  background-color: white;
+}
+
+.secondary:hover {
+  background-color: #f0eee2;
+}
+
+.progressBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: #f0eee2;
+  color: #6b6b6b;
+  font-weight: 500;
+}
+
+.completed {
+  background-color: #620000;
+  color: #f5f5f5;
+}
+
+.active {
+  background-color: #e36065;
+  color: #292929;
+}
+
+.muted {
+  color: #6b6b6b;
+}
+
+.muted a {
+  color: #620000;
+  font-weight: 500;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid #d9d5c7;
+  border-radius: 10px;
+  background-color: #f8f7f0;
+}
+
+.panel h2,
+.panel summary {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.panel summary {
+  cursor: pointer;
+}
+
+details.panel[open] summary {
+  margin-bottom: 0.75rem;
+}
+
+details.panel > div + div {
+  margin-top: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.field span {
+  color: #6b6b6b;
+  font-size: 0.875rem;
+}
+
+.field select,
+.field input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d9d5c7;
+  border-radius: 6px;
+  background-color: white;
+}
+
+.bookInfo {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.bookCover {
+  display: block;
+}
+
+.bookInfo strong {
+  font-weight: 500;
+}
+
+.bookInfo .field {
+  margin-top: 0.5rem;
+}
+
+.settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  align-items: end;
+  gap: 0.75rem;
+}
+
+@media (max-width: 800px) {
+  .container {
+    grid-template-columns: minmax(0, 1fr);
   }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    background-color: #f5f5f5;
-    padding: 10px 20px;
-  }
-  
-  .menuIcon {
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
-  .menuIcon i {
-    font-size: 24px;
-  }
-  
-  .logo img {
-    height: 40px;
-  }
-  
-  .profile {
-    display: flex;
-    align-items: center;
-  }
-  
-  .profilePic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: red;
-    margin-left: 10px;
-  }
-  
-  .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  
-  .bookInfo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .bookCover {
-    width: 150px;
-    height: 200px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .timer {
-    margin-top: 10px;
-  }
-  
-  .timer h1 {
-    font-size: 48px;
-    color: #e74c3c;
-  }
-  
-  .timer p {
-    font-size: 18px;
-    color: #666;
-  }
-  
-  .controls {
-    margin-top: 20px;
-  }
-  
-  .controls button {
-    padding: 10px 20px;
-    margin: 0 10px;
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .controls button:hover {
-    background-color: #c0392b;
-  }
-  
-  .progressBar {
-    display: flex;
-    justify-content: center;
-    margin-top: 30px;
-  }
-  
-  .circle {
-    width: 40px;
-    height: 40px;
-    margin: 0 5px;
-    border-radius: 50%;
-    background-color: #ddd;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 18px;
-  }
-  
-  .completed {
-    background-color: #e74c3c;
-  }
-  
-  .active {
-    background-color: #f39c12;
-  }
+}
