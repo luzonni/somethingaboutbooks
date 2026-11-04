@@ -1,99 +1,94 @@
-import styled from "styled-components"
-import { Black, DarkGray, DarkRed, Gray } from "../../assets/Colors"
+import { useState } from "react"
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom"
+import styled, { keyframes } from "styled-components"
 import { FaTag } from "react-icons/fa6"
-import { NavLink } from "react-router-dom"
-import { InputButton, InputCheckBox, InputText } from "../../components/Inputs"
+import { DarkRed } from "../../assets/Colors"
+import AuthLayout from "../../components/AuthLayout"
+import { FormError, InputButton, InputCheckBox, InputPassword, InputText } from "../../components/Inputs"
+import { useAuth } from "../../context/AuthContext"
+import { useDocumentTitle } from "../../hooks/useDocumentTitle"
+import { hasErrors, validateEmail } from "../../utils/validation"
 
-const StyleLogin = styled.main`
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: row;
-    flex-grow: 2;
-    .container__input {
-        width: 50%;
-        display: flex;
-        padding: 4rem;
-        align-items: start;
-        flex-direction: column;
-        justify-content: center;
-        gap: 1rem;
-        h1 {
-            font-size: 4rem;
-        }
-        h3 {
-            font-size: 2rem;
-            color: ${DarkGray};
-        }
-        .form__login {
-            padding: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: start;
-        }
-        p {
-            font-size: 0.75rem;
-            color: ${Black};
-            font-weight: bold;
-        }
-        .singup {
-            color: ${DarkRed};
-            text-transform: uppercase;
-        }
-    }
-    .container__drawing {
-        display: flex;
-        width: 50%;
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-        background-color: ${Gray};
-        span {
-            width: 20rem;
-            height: 20rem;
-            background-color: ${DarkRed};
-            border-radius: 50%;
-            animation: rotate-triangle 30s linear infinite;
-            box-shadow: 0 0 4rem RGB(0, 0, 0, 0.5);
-        }
-    }
-    @keyframes rotate-triangle {
-        0% {
-            transform: rotate(0deg);
-        }
-        50% {
-            transform: rotate(180deg);
-            border-radius: 0;
-        }
-        100%{
-            transform: rotate(360deg);
-        }
-    }
+const morph = keyframes`
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); border-radius: 0; }
+    100% { transform: rotate(360deg); }
 `
 
-
+const Drawing = styled.span`
+    width: 20rem;
+    height: 20rem;
+    background-color: ${DarkRed};
+    border-radius: 50%;
+    animation: ${morph} 30s linear infinite;
+    box-shadow: 0 0 4rem rgba(0, 0, 0, 0.5);
+`
 
 const Login = () => {
+    const { user, login } = useAuth()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const redirectTo = location.state?.from ?? "/"
+
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [remember, setRemember] = useState(true)
+    const [errors, setErrors] = useState({})
+    const [submitting, setSubmitting] = useState(false)
+
+    useDocumentTitle("Entrar")
+
+    if (user && !submitting) return <Navigate to={redirectTo} replace />
+
+    const handleSubmit = async (event) => {
+        event.preventDefault()
+        const nextErrors = {
+            email: validateEmail(email),
+            password: password ? "" : "Informe sua senha.",
+        }
+        setErrors(nextErrors)
+        if (hasErrors(nextErrors)) return
+
+        setSubmitting(true)
+        try {
+            await login({ email, password, remember })
+            navigate(redirectTo, { replace: true })
+        } catch (error) {
+            setErrors({ [error.field ?? "form"]: error.message })
+            setSubmitting(false)
+        }
+    }
+
     return (
-        <StyleLogin>
-            <div className="container__input" onSubmit={e => e.preventDefault()}>
-                <h1>Bem-vindo de volta!</h1>
-                <h3>Bem-vindo de volta! Coloque suas informações</h3>
-                <form className="form__login" >
-                    <InputText label={"Email"}/>
-                    <InputText label={"Password"}/>
-                    <InputCheckBox label={"Lembrar de mim!"}/>
-                    <NavLink style={{width:"100%", textDecoration:"none"}} to={"/"}>
-                        <InputButton label={"Entrar"} icon={<FaTag/>}/>
-                    </NavLink>
-                </form>
-                <p>Não possui uma conta ou cadastro? <NavLink className="singup" to="/signup">Cadastre-se</NavLink></p>
-            </div>
-            <div className="container__drawing">
-                <span></span>
-            </div>
-        </StyleLogin>
+        <AuthLayout title="Bem-vindo de volta!" subtitle="Coloque suas informações" drawing={<Drawing />}>
+            <form onSubmit={handleSubmit} noValidate>
+                <InputText
+                    label="Email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    error={errors.email}
+                    onChange={(event) => setEmail(event.target.value)}
+                />
+                <InputPassword
+                    label="Senha"
+                    autoComplete="current-password"
+                    value={password}
+                    error={errors.password}
+                    onChange={(event) => setPassword(event.target.value)}
+                />
+                <InputCheckBox
+                    label="Lembrar de mim"
+                    checked={remember}
+                    onChange={(event) => setRemember(event.target.checked)}
+                />
+                <FormError message={errors.form} />
+                <InputButton label={submitting ? "Entrando..." : "Entrar"} icon={<FaTag aria-hidden="true" />} disabled={submitting} />
+            </form>
+            <p>
+                Não possui uma conta? <Link className="linkTo" to="/signup" state={location.state}>Cadastre-se</Link>
+            </p>
+        </AuthLayout>
     )
 }
 
