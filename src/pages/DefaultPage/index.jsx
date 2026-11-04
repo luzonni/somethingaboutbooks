@@ -62,8 +62,8 @@ const DefaultPage = () => {
                     <nav className={`menu ${menuOpened ? "show" : ""}`}>
                         <ul>
                             <li><MyNavLink to={"/"}>Home</MyNavLink></li>
-                            <li><MyNavLink to={"/profile"}>Perfil</MyNavLink></li>
-                            <li><MyNavLink to={"/searcg"}>Procurar</MyNavLink></li>
+                            <li><MyNavLink to={"/preuserconfigs"}>Perfil</MyNavLink></li>
+                            <li><MyNavLink to={"/books"}>Procurar</MyNavLink></li>
                             <li><MyNavLink to={"/pomodoro"}>Pomodoro</MyNavLink></li>
                         </ul>
                     </nav>

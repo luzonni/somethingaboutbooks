@@ -82,7 +82,7 @@ export const CardBook = ({thumb, title, content, isNew}) => {
 export const RowCardBook = ({thumb, title, author, gener, stars}) => { 
     return (
         <RowCardBookStyle>
-            <NavLink to="/bookpewview">
+            <NavLink to="/bookpreview">
                 <img src={thumb} alt={title} />
             </NavLink>
             <div className="content">
