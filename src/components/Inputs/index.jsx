@@ -1,7 +1,7 @@
 import { useId, useState } from "react"
 import styled from "styled-components"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
-import { Black, Danger, DarkGray, DarkRed, White } from "../../assets/Colors"
+import { Black, Border, Danger, DarkGray, DarkRed, White } from "../../assets/Colors"
 
 const InputStyle = styled.div`
     width: 100%;
@@ -9,8 +9,9 @@ const InputStyle = styled.div`
     gap: 0.25rem;
     flex-direction: column;
     label {
-        color: ${DarkGray};
-        font-size: 1rem;
+        color: ${Black};
+        font-size: 0.875rem;
+        font-weight: 500;
     }
 
     .done_button {
@@ -18,12 +19,15 @@ const InputStyle = styled.div`
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        padding: 0.75rem 1rem;
+        height: 2.875rem;
+        padding: 0 1rem;
         border: none;
         background-color: ${DarkRed};
         color: ${White};
-        font-size: 1.125rem;
+        font-size: 1rem;
+        font-weight: 500;
         border-radius: 8px;
+        transition: background-color 150ms ease;
     }
 
     .done_button:hover:not(:disabled) {
@@ -36,12 +40,38 @@ const InputStyle = styled.div`
 
     .inputText {
         width: 100%;
-        border: 1px solid ${DarkGray};
-        border-radius: 6px;
-        padding: 0.75rem;
-        font-size: 1rem;
+        height: 2.75rem;
+        border: 1px solid ${Border};
+        border-radius: 8px;
+        padding: 0 0.75rem;
+        font-size: 0.9375rem;
         color: ${Black};
         background-color: white;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .inputText::placeholder {
+        color: #8a8a8a;
+    }
+
+    .inputText:focus {
+        outline: none;
+        border-color: ${DarkRed};
+        box-shadow: 0 0 0 3px rgba(98, 0, 0, 0.15);
+    }
+
+    textarea.inputText {
+        height: auto;
+        padding: 0.75rem;
+        resize: vertical;
+    }
+
+    select.inputText {
+        appearance: none;
+        padding-right: 2.25rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
     }
 
     .inputText[aria-invalid="true"] {
