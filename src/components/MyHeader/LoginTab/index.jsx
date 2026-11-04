@@ -1,55 +1,172 @@
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { FaUser } from "react-icons/fa";
-import { FiLogOut } from "react-icons/fi";
-import { NavLink, useNavigate } from "react-router-dom";
-import { Black, DarkRed } from "../../../assets/Colors";
+import { FiChevronDown, FiLogOut } from "react-icons/fi";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Black, Border, Cream, DarkRed, White } from "../../../assets/Colors";
 import { useAuth } from "../../../context/AuthContext";
+import { accountLinks } from "../navItems";
 
 const LoginTabStyle = styled.div`
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
 
-    .icon {
-        flex-shrink: 0;
+    .login__enter, .login__signup {
+        padding: 0.4rem 0.9rem;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .login__enter {
         color: ${DarkRed};
     }
 
-    .username {
-        font-size: 1.125rem;
-        font-weight: 500;
+    .login__enter:hover {
+        background-color: ${White};
+    }
+
+    .login__signup {
+        background-color: ${DarkRed};
+        color: ${White};
+    }
+
+    .login__signup:hover {
+        background-color: #7a0000;
+    }
+
+    .user__toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+        border: none;
+        border-radius: 999px;
+        background: none;
         color: ${Black};
-        text-decoration: none;
-        max-width: 10rem;
+        font-weight: 500;
+    }
+
+    .user__toggle:hover {
+        background-color: ${White};
+    }
+
+    .user__avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        background-color: ${DarkRed};
+        color: ${White};
+        font-weight: 700;
+    }
+
+    .user__name {
+        max-width: 9rem;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    .username:hover {
-        color: ${DarkRed};
+    .user__menu {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        z-index: 30;
+        min-width: 12rem;
+        padding: 0.375rem;
+        border: 1px solid ${Border};
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
-    .link {
-        font-size: 1.125rem;
-        text-decoration: none;
-        font-weight: bold;
-        color: ${DarkRed};
-    }
-
-    .logout {
+    .user__menu a, .user__menu button {
         display: flex;
-        padding: 0.25rem;
-        color: ${DarkRed};
-        font-size: 1.5rem;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: none;
+        border-radius: 6px;
+        background: none;
+        color: ${Black};
+        text-align: left;
+        text-decoration: none;
     }
 
-    @media (max-width: 480px) {
-        .username {
+    .user__menu a:hover, .user__menu button:hover {
+        background-color: ${Cream};
+    }
+
+    .user__menu .user__logout {
+        margin-top: 0.25rem;
+        color: ${DarkRed};
+    }
+
+    @media (max-width: 899px) {
+        .user__name, .user__chevron, .login__signup {
             display: none;
+        }
+        .user__toggle {
+            padding: 0;
         }
     }
 `
+
+const UserMenu = ({ user, onLogout }) => {
+    const [open, setOpen] = useState(false)
+    const containerRef = useRef(null)
+    const location = useLocation()
+
+    useEffect(() => setOpen(false), [location.pathname])
+
+    useEffect(() => {
+        if (!open) return undefined
+        const closeOutside = (event) => {
+            if (!containerRef.current?.contains(event.target)) setOpen(false)
+        }
+        const closeOnEscape = (event) => {
+            if (event.key === "Escape") setOpen(false)
+        }
+        document.addEventListener("pointerdown", closeOutside)
+        document.addEventListener("keydown", closeOnEscape)
+        return () => {
+            document.removeEventListener("pointerdown", closeOutside)
+            document.removeEventListener("keydown", closeOnEscape)
+        }
+    }, [open])
+
+    return (
+        <div ref={containerRef}>
+            <button
+                type="button"
+                className="user__toggle"
+                aria-expanded={open}
+                aria-label={`Menu de ${user.username}`}
+                onClick={() => setOpen(!open)}
+            >
+                <span className="user__avatar" aria-hidden="true">{user.username[0].toUpperCase()}</span>
+                <span className="user__name">{user.username}</span>
+                <FiChevronDown className="user__chevron" aria-hidden="true" />
+            </button>
+            {open && (
+                <div className="user__menu">
+                    {accountLinks(user).map((link) => (
+                        <Link key={link.to} to={link.to}>{link.label}</Link>
+                    ))}
+                    <button type="button" className="user__logout" onClick={onLogout}>
+                        <FiLogOut aria-hidden="true" /> Sair
+                    </button>
+                </div>
+            )}
+        </div>
+    )
+}
 
 const LoginTab = () => {
     const { user, logout } = useAuth()
@@ -62,16 +179,13 @@ const LoginTab = () => {
 
     return (
         <LoginTabStyle>
-            <FaUser className="icon" size="1.5rem" aria-hidden="true" />
             {user ? (
-                <>
-                    <NavLink to={`/user/${user.username}`} className="username">{user.username}</NavLink>
-                    <button type="button" className="logout" aria-label="Sair" title="Sair" onClick={handleLogout}>
-                        <FiLogOut aria-hidden="true" />
-                    </button>
-                </>
+                <UserMenu user={user} onLogout={handleLogout} />
             ) : (
-                <NavLink to="/login" className="link">Entrar</NavLink>
+                <>
+                    <Link to="/login" className="login__enter">Entrar</Link>
+                    <Link to="/signup" className="login__signup">Criar conta</Link>
+                </>
             )}
         </LoginTabStyle>
     )
