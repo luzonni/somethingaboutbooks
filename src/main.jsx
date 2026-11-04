@@ -7,3 +7,11 @@ createRoot(document.getElementById('root')).render(
     <AppRoutes />
   </StrictMode>
 )
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Sem service worker o site continua funcionando, só baixa as capas de novo.
+    })
+  })
+}

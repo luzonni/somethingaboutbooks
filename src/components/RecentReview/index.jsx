@@ -1,63 +1,54 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import BookCover from "../BookCover";
 import Stars from "../Stars";
+import { Black, Cream, DarkGray } from "../../assets/Colors";
 
-const ReviewStyle = styled.section`
-    display: flex;
-    flex-direction: column;
-    .title__main {
-        font-size: 2rem;
-        padding: 2rem;
+const ReviewStyle = styled.article`
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 1.5rem;
+    @media (max-width: 480px) {
+        grid-template-columns: 5rem minmax(0, 1fr);
+        gap: 1rem;
     }
-    .container {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        gap: 3rem;
-    }
-    .container img {
-        width: 20rem;
-    }
-    .container .contents {
-        width: 50%;
+    .review__contents {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        .title__book {
-            font-size: 2.5rem;
-        }
-        .date {
-            margin-top: 1rem;
-        }
-        p {
-            margin-top: 2rem;
-            background-color: lightgray;
-            padding: 2rem;
-        }
-        .head__book {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .review__title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: ${Black};
+    }
+    .review__date {
+        color: ${DarkGray};
+        font-size: 0.875rem;
+    }
+    .review__text {
+        width: 100%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background-color: ${Cream};
+        border-radius: 6px;
+        white-space: pre-wrap;
     }
 `
 
-const RecentReviws = ({book, date, children}) => {
-    return (
-        <ReviewStyle>
-            <h1 className="title__main">Review mais recente</h1>
-            <div className="container">
-                <img src={book.thumb} alt={book.title} />
-                <div className="contents">
-                    <div className="head__book">
-                        <h1 className="title__book">{book.title}</h1>
-                        <span className="date">Lido em {date}</span>
-                    </div>
-                    <Stars stars={4.3}/>
-                    <p>{children}</p>
-                </div>
-            </div>
-        </ReviewStyle>
-    )
-}
+const RecentReview = ({ book, date, rating, children }) => (
+    <ReviewStyle>
+        <Link to={`/books/${book.id}`} aria-label={book.title}>
+            <BookCover src={book.cover} title={book.title} />
+        </Link>
+        <div className="review__contents">
+            <Link to={`/books/${book.id}`} className="review__title">{book.title}</Link>
+            {date && <span className="review__date">{date}</span>}
+            {rating ? <Stars stars={rating} /> : null}
+            {children && <p className="review__text">{children}</p>}
+        </div>
+    </ReviewStyle>
+)
 
-export default RecentReviws
+export default RecentReview

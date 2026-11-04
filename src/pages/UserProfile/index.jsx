@@ -1,148 +1,232 @@
-import { useParams } from "react-router-dom"
+import { useState } from "react"
+import { Link, useParams } from "react-router-dom"
 import styled from "styled-components"
 import { MdPlace } from "react-icons/md"
-import ListCards from "../../components/ListCards"
-import books from "../../assets/books.json"
+import { Border, Cream, DarkGray, DarkRed, White } from "../../assets/Colors"
 import { CardBook } from "../../components/CardBook"
-import RecentReviws from "../../components/RecentReview"
+import { EmptyState } from "../../components/Feedback"
+import ListCards from "../../components/ListCards"
+import RecentReview from "../../components/RecentReview"
+import { useAuth } from "../../context/AuthContext"
+import { useLibrary } from "../../context/LibraryContext"
+import { useDocumentTitle } from "../../hooks/useDocumentTitle"
+import { findUserByUsername } from "../../services/authService"
+import { byRecent, libraryStats, loadLibrary } from "../../services/library"
 
-const UserProfileStyle = styled.main`
-    background-color: white;
-    padding: 2rem;
+const UserProfileStyle = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 1.5rem;
     width: 100%;
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
     .profile {
-        padding: 1rem;
         display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         align-items: center;
-        gap: 2rem;
-        border-radius: 12px;
+        gap: 1.5rem;
     }
-
+    .profile__avatar {
+        width: 6rem;
+        height: 6rem;
+    }
     .profile__content {
+        max-width: 28rem;
         h1 {
             font-size: 2rem;
+            font-weight: 700;
         }
         p {
-            margin-top: 1rem;
+            margin-top: 0.25rem;
             font-weight: 300;
-            font-size: 1.25rem;
         }
     }
-    .profile__configs {
+    .profile__place {
         display: flex;
-        gap: 1rem;
-        button {
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            border: none;
-            font-weight: bold;
-            font-size: 1.25rem;
-            color: #a8a8a8;
-        }
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .profile__edit {
+        display: inline-block;
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        background-color: ${Cream};
+        border: 1px solid ${Border};
+        color: inherit;
+        font-weight: 500;
+        text-decoration: none;
     }
     .profile__values {
-        margin-left: 4rem;
         display: flex;
-        gap: 1rem;
-        
+        margin: 0;
     }
     .profile__values__card {
         display: flex;
-        flex-direction: column;
+        flex-direction: column-reverse;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 1.25rem;
-        padding: 1rem 2rem;
-        border-right: 4px solid #a8a8a8;
-        h3 {
-            font-weight: bold;
+        padding: 0.25rem 1.5rem;
+        border-right: 2px solid ${Border};
+        dd {
+            font-size: 1.5rem;
+            font-weight: 700;
         }
-        p {
+        dt {
+            color: ${DarkGray};
             font-weight: 300;
         }
     }
+    .profile__values__card:last-child {
+        border-right: none;
+    }
     .bar {
-        padding: 1rem;
-        border-radius: 40px;
-        -webkit-box-shadow: 0px 0px 84px -22px rgba(0,0,0,0.51);
-        -moz-box-shadow: 0px 0px 84px -22px rgba(0,0,0,0.51);
-        box-shadow: 0px 0px 84px -22px rgba(0,0,0,0.51);
         display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.25rem;
+        padding: 0.25rem;
+        border-radius: 12px;
+        background-color: ${Cream};
         button {
-            padding: 1rem 4rem;
-            background: none;
+            padding: 0.5rem 1.5rem;
             border: none;
-            font-size: 1.5rem;
+            border-radius: 8px;
+            background: none;
+            font-size: 1.0625rem;
         }
         button:hover {
-            background-color: lightgray;
+            background-color: ${Border};
         }
-        span {
-            width: 4px;
-            background-color: lightgray;
+        button[aria-selected="true"] {
+            background-color: ${DarkRed};
+            color: ${White};
         }
+    }
+    .panel {
+        width: 100%;
+    }
+    .reviews {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 56rem;
+        margin: 0 auto;
     }
 `
 
+const TABS = [
+    { id: "overview", label: "Visão geral" },
+    { id: "reviews", label: "Reviews" },
+    { id: "want", label: "Lista de desejos" },
+]
+
+const BookRow = ({ title, books, emptyText }) => (
+    <ListCards title={title}>
+        {books.length > 0
+            ? books.map((book) => <CardBook key={book.id} book={book} />)
+            : <p>{emptyText}</p>}
+    </ListCards>
+)
+
 const UserProfile = () => {
-    const params = useParams()
-    const username = params.username
+    const { username } = useParams()
+    const { user } = useAuth()
+    const { library: ownLibrary } = useLibrary()
+    const [activeTab, setActiveTab] = useState("overview")
+
+    const isOwner = user?.username.toLowerCase() === username.toLowerCase()
+    const profile = isOwner ? user : findUserByUsername(username)
+
+    useDocumentTitle(profile?.username ?? "Perfil")
+
+    if (!profile) {
+        return (
+            <EmptyState
+                title="Usuário não encontrado"
+                description="Os perfis ficam salvos no navegador em que a conta foi criada."
+                actionLabel="Voltar para o início"
+                actionTo="/"
+            />
+        )
+    }
+
+    const library = isOwner ? ownLibrary : loadLibrary(profile.id)
+    const stats = libraryStats(library)
+    const entries = Object.values(library.books)
+    const favorites = entries.filter((entry) => entry.favorite).sort(byRecent("updatedAt"))
+    const lastRead = entries.filter((entry) => entry.shelf === "read").sort(byRecent("finishedAt"))
+    const wishlist = entries.filter((entry) => entry.shelf === "want").sort(byRecent("updatedAt"))
+    const reviews = entries.filter((entry) => entry.rating).sort(byRecent("reviewedAt"))
+
     return (
         <UserProfileStyle>
             <div className="profile">
-                <img src="/imgs/user.svg" alt="" />
+                <img className="profile__avatar" src="/imgs/user.svg" alt="" />
                 <div className="profile__content">
-                    <h1>{username}</h1>
-                    <p><MdPlace/> Maceió, Alagoas</p>
+                    <h1>{profile.username}</h1>
+                    {profile.location && <p className="profile__place"><MdPlace aria-hidden="true" /> {profile.location}</p>}
+                    {profile.bio && <p>{profile.bio}</p>}
                 </div>
-                <div className="profile__configs">
-                    <button>Editar Perfil</button>
-                    <button>...</button>
-                </div>
-                <div className="profile__values">
-                    <div className="profile__values__card">
-                        <h3>23</h3>
-                        <p>Livros</p>
-                    </div>
-                    <div className="profile__values__card">
-                        <h3>7</h3>
-                        <p>Este ano</p>
-                    </div>
-                    <div className="profile__values__card">
-                        <h3>1</h3>
-                        <p>Lista</p>
-                    </div>
-                </div>
+                {isOwner && <Link className="profile__edit" to="/userconfig">Editar perfil</Link>}
+                <dl className="profile__values">
+                    <div className="profile__values__card"><dt>Livros</dt><dd>{stats.read}</dd></div>
+                    <div className="profile__values__card"><dt>Este ano</dt><dd>{stats.readThisYear}</dd></div>
+                    <div className="profile__values__card"><dt>Listas</dt><dd>{stats.lists}</dd></div>
+                </dl>
             </div>
-            <div className="bar">
-                <button>Reviews</button>
-                <span></span>
-                <button>Diario</button>
-                <span></span>
-                <button>Lista de Desejos</button>
+
+            <div className="bar" role="tablist" aria-label="Seções do perfil">
+                {TABS.map((tab) => (
+                    <button
+                        key={tab.id}
+                        type="button"
+                        role="tab"
+                        id={`profile-tab-${tab.id}`}
+                        aria-selected={activeTab === tab.id}
+                        aria-controls="profile-panel"
+                        onClick={() => setActiveTab(tab.id)}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
             </div>
-            <ListCards title="Favoritos">
-                {books.filter((book, index) => index % 3 !== 0).map((book, index) => {
-                    return <CardBook key={index} {...book}/>
-                })}
-            </ListCards>
-            <ListCards title="Ultimos Lidos">
-                {books.filter((book, index) => index % 3 !== 0).map((book, index) => {
-                    return <CardBook key={index} {...book}/>
-                })}
-            </ListCards>
-            <ListCards title="Lista de Desejos">
-                {books.filter((book, index) => index % 3 !== 0).map((book, index) => {
-                    return <CardBook key={index} {...book}/>
-                })}
-            </ListCards>
-            <RecentReviws book={books[2]} date={"14 de outubro de 2024"}>
-                Eu adorei ler O Hobbit. A história é envolvente desde o começo, com Bilbo Bolseiro, um hobbit pacato, sendo inesperadamente arrastado para uma grande aventura ao lado de anões em busca de um tesouro guardado pelo dragão Smaug. A narrativa tem uma mistura perfeita de fantasia, humor e momentos de tensão. A jornada de Bilbo não é apenas física, mas também uma transformação pessoal. Ele vai de um hobbit comum a um verdadeiro herói, o que é muito inspirador. Os cenários descritos por Tolkien são tão detalhados que é fácil se perder no mundo da Terra-média. Além disso, os personagens, especialmente Gandalf e Gollum, são fascinantes. O livro é leve, divertido e cheio de lições sobre coragem, amizade e o valor de sair da zona de conforto.
-            </RecentReviws>
+
+            <div className="panel" id="profile-panel" role="tabpanel" aria-labelledby={`profile-tab-${activeTab}`}>
+                {activeTab === "overview" && (
+                    <>
+                        <BookRow title="Favoritos" books={favorites} emptyText="Nenhum favorito ainda." />
+                        <BookRow title="Últimos lidos" books={lastRead} emptyText="Nenhuma leitura concluída ainda." />
+                    </>
+                )}
+                {activeTab === "reviews" && (
+                    reviews.length > 0 ? (
+                        <div className="reviews">
+                            {reviews.map((entry) => (
+                                <RecentReview
+                                    key={entry.id}
+                                    book={entry}
+                                    rating={entry.rating}
+                                    date={`Avaliado em ${new Date(entry.reviewedAt).toLocaleDateString("pt-BR")}`}
+                                >
+                                    {entry.review}
+                                </RecentReview>
+                            ))}
+                        </div>
+                    ) : (
+                        <EmptyState title="Nenhuma review ainda" />
+                    )
+                )}
+                {activeTab === "want" && (
+                    wishlist.length > 0 ? (
+                        <BookRow title="Lista de desejos" books={wishlist} />
+                    ) : (
+                        <EmptyState title="A lista de desejos está vazia" />
+                    )
+                )}
+            </div>
         </UserProfileStyle>
     )
 }

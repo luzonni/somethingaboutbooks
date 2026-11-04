@@ -1,37 +1,76 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Spinner } from "./components/Feedback";
+import RequireAuth from "./components/RequireAuth";
 import Reset from "./components/Reset";
-import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./context/AuthContext";
+import { LibraryProvider } from "./context/LibraryContext";
+import { PomodoroProvider } from "./context/PomodoroContext";
 import DefaultPage from "./pages/DefaultPage";
-import SignUp from "./pages/SignUp";
-import Pomodoro from "./pages/Pomodoro";
-import UserConfig from "./pages/UserConfig";
-import PreConfigs from "./pages/PreConfigs";
-import ReadingHistoryList from "./pages/ReadingHistoryList";
-import AllBooksPage from "./pages/AllBooksPage";
-import UserProfile from "./pages/UserProfile";
-import BookPreview from "./pages/BookPreview";
+import Home from "./pages/Home";
+
+const loadAllBooksPage = () => import("./pages/AllBooksPage");
+const AllBooksPage = lazy(loadAllBooksPage);
+const loadBookPreview = () => import("./pages/BookPreview");
+const BookPreview = lazy(loadBookPreview);
+const loadAuthPage = () => import("./pages/Auth");
+const AuthPage = lazy(loadAuthPage);
+const loadInfo = () => import("./pages/Info");
+const Info = lazy(loadInfo);
+const loadNotFound = () => import("./pages/NotFound");
+const NotFound = lazy(loadNotFound);
+const loadPomodoro = () => import("./pages/Pomodoro");
+const Pomodoro = lazy(loadPomodoro);
+const loadPreConfigs = () => import("./pages/PreConfigs");
+const PreConfigs = lazy(loadPreConfigs);
+const loadReadingHistoryList = () => import("./pages/ReadingHistoryList");
+const ReadingHistoryList = lazy(loadReadingHistoryList);
+const loadUserConfig = () => import("./pages/UserConfig");
+const UserConfig = lazy(loadUserConfig);
+const loadUserProfile = () => import("./pages/UserProfile");
+const UserProfile = lazy(loadUserProfile);
+
+// Baixa as outras páginas com o navegador ocioso para a navegação não mostrar carregamento.
+const preloadPages = () =>
+  [loadAllBooksPage, loadBookPreview, loadPomodoro, loadAuthPage].forEach((load) => load().catch(() => {}));
+
+const schedule = window.requestIdleCallback ?? ((callback) => setTimeout(callback, 1500));
+schedule(preloadPages);
+
+const isPrivate = (page) => <RequireAuth>{page}</RequireAuth>;
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Reset />
-      <Routes>
-        <Route path="/" element={<DefaultPage />}>
-          <Route index element={<Home />} />
-          <Route path="/pomodoro" element={<Pomodoro />} />
-          <Route path="/userconfig" element={<UserConfig />} />
-          <Route path="/preuserconfigs" element={<PreConfigs />} />
-          <Route path="/readinghistorylist" element={<ReadingHistoryList />} /> 
-          <Route path="/books" element={<AllBooksPage />} />
-          <Route path="/user/:username" element={<UserProfile />} />
-          <Route path="/bookpreview" element={<BookPreview />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-      </Routes>
+      <AuthProvider>
+        <LibraryProvider>
+          <PomodoroProvider>
+            <Suspense fallback={<Spinner label="Carregando página" />}>
+              <Routes>
+                <Route path="/" element={<DefaultPage />}>
+                  <Route index element={<Home />} />
+                  <Route path="books" element={<AllBooksPage />} />
+                  <Route path="books/:id" element={<BookPreview />} />
+                  <Route path="pomodoro" element={<Pomodoro />} />
+                  <Route path="user/:username" element={<UserProfile />} />
+                  <Route path="userconfig" element={isPrivate(<UserConfig />)} />
+                  <Route path="preuserconfigs" element={isPrivate(<PreConfigs />)} />
+                  <Route path="readinghistorylist" element={isPrivate(<ReadingHistoryList />)} />
+                  <Route path="sobre" element={<Info page="about" />} />
+                  <Route path="termos" element={<Info page="terms" />} />
+                  <Route path="privacidade" element={<Info page="privacy" />} />
+                  <Route path="suporte" element={<Info page="support" />} />
+                  <Route path="bookpreview" element={<Navigate to="/books" replace />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+                <Route path="/login" element={<AuthPage />} />
+                <Route path="/signup" element={<AuthPage />} />
+              </Routes>
+            </Suspense>
+          </PomodoroProvider>
+        </LibraryProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

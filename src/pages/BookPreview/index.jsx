@@ -1,79 +1,207 @@
-import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { FaExternalLinkAlt } from "react-icons/fa";
+import { getBookExtras, getWork } from "../../api/openLibrary";
+import BookActions from "../../components/BookActions";
+import BookCover from "../../components/BookCover";
+import BookReviews from "../../components/BookReviews";
+import { ErrorState, Skeleton, Spinner } from "../../components/Feedback";
+import Stars from "../../components/Stars";
+import { useLibrary } from "../../context/LibraryContext";
+import { useAsync } from "../../hooks/useAsync";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+import { formatApiDate, formatLifespan, truncateText } from "../../utils/text";
 import styles from "./BookPreview.module.css";
 
-function BookPreview() {
-  return (
-    <div className={`${styles.container}`}>
-      {/* Conteúdo Principal */}
-      <main className="my-5">
-        {/* Detalhes do Livro */}
-        <section className="d-flex align-items-start mb-5">
-          <img
-            src="https://1.bp.blogspot.com/-wg1tQl6DMtU/XPBwbXQ607I/AAAAAAAAIPM/07cHJP6DZ5Qn2HCveiGmNOMgw4aIBezaQCLcBGAs/s1600/91wNn43pJHL.jpg"
-            alt="Capa do Livro"
-            className="me-4"
-          />
-          <div className={`${styles.detalhesLivro}`}>
-            <h2 className="fw-bold h3 text-decoration-underline">O Hobbit</h2>
-            <p>
-              <span className="text-warning">★★★★☆</span> | tags: fantasia
-            </p>
-            <p>
-              Bilbo Bolseiro é um hobbit que leva uma vida confortável e sem 
-              ambições, raramente aventurando-se para além de sua despensa ou sua adega. 
-              Mas seu contentamento é perturbado quando Gandalf, o mago, e uma companhia 
-              de anões batem em sua porta e levam-no para uma expedição.
-            </p>
-            <div className="d-flex gap-2">
-            <button className={`btn ${styles.botaoComprar}`}>Comprar</button>
-              <button className="btn btn-secondary">Estilo Kindle</button>
-              <button className="btn btn-light">Lido</button>
-            </div>
-          </div>
-        </section>
-        <hr className="divisor" />
-        {/* Informações do Autor */}
-        <section className={`${styles.informacaoAutor} d-flex align-items-start mb-5`}>
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/J._R._R._Tolkien%2C_ca._1925.jpg/220px-J._R._R._Tolkien%2C_ca._1925.jpg"
-            alt="Foto do Autor"
-            className="me-4"
-          />
-          <div>
-            <h2 className="fw-bold h4 text-decoration-underline">Informação do Autor/a</h2>
-            <p>
-              John Ronald Reuel Tolkien (1892–1973) foi um renomado escritor,
-              professor universitário e filólogo britânico, amplamente
-              reconhecido como o pai da alta fantasia moderna.
-            </p>
-          </div>
-        </section>
+const TABS = [
+  { id: "reviews", label: "Reviews" },
+  { id: "details", label: "Detalhes" },
+  { id: "genres", label: "Gêneros" },
+];
 
-        {/* Abas */}
-        <section>
-          <ul className="nav nav-tabs mb-3">
-            <li className="nav-item">
-              <button className="nav-link active">Reviews</button>
-            </li>
-            <li className="nav-item">
-              <button className="nav-link">Detalhes</button>
-            </li>
-            <li className="nav-item">
-              <button className="nav-link">Gêneros</button>
-            </li>
-          </ul>
-          <div className={`${styles.reviews}`}>
-            <h4 className="fw-bold">O Hobbit (1937)</h4>
-            <p>★★★★★ | Lido em 14 de outubro de 2024</p>
-            <p>
-              Eu adorei ler O Hobbit. A história é envolvente desde o começo,
-              com Bilbo Bolseiro, um hobbit pacato, sendo inesperadamente
-              arrastado para uma grande aventura.
+const DESCRIPTION_LIMIT = 600;
+const BIO_LIMIT = 400;
+
+function ExpandableText({ text, limit, emptyText }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (!text) return <p className={styles.muted}>{emptyText}</p>;
+
+  return (
+    <div className={styles.description}>
+      <p>{expanded ? text : truncateText(text, limit)}</p>
+      {text.length > limit && (
+        <button type="button" className={styles.textButton} onClick={() => setExpanded(!expanded)}>
+          {expanded ? "Ler menos" : "Ler mais"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function AuthorInfo({ author }) {
+  const lifespan = formatLifespan(author.birthDate, author.deathDate);
+  return (
+    <div className={styles.author}>
+      {author.photo && (
+        <img src={author.photo} alt={`Foto de ${author.name}`} className={styles.authorPhoto} loading="lazy" />
+      )}
+      <div className={styles.authorText}>
+        <h3>
+          <Link to={`/books?q=${encodeURIComponent(author.name)}`}>{author.name}</Link>
+        </h3>
+        {lifespan && <p className={styles.muted}>{lifespan}</p>}
+        <ExpandableText text={author.bio} limit={BIO_LIMIT} emptyText="Biografia não disponível." />
+      </div>
+    </div>
+  );
+}
+
+function DetailsTab({ work }) {
+  const rows = [
+    ["Primeira publicação", formatApiDate(work.firstPublished)],
+    ["Lugares", work.places.join(", ")],
+    ["Personagens", work.characters.join(", ")],
+  ].filter(([, value]) => value);
+
+  return (
+    <>
+      {rows.length > 0 ? (
+        <dl className={styles.detailsList}>
+          {rows.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p className={styles.muted}>Não há mais detalhes sobre esta obra.</p>
+      )}
+      <a className={styles.externalLink} href={work.url} target="_blank" rel="noreferrer">
+        Ver na Open Library <FaExternalLinkAlt aria-hidden="true" size="0.75em" />
+      </a>
+    </>
+  );
+}
+
+function GenresTab({ subjects }) {
+  if (subjects.length === 0) return <p className={styles.muted}>Nenhum gênero cadastrado.</p>;
+  return (
+    <ul className={styles.tags}>
+      {subjects.map((subject) => (
+        <li key={subject}>
+          <Link to={`/books?q=${encodeURIComponent(subject)}`}>{subject}</Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const largerCover = (cover = "") => cover.replace("-M.jpg", "-L.jpg");
+
+function BookPreview() {
+  const { id } = useParams();
+  const location = useLocation();
+  const { getEntry } = useLibrary();
+  const [activeTab, setActiveTab] = useState("reviews");
+
+  // O card ou a estante já sabem título, autor e capa: a página aparece antes da resposta da API.
+  const stateBook = location.state?.book;
+  const preview = stateBook?.id === id ? stateBook : getEntry(id);
+
+  const { data: work, error, loading, retry } = useAsync((signal) => getWork(id, { signal }), [id]);
+  const { data: extras, loading: loadingExtras } = useAsync(
+    (signal) => (work ? getBookExtras(work, { signal }) : Promise.resolve(null)),
+    [work]
+  );
+
+  const title = preview?.title ?? work?.title;
+  const author = preview?.author ?? extras?.author;
+  const cover = preview?.cover ? largerCover(preview.cover) : work?.cover;
+  const authors = extras?.authors ?? [];
+
+  useDocumentTitle(title ?? "Livro");
+
+  if (error) {
+    return (
+      <ErrorState
+        message={error.status === 404 ? "Livro não encontrado." : error.message}
+        onRetry={error.status === 404 ? undefined : retry}
+      />
+    );
+  }
+  if (!title) return <Spinner label="Carregando livro" />;
+
+  const savedBook = { id, title, author, cover: preview?.cover ?? work?.coverThumb ?? "" };
+
+  return (
+    <div className={styles.container}>
+      <section className={styles.header}>
+        <div className={styles.cover}>
+          <BookCover src={cover} lowResSrc={preview?.cover} title={title} />
+        </div>
+        <div className={styles.info}>
+          <h1>{title}</h1>
+          <p className={styles.byline}>
+            {authors.map((item) => item.name).join(", ") || author || <Skeleton as="span" className={styles.skeletonLine} $width="10rem" $height="1.25rem" />}
+          </p>
+          {extras?.rating ? (
+            <p className={styles.rating}>
+              <Stars stars={extras.rating} />
+              <span>
+                {extras.rating.toFixed(1)} ({extras.ratingCount.toLocaleString("pt-BR")} avaliações)
+              </span>
             </p>
-          </div>
+          ) : loadingExtras ? (
+            <Skeleton $width="14rem" $height="1.5rem" />
+          ) : (
+            <p className={styles.muted}>Ainda sem avaliações na Open Library.</p>
+          )}
+          {author ? <BookActions book={savedBook} /> : <Skeleton $width="20rem" $height="2.5rem" />}
+          {loading ? (
+            <Skeleton $height="8rem" />
+          ) : (
+            <ExpandableText text={work.description} limit={DESCRIPTION_LIMIT} emptyText="Este livro ainda não tem sinopse." />
+          )}
+        </div>
+      </section>
+
+      {(loadingExtras || authors.length > 0) && (
+        <section className={styles.section}>
+          <h2>Sobre {authors.length > 1 ? "os autores" : "o autor"}</h2>
+          {loadingExtras ? (
+            <Skeleton $height="6rem" />
+          ) : (
+            authors.map((item) => <AuthorInfo key={item.id} author={item} />)
+          )}
         </section>
-      </main>
+      )}
+
+      <section className={styles.section}>
+        <div className={styles.tabs} role="tablist" aria-label="Informações do livro">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={activeTab === tab.id}
+              aria-controls={`panel-${tab.id}`}
+              className={activeTab === tab.id ? styles.tabActive : styles.tab}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <div role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`} className={styles.panel}>
+          {activeTab === "reviews" && author && <BookReviews book={savedBook} />}
+          {activeTab !== "reviews" && !work && <Spinner />}
+          {activeTab === "details" && work && <DetailsTab work={work} />}
+          {activeTab === "genres" && work && <GenresTab subjects={work.subjects} />}
+        </div>
+      </section>
     </div>
   );
 }
