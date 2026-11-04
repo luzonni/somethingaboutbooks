@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { useState } from "react";
 import { DarkRed, Gray } from "../../assets/Colors";
 import MyNavLink from "../../components/MyNavLink";
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 
 const MenuStyled = styled.div`
     width: 100%;
