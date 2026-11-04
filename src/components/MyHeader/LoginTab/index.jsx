@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { FiChevronDown, FiLogOut } from "react-icons/fi";
+import { FiArrowRight, FiChevronDown, FiLogOut } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Black, Border, Cream, DarkRed, White } from "../../../assets/Colors";
 import { useAuth } from "../../../context/AuthContext";
@@ -13,28 +13,68 @@ const LoginTabStyle = styled.div`
     gap: 0.5rem;
 
     .login__enter, .login__signup {
-        padding: 0.4rem 0.9rem;
-        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 2.5rem;
+        padding: 0 1.125rem;
+        border-radius: 999px;
+        font-size: 0.9375rem;
         font-weight: 500;
         text-decoration: none;
         white-space: nowrap;
+        transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    }
+
+    .login__enter svg {
+        transition: transform 180ms ease;
     }
 
     .login__enter {
+        border: 1.5px solid rgba(98, 0, 0, 0.3);
         color: ${DarkRed};
     }
 
     .login__enter:hover {
+        border-color: ${DarkRed};
         background-color: ${White};
     }
 
+    .login__enter:hover svg {
+        transform: translateX(2px);
+    }
+
     .login__signup {
-        background-color: ${DarkRed};
+        position: relative;
+        overflow: hidden;
+        background-image: linear-gradient(135deg, #8a1616, ${DarkRed});
         color: ${White};
+        box-shadow: 0 4px 12px rgba(98, 0, 0, 0.3);
+    }
+
+    .login__signup::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -60%;
+        width: 40%;
+        background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+        transform: skewX(-20deg);
+        transition: left 550ms ease;
     }
 
     .login__signup:hover {
-        background-color: #7a0000;
+        box-shadow: 0 6px 18px rgba(98, 0, 0, 0.42);
+        transform: translateY(-1px);
+    }
+
+    .login__signup:hover::after {
+        left: 120%;
+    }
+
+    .login__signup:active, .login__enter:active {
+        transform: translateY(0) scale(0.97);
     }
 
     .user__toggle {
@@ -183,7 +223,9 @@ const LoginTab = () => {
                 <UserMenu user={user} onLogout={handleLogout} />
             ) : (
                 <>
-                    <Link to="/login" className="login__enter">Entrar</Link>
+                    <Link to="/login" className="login__enter">
+                        Entrar <FiArrowRight aria-hidden="true" />
+                    </Link>
                     <Link to="/signup" className="login__signup">Criar conta</Link>
                 </>
             )}

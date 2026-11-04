@@ -104,18 +104,19 @@ const MobileMenuStyle = styled.div`
     .drawer__cta {
         display: block;
         padding: 0.75rem;
-        border-radius: 8px;
+        border-radius: 999px;
         text-align: center;
         font-weight: 500;
         text-decoration: none;
     }
     .drawer__cta--primary {
-        background-color: ${DarkRed};
+        background-image: linear-gradient(135deg, #8a1616, ${DarkRed});
         color: ${White};
+        box-shadow: 0 4px 12px rgba(98, 0, 0, 0.3);
     }
     .drawer__cta--secondary {
         margin-top: 0.5rem;
-        border: 1px solid ${DarkRed};
+        border: 1.5px solid rgba(98, 0, 0, 0.3);
         color: ${DarkRed};
     }
     @media (min-width: 900px) {
