@@ -4,7 +4,6 @@ import Search from "../../components/Search"
 import ListCards from "../../components/ListCards"
 import { CardBook, RowCardBook } from "../../components/CardBook"
 import books from "../../assets/books.json"
-import { NavLink } from "react-router-dom"
 
 const HomeStyle = styled.main`
     width: 100%;

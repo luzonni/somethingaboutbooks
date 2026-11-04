@@ -2,7 +2,6 @@ import styled from "styled-components"
 import { Black, DarkGray, DarkRed, Gray } from "../../assets/Colors"
 import { NavLink } from "react-router-dom"
 import { FaTag } from "react-icons/fa6"
-import { useState } from "react"
 import { InputButton, InputDate, InputPassword, InputSelect, InputText } from "../../components/Inputs"
 
 const StyleSignUp = styled.main`
@@ -84,11 +83,6 @@ const StyleSignUp = styled.main`
 
 
 const SignUp = () => {
-    const [userName, setUserName] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [birthday, setBirthday] = useState("")
-    const [gender, setGender] = useState("")
 
     return (
         <StyleSignUp>

@@ -53,7 +53,6 @@ const DefaultPage = () => {
     const [menuOpened, setMenuOpened] = useState(false)
     const handleMenu = () => {
         setMenuOpened(!menuOpened)
-        console.log("Click")
     }
     return (
         <main>

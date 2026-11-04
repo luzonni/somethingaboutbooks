@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Black, Gray, White } from "../../assets/Colors"
+import { Black, White } from "../../assets/Colors"
 import { MdError } from "react-icons/md";
 
 

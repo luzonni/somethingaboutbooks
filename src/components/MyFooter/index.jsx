@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { Black, Gray, White } from "../../assets/Colors";
-import Logo from "/public/imgs/logo.png"
+import { Black, Gray } from "../../assets/Colors";
+const Logo = "/imgs/logo.png"
 
 const MyFooterSyle = styled.footer`
     padding: 2rem;

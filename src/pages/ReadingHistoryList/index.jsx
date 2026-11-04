@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './ReadingHistoryList.module.css';
 
 const ReadingHistoryList = () => {
