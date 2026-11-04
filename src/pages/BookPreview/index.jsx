@@ -1,78 +1,176 @@
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { FaExternalLinkAlt } from "react-icons/fa";
+import { getBookDetails } from "../../api/openLibrary";
+import BookCover from "../../components/BookCover";
+import { ErrorState, Spinner } from "../../components/Feedback";
+import Stars from "../../components/Stars";
+import { useAsync } from "../../hooks/useAsync";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import styles from "./BookPreview.module.css";
 
-function BookPreview() {
-  return (
-    <div className={`${styles.container}`}>
-      {/* Conteúdo Principal */}
-      <main className="my-5">
-        {/* Detalhes do Livro */}
-        <section className="d-flex align-items-start mb-5">
-          <img
-            src="https://1.bp.blogspot.com/-wg1tQl6DMtU/XPBwbXQ607I/AAAAAAAAIPM/07cHJP6DZ5Qn2HCveiGmNOMgw4aIBezaQCLcBGAs/s1600/91wNn43pJHL.jpg"
-            alt="Capa do Livro"
-            className="me-4"
-          />
-          <div className={`${styles.detalhesLivro}`}>
-            <h2 className="fw-bold h3 text-decoration-underline">O Hobbit</h2>
-            <p>
-              <span className="text-warning">★★★★☆</span> | tags: fantasia
-            </p>
-            <p>
-              Bilbo Bolseiro é um hobbit que leva uma vida confortável e sem 
-              ambições, raramente aventurando-se para além de sua despensa ou sua adega. 
-              Mas seu contentamento é perturbado quando Gandalf, o mago, e uma companhia 
-              de anões batem em sua porta e levam-no para uma expedição.
-            </p>
-            <div className="d-flex gap-2">
-            <button className={`btn ${styles.botaoComprar}`}>Comprar</button>
-              <button className="btn btn-secondary">Estilo Kindle</button>
-              <button className="btn btn-light">Lido</button>
-            </div>
-          </div>
-        </section>
-        <hr className="divisor" />
-        {/* Informações do Autor */}
-        <section className={`${styles.informacaoAutor} d-flex align-items-start mb-5`}>
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/J._R._R._Tolkien%2C_ca._1925.jpg/220px-J._R._R._Tolkien%2C_ca._1925.jpg"
-            alt="Foto do Autor"
-            className="me-4"
-          />
-          <div>
-            <h2 className="fw-bold h4 text-decoration-underline">Informação do Autor/a</h2>
-            <p>
-              John Ronald Reuel Tolkien (1892–1973) foi um renomado escritor,
-              professor universitário e filólogo britânico, amplamente
-              reconhecido como o pai da alta fantasia moderna.
-            </p>
-          </div>
-        </section>
+const TABS = [
+  { id: "reviews", label: "Reviews" },
+  { id: "details", label: "Detalhes" },
+  { id: "genres", label: "Gêneros" },
+];
 
-        {/* Abas */}
-        <section>
-          <ul className="nav nav-tabs mb-3">
-            <li className="nav-item">
-              <button className="nav-link active">Reviews</button>
-            </li>
-            <li className="nav-item">
-              <button className="nav-link">Detalhes</button>
-            </li>
-            <li className="nav-item">
-              <button className="nav-link">Gêneros</button>
-            </li>
-          </ul>
-          <div className={`${styles.reviews}`}>
-            <h4 className="fw-bold">O Hobbit (1937)</h4>
-            <p>★★★★★ | Lido em 14 de outubro de 2024</p>
-            <p>
-              Eu adorei ler O Hobbit. A história é envolvente desde o começo,
-              com Bilbo Bolseiro, um hobbit pacato, sendo inesperadamente
-              arrastado para uma grande aventura.
+const DESCRIPTION_LIMIT = 600;
+
+function Description({ text }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (!text) return <p className={styles.muted}>Este livro ainda não tem sinopse.</p>;
+
+  const isLong = text.length > DESCRIPTION_LIMIT;
+  const visible = isLong && !expanded ? `${text.slice(0, DESCRIPTION_LIMIT).trimEnd()}…` : text;
+
+  return (
+    <div className={styles.description}>
+      <p>{visible}</p>
+      {isLong && (
+        <button type="button" className={styles.textButton} onClick={() => setExpanded(!expanded)}>
+          {expanded ? "Ler menos" : "Ler mais"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function AuthorInfo({ author }) {
+  const lifespan = [author.birthDate, author.deathDate].filter(Boolean).join(" – ");
+  return (
+    <div className={styles.author}>
+      {author.photo && (
+        <img src={author.photo} alt={`Foto de ${author.name}`} className={styles.authorPhoto} loading="lazy" />
+      )}
+      <div>
+        <h3>
+          <Link to={`/books?q=${encodeURIComponent(author.name)}`}>{author.name}</Link>
+        </h3>
+        {lifespan && <p className={styles.muted}>{lifespan}</p>}
+        <p className={styles.authorBio}>{author.bio || "Biografia não disponível."}</p>
+      </div>
+    </div>
+  );
+}
+
+function DetailsTab({ book }) {
+  const rows = [
+    ["Primeira publicação", book.firstPublished],
+    ["Lugares", book.places.join(", ")],
+    ["Personagens", book.characters.join(", ")],
+  ].filter(([, value]) => value);
+
+  return (
+    <>
+      {rows.length > 0 ? (
+        <dl className={styles.detailsList}>
+          {rows.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p className={styles.muted}>Não há mais detalhes sobre esta obra.</p>
+      )}
+      <a className={styles.externalLink} href={book.url} target="_blank" rel="noreferrer">
+        Ver na Open Library <FaExternalLinkAlt aria-hidden="true" size="0.75em" />
+      </a>
+    </>
+  );
+}
+
+function GenresTab({ subjects }) {
+  if (subjects.length === 0) return <p className={styles.muted}>Nenhum gênero cadastrado.</p>;
+  return (
+    <ul className={styles.tags}>
+      {subjects.map((subject) => (
+        <li key={subject}>
+          <Link to={`/books?q=${encodeURIComponent(subject)}`}>{subject}</Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function BookPreview() {
+  const { id } = useParams();
+  const [activeTab, setActiveTab] = useState("reviews");
+  const { data: book, error, loading, retry } = useAsync(
+    (signal) => getBookDetails(id, { signal }),
+    [id]
+  );
+
+  useDocumentTitle(book?.title ?? "Livro");
+
+  if (loading) return <Spinner label="Carregando livro" />;
+  if (error) {
+    return (
+      <ErrorState
+        message={error.status === 404 ? "Livro não encontrado." : error.message}
+        onRetry={error.status === 404 ? undefined : retry}
+      />
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      <section className={styles.header}>
+        <div className={styles.cover}>
+          <BookCover src={book.cover} title={book.title} />
+        </div>
+        <div className={styles.info}>
+          <h1>{book.title}</h1>
+          <p className={styles.byline}>{book.authors.map((author) => author.name).join(", ") || book.author}</p>
+          {book.rating ? (
+            <p className={styles.rating}>
+              <Stars stars={book.rating} />
+              <span>
+                {book.rating.toFixed(1)} ({book.ratingCount.toLocaleString("pt-BR")} avaliações)
+              </span>
             </p>
-          </div>
+          ) : (
+            <p className={styles.muted}>Ainda sem avaliações na Open Library.</p>
+          )}
+          <Description text={book.description} />
+        </div>
+      </section>
+
+      {book.authors.length > 0 && (
+        <section className={styles.section}>
+          <h2>Sobre {book.authors.length > 1 ? "os autores" : "o autor"}</h2>
+          {book.authors.map((author) => (
+            <AuthorInfo key={author.id} author={author} />
+          ))}
         </section>
-      </main>
+      )}
+
+      <section className={styles.section}>
+        <div className={styles.tabs} role="tablist" aria-label="Informações do livro">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={activeTab === tab.id}
+              aria-controls={`panel-${tab.id}`}
+              className={activeTab === tab.id ? styles.tabActive : styles.tab}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <div role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`} className={styles.panel}>
+          {activeTab === "reviews" && <p className={styles.muted}>Ainda não há reviews deste livro.</p>}
+          {activeTab === "details" && <DetailsTab book={book} />}
+          {activeTab === "genres" && <GenresTab subjects={book.subjects} />}
+        </div>
+      </section>
     </div>
   );
 }

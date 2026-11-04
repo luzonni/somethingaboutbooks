@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Reset from "./components/Reset";
@@ -26,7 +26,8 @@ function AppRoutes() {
           <Route path="/readinghistorylist" element={<ReadingHistoryList />} /> 
           <Route path="/books" element={<AllBooksPage />} />
           <Route path="/user/:username" element={<UserProfile />} />
-          <Route path="/bookpreview" element={<BookPreview />} />
+          <Route path="/books/:id" element={<BookPreview />} />
+          <Route path="/bookpreview" element={<Navigate to="/books" replace />} />
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/login" element={<Login />} />
