@@ -1,12 +1,18 @@
 import { createGlobalStyle } from "styled-components";
-import { White } from "../../assets/Colors";
+import { Black, Coral, DarkGray, White } from "../../assets/Colors";
+
 const Reset = createGlobalStyle`
 
 :root {
 	font-family: "Roboto", sans-serif;
-  	font-optical-sizing: auto;
-  	font-weight: 400;
-  	font-style: normal;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+	color: ${Black};
+}
+
+*, *::before, *::after {
+	box-sizing: border-box;
 }
 
 html, body, div, span, applet, object, iframe,
@@ -18,8 +24,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
 	margin: 0;
@@ -29,37 +35,67 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+
 body {
-	line-height: 1;
+	line-height: 1.5;
+	background-color: white;
+	overflow-wrap: break-word;
 }
+
+img {
+	max-width: 100%;
+}
+
+button, input, select, textarea {
+	font: inherit;
+	color: inherit;
+}
+
+button {
+	cursor: pointer;
+}
+
+button:disabled {
+	cursor: not-allowed;
+}
+
+:focus-visible {
+	outline: 3px solid ${Coral};
+	outline-offset: 2px;
+}
+
 ol, ul {
 	list-style: none;
 }
+
 blockquote, q {
 	quotes: none;
 }
+
 blockquote:before, blockquote:after,
 q:before, q:after {
 	content: '';
 	content: none;
 }
+
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
-	height: 4px;
-    background: ${White};
+	width: 8px;
+	height: 8px;
+	background: ${White};
 }
+
 ::-webkit-scrollbar-thumb {
-    background: ${White};
+	background: ${DarkGray};
 	border-radius: 5px;
 }
 
@@ -67,6 +103,13 @@ table {
 	background-color: ${White};
 }
 
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
 `
 
 export default Reset
