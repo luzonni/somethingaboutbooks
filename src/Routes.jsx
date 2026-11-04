@@ -5,6 +5,7 @@ import Reset from "./components/Reset";
 import { AuthProvider } from "./context/AuthContext";
 import RequireAuth from "./components/RequireAuth";
 import { LibraryProvider } from "./context/LibraryContext";
+import { PomodoroProvider } from "./context/PomodoroContext";
 import NotFound from "./pages/NotFound";
 import DefaultPage from "./pages/DefaultPage";
 import SignUp from "./pages/SignUp";
@@ -22,6 +23,7 @@ function AppRoutes() {
       <Reset />
       <AuthProvider>
       <LibraryProvider>
+      <PomodoroProvider>
       <Routes>
         <Route path="/" element={<DefaultPage />}>
           <Route index element={<Home />} />
@@ -38,6 +40,7 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
+      </PomodoroProvider>
       </LibraryProvider>
       </AuthProvider>
     </BrowserRouter>
