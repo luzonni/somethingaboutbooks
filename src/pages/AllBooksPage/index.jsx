@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import styles from "./AllBooksPage.module.css";
-import { fetchBooks } from "../../api/API";
+import { searchBooks } from "../../api/openLibrary";
+
+const fetchBooks = async (page, query) => (await searchBooks({ query, page })).books;
 
 // Função para buscar livros
 
