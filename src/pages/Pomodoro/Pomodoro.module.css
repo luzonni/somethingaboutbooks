@@ -204,6 +204,10 @@
   cursor: pointer;
 }
 
+details.panel {
+  display: block;
+}
+
 details.panel[open] summary {
   margin-bottom: 0.75rem;
 }
