@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled, { keyframes } from "styled-components"
 import { Cream, White } from "../../assets/Colors"
 import Search from "../../components/Search"
 import BookSection from "../../components/BookSection"
@@ -8,6 +8,11 @@ import { genreList, topRatedList, trendingList } from "../../api/openLibrary"
 import { useLibrary } from "../../context/LibraryContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import { byRecent } from "../../services/library"
+
+const riseIn = keyframes`
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+`
 
 const HomeStyle = styled.div`
     width: 100%;
@@ -42,6 +47,16 @@ const HomeStyle = styled.div`
         font-size: clamp(1rem, 2vw, 1.25rem);
         font-weight: 300;
     }
+    h1, .hero__subtitle, .hero__search {
+        animation: ${riseIn} 600ms ease both;
+    }
+    .hero__subtitle {
+        animation-delay: 120ms;
+    }
+    .hero__search {
+        width: 100%;
+        animation-delay: 240ms;
+    }
 `
 
 const Home = () => {
@@ -55,7 +70,9 @@ const Home = () => {
             <div className="hero">
                 <h1>Encontre a sua próxima história!</h1>
                 <p className="hero__subtitle">Busque entre milhões de livros, organize suas estantes e crie o hábito de ler.</p>
-                <Search />
+                <div className="hero__search">
+                    <Search animated />
+                </div>
             </div>
             {reading.length > 0 && (
                 <ListCards title="Continue lendo" moreLink="/readinghistorylist">
