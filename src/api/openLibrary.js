@@ -28,6 +28,8 @@ export const GENRES = [
     { slug: "history", label: "História" },
 ]
 
+const HTML_ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" }
+
 const cache = new Map()
 
 export const clearApiCache = () => cache.clear()
@@ -79,9 +81,17 @@ export const cleanText = (value) => {
     return text
         .replace(/\r/g, "")
         .split(/\n-{3,}\s*\n/)[0]
-        .replace(/^\[\d+\]:.*$/gm, "")
+        .replace(/^[ \t]*\[\d+\]:.*$/gm, "")
+        .replace(/^\W*(?:source|fonte)\W*:.*$/gim, "")
+        .replace(/\(\s*\[?source\]?(?:\[\d+\]|\([^)]*\))?\s*\)/gi, "")
+        .replace(/[ \t]*[-–—][ \t]*(?:from[ \t]+)?wikipedia\.?[ \t]*$/gim, "")
         .replace(/\[([^\]]+)\]\((?:[^)]+)\)/g, "$1")
         .replace(/\[([^\]]+)\]\[\d+\]/g, "$1")
+        .replace(/<\/?[a-z][^>]*>/gi, "")
+        .replace(/(\*\*|__)(.+?)\1/g, "$2")
+        .replace(/(^|[\s("])\*(\S(?:.*?\S)?)\*/gm, "$1$2")
+        .replace(/&(amp|lt|gt|quot|#39);/g, (_, entity) => HTML_ENTITIES[entity])
+        .replace(/[ \t]+$/gm, "")
         .replace(/\n{3,}/g, "\n\n")
         .trim()
 }

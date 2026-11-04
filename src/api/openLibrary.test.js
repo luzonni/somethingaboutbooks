@@ -35,6 +35,21 @@ describe("openLibrary", () => {
         expect(cleanText({ value: raw })).toBe("Veja o livro e outro.")
     })
 
+    it("remove Markdown, HTML e a linha de fonte das biografias", () => {
+        const raw =
+            'Autor de *The 48 Laws of Power*, **Mastery** e 2 * 3 livros.\r\n\r\n**Source**: <a href="https://w.org" target="blanck">Robert</a> on Wikipedia'
+        expect(cleanText(raw)).toBe("Autor de The 48 Laws of Power, Mastery e 2 * 3 livros.")
+    })
+
+    it("remove referências indentadas e créditos da Wikipedia", () => {
+        const raw = "Autor famoso.\r\n- Wikipedia\r\n\r\n([Source][1])\r\n\r\n\r\n  [1]: http://en.wikipedia.org/wiki/Autor"
+        expect(cleanText({ value: raw })).toBe("Autor famoso.")
+    })
+
+    it("mantém o texto de tags HTML e decodifica entidades", () => {
+        expect(cleanText('Veja <a href="x">este link</a> &amp; <em>mais</em>')).toBe("Veja este link & mais")
+    })
+
     it("codifica a busca e prefere a edição em português", async () => {
         const fetchMock = mockFetch(() => ({
             body: {
