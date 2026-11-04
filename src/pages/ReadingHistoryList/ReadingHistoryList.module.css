@@ -1,97 +1,187 @@
 .pageContainer {
-    background-color: #f4f4f9;
-    padding: 30px;
-    border-radius: 8px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.header {
-    background-color: #333;
-    color: #fff;
-    padding: 15px;
-    border-radius: 8px 8px 0 0;
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
 }
 
 .title {
-    font-size: 24px;
-    font-weight: bold;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  margin-bottom: 1.25rem;
 }
 
-.userIcon {
-    background-color: #555;
-    padding: 5px 10px;
-    border-radius: 15px;
-    color: #fff;
-    font-size: 14px;
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stats div {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background-color: #f0eee2;
+}
+
+.stats dt {
+  color: #6b6b6b;
+  font-size: 0.875rem;
+}
+
+.stats dd {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter,
+.filterActive {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid #d9d5c7;
+  font-size: 0.9375rem;
+}
+
+.filter {
+  background-color: white;
+}
+
+.filter:hover {
+  background-color: #f0eee2;
+}
+
+.filterActive {
+  background-color: #620000;
+  border-color: #620000;
+  color: #f5f5f5;
 }
 
 .readingList {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.subtitle {
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-.listGroup {
-    margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .listItem {
-    background-color: #e9ecef;
-    color: #333;
-    border: none;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background-color: #f8f7f0;
 }
 
-.listItem:hover {
-    background-color: #d0d4da;
+.itemLink {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
 }
 
-.footer {
-    margin-top: 30px;
-    text-align: center;
-    font-size: 14px;
-    color: #666;
+.itemLink img,
+.noCover {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 4.5rem;
+  border-radius: 4px;
+  object-fit: cover;
+  background-color: #e5e2d2;
 }
 
-.footer a {
-    color: #666;
-    margin: 0 10px;
-    text-decoration: none;
+.itemLink > span:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.footer a:hover {
-    text-decoration: underline;
-}
-.header {
-    background-color: #333;
-    color: #fff;
-    padding: 15px;
-    border-radius: 8px 8px 0 0;
-    display: flex;
-    justify-content: space-between; /* Adiciona espaçamento máximo entre o título e o nome do usuário */
-    align-items: center;
+.itemLink strong {
+  font-weight: 500;
 }
 
-.title {
-    font-size: 24px;
-    font-weight: bold;
+.muted {
+  color: #6b6b6b;
+  font-size: 0.875rem;
 }
 
-.userIcon {
-    background-color: #555;
-    padding: 5px 10px;
-    border-radius: 15px;
-    color: #fff;
-    font-size: 14px;
-    margin-left: auto; /* Garante que o nome do usuário fique alinhado à direita */
+.iconButton {
+  display: flex;
+  flex-shrink: 0;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: #6b6b6b;
+}
+
+.iconButton:hover {
+  color: #b3261e;
+  background-color: #f0eee2;
+}
+
+.section {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #d9d5c7;
+}
+
+.subtitle {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.listForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.listForm input {
+  flex: 1;
+  min-width: 12rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d9d5c7;
+  border-radius: 8px;
+}
+
+.primaryButton {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #620000;
+  color: #f5f5f5;
+  font-weight: 500;
+}
+
+.list {
+  margin-top: 1.25rem;
+}
+
+.listHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.listHead h3 {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.listBooks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: 1rem;
 }
