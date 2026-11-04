@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiCalendar, FiExternalLink } from "react-icons/fi";
 import { authorBooksList, getBookExtras, getWork, similarBooksList } from "../../api/openLibrary";
 import BookActions from "../../components/BookActions";
@@ -229,6 +229,10 @@ function BookPage({ id }) {
         onRetry={error.status === 404 ? undefined : retry}
       />
     );
+  }
+  if (work && work.id !== id) {
+    const movedState = stateBook ? { book: { ...stateBook, id: work.id } } : undefined;
+    return <Navigate to={`/books/${work.id}`} replace state={movedState} />;
   }
   if (!title) return <Spinner label="Carregando livro" />;
 
