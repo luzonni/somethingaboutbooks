@@ -1,5 +1,5 @@
 import { createGlobalStyle } from "styled-components";
-import { Black, Coral, DarkGray, White } from "../../assets/Colors";
+import { Black, Coral, Cream, DarkRed } from "../../assets/Colors";
 
 const Reset = createGlobalStyle`
 
@@ -89,18 +89,33 @@ table {
 }
 
 ::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
-	background: ${White};
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: ${Cream};
 }
 
 ::-webkit-scrollbar-thumb {
-	background: ${DarkGray};
-	border-radius: 5px;
+	background: ${Coral};
+	border: 2px solid ${Cream};
+	border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: ${DarkRed};
 }
 
 ::-webkit-scrollbar-corner {
-	background-color: ${White};
+	background: ${Cream};
+}
+
+@supports not selector(::-webkit-scrollbar) {
+	* {
+		scrollbar-color: ${Coral} ${Cream};
+		scrollbar-width: thin;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
