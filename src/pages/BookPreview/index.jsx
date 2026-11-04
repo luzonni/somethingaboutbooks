@@ -139,7 +139,7 @@ function BookPreview() {
     <div className={styles.container}>
       <section className={styles.header}>
         <div className={styles.cover}>
-          <BookCover src={cover} title={title} />
+          <BookCover src={cover} lowResSrc={preview?.cover} title={title} />
         </div>
         <div className={styles.info}>
           <h1>{title}</h1>
