@@ -127,20 +127,20 @@ const UserProfile = () => {
             </div>
             <ListCards title="Favoritos">
                 {books.filter((book, index) => index % 3 !== 0).map((book, index) => {
-                    return <CardBook key={index} {...book}/>
+                    return <CardBook key={index} book={{ ...book, id: index, cover: book.thumb }}/>
                 })}
             </ListCards>
             <ListCards title="Ultimos Lidos">
                 {books.filter((book, index) => index % 3 !== 0).map((book, index) => {
-                    return <CardBook key={index} {...book}/>
+                    return <CardBook key={index} book={{ ...book, id: index, cover: book.thumb }}/>
                 })}
             </ListCards>
             <ListCards title="Lista de Desejos">
                 {books.filter((book, index) => index % 3 !== 0).map((book, index) => {
-                    return <CardBook key={index} {...book}/>
+                    return <CardBook key={index} book={{ ...book, id: index, cover: book.thumb }}/>
                 })}
             </ListCards>
-            <RecentReviws book={books[2]} date={"14 de outubro de 2024"}>
+            <RecentReviws book={{ ...books[2], id: 2, cover: books[2].thumb }} date={"14 de outubro de 2024"} rating={4.3}>
                 Eu adorei ler O Hobbit. A história é envolvente desde o começo, com Bilbo Bolseiro, um hobbit pacato, sendo inesperadamente arrastado para uma grande aventura ao lado de anões em busca de um tesouro guardado pelo dragão Smaug. A narrativa tem uma mistura perfeita de fantasia, humor e momentos de tensão. A jornada de Bilbo não é apenas física, mas também uma transformação pessoal. Ele vai de um hobbit comum a um verdadeiro herói, o que é muito inspirador. Os cenários descritos por Tolkien são tão detalhados que é fácil se perder no mundo da Terra-média. Além disso, os personagens, especialmente Gandalf e Gollum, são fascinantes. O livro é leve, divertido e cheio de lições sobre coragem, amizade e o valor de sair da zona de conforto.
             </RecentReviws>
         </UserProfileStyle>
