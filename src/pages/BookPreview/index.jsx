@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { getBookDetails } from "../../api/openLibrary";
+import BookActions from "../../components/BookActions";
 import BookCover from "../../components/BookCover";
+import BookReviews from "../../components/BookReviews";
 import { ErrorState, Spinner } from "../../components/Feedback";
 import Stars from "../../components/Stars";
 import { useAsync } from "../../hooks/useAsync";
@@ -116,6 +118,8 @@ function BookPreview() {
     );
   }
 
+  const savedBook = { id: book.id, title: book.title, author: book.author, cover: book.coverThumb };
+
   return (
     <div className={styles.container}>
       <section className={styles.header}>
@@ -135,6 +139,7 @@ function BookPreview() {
           ) : (
             <p className={styles.muted}>Ainda sem avaliações na Open Library.</p>
           )}
+          <BookActions book={savedBook} />
           <Description text={book.description} />
         </div>
       </section>
@@ -166,7 +171,7 @@ function BookPreview() {
           ))}
         </div>
         <div role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`} className={styles.panel}>
-          {activeTab === "reviews" && <p className={styles.muted}>Ainda não há reviews deste livro.</p>}
+          {activeTab === "reviews" && <BookReviews book={savedBook} />}
           {activeTab === "details" && <DetailsTab book={book} />}
           {activeTab === "genres" && <GenresTab subjects={book.subjects} />}
         </div>
