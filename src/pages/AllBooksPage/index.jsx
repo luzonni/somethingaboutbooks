@@ -1,107 +1,139 @@
 import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import styles from "./AllBooksPage.module.css";
-import { searchBooks } from "../../api/openLibrary";
+import { GENRES, getTrendingBooks, searchBooks } from "../../api/openLibrary";
+import { CardBook } from "../../components/CardBook";
+import { EmptyState, ErrorState, Spinner } from "../../components/Feedback";
+import Search from "../../components/Search";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
-const fetchBooks = async (page, query) => (await searchBooks({ query, page })).books;
+const dedupe = (books) => [...new Map(books.map((book) => [book.id, book])).values()];
 
-// Função para buscar livros
+const genreLink = (query, slug) => {
+  const params = new URLSearchParams();
+  if (query) params.set("q", query);
+  if (slug) params.set("genero", slug);
+  const search = params.toString();
+  return search ? `/books?${search}` : "/books";
+};
 
-function AllBooksPage() {
-  const [books, setBooks] = useState([]);
+function Results({ query, genre }) {
+  const isBrowsing = !query && !genre;
   const [page, setPage] = useState(1);
-  const [visibleBooks, setVisibleBooks] = useState(20);
-  const [searchQuery, setSearchQuery] = useState(""); // Estado para armazenar a consulta de pesquisa
-  const [loading, setLoading] = useState(false); // Estado de carregamento
+  const [attempt, setAttempt] = useState(0);
+  const [results, setResults] = useState({ books: [], total: 0, hasMore: false });
+  const [status, setStatus] = useState({ loading: true, error: null });
 
   useEffect(() => {
-    async function loadBooks() {
-      setLoading(true);
-      const data = await fetchBooks(page, searchQuery);
-      setBooks((prevBooks) => [...prevBooks, ...data]); // Adiciona livros ao estado
-      setLoading(false);
-    }
-    if (searchQuery) {
-      loadBooks(); // Só faz a busca se houver uma consulta
-    }
-  }, [page, searchQuery]); // Recarregar quando mudar a página ou a pesquisa
+    const controller = new AbortController();
+    const { signal } = controller;
+    setStatus({ loading: true, error: null });
 
-  // Função para lidar com a pesquisa ao apertar Enter
-  const handleSearchKeyDown = (event) => {
-    if (event.key === "Enter") {
-      setPage(1); // Reinicia a página ao pressionar Enter
-      setBooks([]); // Limpa os livros atuais
-      setLoading(true);
-      fetchBooks(1, searchQuery).then((data) => {
-        setBooks(data); // Atualiza os livros com o resultado da busca
-        setLoading(false);
+    const load = isBrowsing
+      ? getTrendingBooks({ limit: 24, signal }).then((books) => ({
+          books,
+          total: books.length,
+          hasMore: false,
+        }))
+      : searchBooks({ query, genre, page, signal });
+
+    load
+      .then((data) => {
+        if (signal.aborted) return;
+        setResults((previous) => ({
+          ...data,
+          books: dedupe([...(page === 1 ? [] : previous.books), ...data.books]),
+        }));
+        setStatus({ loading: false, error: null });
+      })
+      .catch((error) => {
+        if (!signal.aborted) setStatus({ loading: false, error });
       });
-    }
-  };
 
-  // Função para atualizar o estado da pesquisa ao digitar
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
+    return () => controller.abort();
+  }, [query, genre, page, isBrowsing, attempt]);
 
-  const loadMoreBooks = () => {
-    setVisibleBooks((prevVisibleBooks) => prevVisibleBooks + 20);
-    setPage((prevPage) => prevPage + 3); // Avança 3 páginas por vez
-  };
+  const { books, total, hasMore } = results;
+  const { loading, error } = status;
 
-  // Dividir livros visíveis em linhas de 5 para o layout de prateleira(shelf)
-  const rows = [];
-  for (let i = 0; i < visibleBooks && i < books.length; i += 5) {
-    rows.push(books.slice(i, i + 5));
+  if (!loading && !error && books.length === 0) {
+    return (
+      <EmptyState
+        title="Nenhum livro encontrado"
+        description="Confira a ortografia ou tente buscar pelo nome do autor."
+      />
+    );
   }
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Livros</h2>
+    <>
+      <p className={styles.summary} aria-live="polite">
+        {isBrowsing
+          ? "Em alta nesta semana"
+          : books.length > 0 && `${total.toLocaleString("pt-BR")} resultados`}
+      </p>
 
-      {/* Campo de Pesquisa */}
-      <div className={styles.searchContainer}>
-        <input
-          type="text"
-          placeholder="Pesquise por livros..."
-          value={searchQuery}
-          onChange={handleSearchChange} // Atualiza o valor da pesquisa enquanto digita
-          onKeyDown={handleSearchKeyDown} // Só pesquisa ao apertar Enter
-          className={styles.searchInput}
-        />
-      </div>
-
-      {/* Exibição de Livros */}
-      {loading ? (
-        <div className={styles.spinner}></div> // Exibe o spinner enquanto carrega
-      ) : rows.length > 0 ? (
-        rows.map((row, rowIndex) => (
-          <div key={rowIndex} className={styles.shelf}>
-            {row.map((book) => (
-              <div key={book.id} className={styles.card}>
-                {book.cover ? (
-                  <img
-                    src={book.cover}
-                    alt={book.title}
-                    className={styles.cover}
-                    loading="lazy" // Lazy load das imagens
-                  />
-                ) : (
-                  <div className={styles.coverPlaceholder}></div>
-                )}
-                <p className={styles.bookTitle}>{book.title}</p>
-                <p className={styles.bookAuthor}>{book.author}</p>
-              </div>
-            ))}
-          </div>
-        ))
-      ) : (
-        <p>Nenhum livro encontrado</p>
+      {books.length > 0 && (
+        <div className={styles.grid}>
+          {books.map((book) => (
+            <CardBook key={book.id} book={book} />
+          ))}
+        </div>
       )}
 
-      {/* Botão de Carregar Mais */}
-      <button onClick={loadMoreBooks} className={styles.loadMoreButton}>
-        Carregar Mais
-      </button>
+      {loading && <Spinner label="Buscando livros" />}
+      {error && (
+        <ErrorState message={error.message} onRetry={() => setAttempt((value) => value + 1)} />
+      )}
+
+      {hasMore && !loading && !error && (
+        <button
+          type="button"
+          onClick={() => setPage((value) => value + 1)}
+          className={styles.loadMoreButton}
+        >
+          Carregar mais
+        </button>
+      )}
+    </>
+  );
+}
+
+function AllBooksPage() {
+  const [searchParams] = useSearchParams();
+  const query = (searchParams.get("q") ?? "").trim();
+  const genre = searchParams.get("genero") ?? "";
+  const genreLabel = GENRES.find((item) => item.slug === genre)?.label;
+
+  useDocumentTitle(query ? `Busca: ${query}` : genreLabel ?? "Livros");
+
+  return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>{genreLabel ?? "Livros"}</h1>
+
+      <Search key={query} initialValue={query} extraParams={genre ? `genero=${genre}` : ""} />
+
+      <nav className={styles.genres} aria-label="Filtrar por gênero">
+        <Link
+          to={genreLink(query, "")}
+          className={`${styles.genre} ${!genre ? styles.genreActive : ""}`}
+          aria-current={!genre ? "true" : undefined}
+        >
+          Todos
+        </Link>
+        {GENRES.map((item) => (
+          <Link
+            key={item.slug}
+            to={genreLink(query, item.slug)}
+            className={`${styles.genre} ${genre === item.slug ? styles.genreActive : ""}`}
+            aria-current={genre === item.slug ? "true" : undefined}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+
+      <Results key={`${query}|${genre}`} query={query} genre={genre} />
     </div>
   );
 }
