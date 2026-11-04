@@ -85,6 +85,11 @@
   background-color: #f0eee2;
 }
 
+.author > div {
+  flex: 1;
+  min-width: 0;
+}
+
 .author h3 {
   font-size: 1.125rem;
   font-weight: 500;
@@ -97,6 +102,7 @@
 .authorBio {
   margin-top: 0.5rem;
   white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 
 .tabs {

@@ -9,6 +9,7 @@ import { ErrorState, Spinner } from "../../components/Feedback";
 import Stars from "../../components/Stars";
 import { useAsync } from "../../hooks/useAsync";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+import { formatApiDate, formatLifespan, truncateText } from "../../utils/text";
 import styles from "./BookPreview.module.css";
 
 const TABS = [
@@ -25,7 +26,7 @@ function Description({ text }) {
   if (!text) return <p className={styles.muted}>Este livro ainda não tem sinopse.</p>;
 
   const isLong = text.length > DESCRIPTION_LIMIT;
-  const visible = isLong && !expanded ? `${text.slice(0, DESCRIPTION_LIMIT).trimEnd()}…` : text;
+  const visible = expanded ? text : truncateText(text, DESCRIPTION_LIMIT);
 
   return (
     <div className={styles.description}>
@@ -40,7 +41,7 @@ function Description({ text }) {
 }
 
 function AuthorInfo({ author }) {
-  const lifespan = [author.birthDate, author.deathDate].filter(Boolean).join(" – ");
+  const lifespan = formatLifespan(author.birthDate, author.deathDate);
   return (
     <div className={styles.author}>
       {author.photo && (
@@ -59,7 +60,7 @@ function AuthorInfo({ author }) {
 
 function DetailsTab({ book }) {
   const rows = [
-    ["Primeira publicação", book.firstPublished],
+    ["Primeira publicação", formatApiDate(book.firstPublished)],
     ["Lugares", book.places.join(", ")],
     ["Personagens", book.characters.join(", ")],
   ].filter(([, value]) => value);
