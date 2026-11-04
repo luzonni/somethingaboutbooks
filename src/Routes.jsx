@@ -1,4 +1,6 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Spinner } from "./components/Feedback";
 import RequireAuth from "./components/RequireAuth";
 import Reset from "./components/Reset";
 import { AuthProvider } from "./context/AuthContext";
@@ -7,17 +9,17 @@ import { PomodoroProvider } from "./context/PomodoroContext";
 import DefaultPage from "./pages/DefaultPage";
 import Home from "./pages/Home";
 
-import AllBooksPage from "./pages/AllBooksPage";
-import BookPreview from "./pages/BookPreview";
-import Info from "./pages/Info";
-import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
-import Pomodoro from "./pages/Pomodoro";
-import PreConfigs from "./pages/PreConfigs";
-import ReadingHistoryList from "./pages/ReadingHistoryList";
-import SignUp from "./pages/SignUp";
-import UserConfig from "./pages/UserConfig";
-import UserProfile from "./pages/UserProfile";
+const AllBooksPage = lazy(() => import("./pages/AllBooksPage"));
+const BookPreview = lazy(() => import("./pages/BookPreview"));
+const Info = lazy(() => import("./pages/Info"));
+const Login = lazy(() => import("./pages/Login"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Pomodoro = lazy(() => import("./pages/Pomodoro"));
+const PreConfigs = lazy(() => import("./pages/PreConfigs"));
+const ReadingHistoryList = lazy(() => import("./pages/ReadingHistoryList"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const UserConfig = lazy(() => import("./pages/UserConfig"));
+const UserProfile = lazy(() => import("./pages/UserProfile"));
 
 const isPrivate = (page) => <RequireAuth>{page}</RequireAuth>;
 
@@ -28,6 +30,7 @@ function AppRoutes() {
       <AuthProvider>
         <LibraryProvider>
           <PomodoroProvider>
+            <Suspense fallback={<Spinner label="Carregando página" />}>
               <Routes>
                 <Route path="/" element={<DefaultPage />}>
                   <Route index element={<Home />} />
@@ -48,6 +51,7 @@ function AppRoutes() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
               </Routes>
+            </Suspense>
           </PomodoroProvider>
         </LibraryProvider>
       </AuthProvider>
