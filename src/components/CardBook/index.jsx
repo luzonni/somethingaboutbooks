@@ -3,6 +3,8 @@ import { Link } from "react-router-dom"
 import BookCover from "../BookCover"
 import Stars from "../Stars"
 import { Black, Coral, Cream, DarkGray, White } from "../../assets/Colors"
+import { useLibrary } from "../../context/LibraryContext"
+import { SHELVES } from "../../services/library"
 
 const CardBookStyle = styled.article`
     position: relative;
@@ -88,16 +90,20 @@ const RowCardBookStyle = styled.article`
     }
 `
 
-export const CardBook = ({ book, badge }) => (
-    <CardBookStyle>
-        <Link to={`/books/${book.id}`}>
-            <BookCover className="card__cover" src={book.cover} title={book.title} />
-            <h3>{book.title}</h3>
-            <p>{book.author}</p>
-        </Link>
-        {badge && <span className="card__badge">{badge}</span>}
-    </CardBookStyle>
-)
+export const CardBook = ({ book }) => {
+    const { getEntry } = useLibrary()
+    const shelf = getEntry(book.id)?.shelf
+    return (
+        <CardBookStyle>
+            <Link to={`/books/${book.id}`}>
+                <BookCover className="card__cover" src={book.cover} title={book.title} />
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+            </Link>
+            {shelf && <span className="card__badge">{SHELVES[shelf]}</span>}
+        </CardBookStyle>
+    )
+}
 
 export const RowCardBook = ({ book }) => (
     <RowCardBookStyle>
