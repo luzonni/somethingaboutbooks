@@ -1,45 +1,200 @@
+import { useCallback, useEffect, useRef, useState } from "react"
+import { Link, NavLink, useLocation } from "react-router-dom"
 import styled from "styled-components"
+import { FiClock, FiMenu } from "react-icons/fi"
+import { Black, Border, Cream, DarkRed, White } from "../../assets/Colors"
+import { useAuth } from "../../context/AuthContext"
+import { usePomodoro } from "../../context/PomodoroContext"
+import { formatTime } from "../../utils/pomodoro"
+import Search from "../Search"
 import LoginTab from "./LoginTab"
-import { Gray } from "../../assets/Colors"
-import { GiHamburgerMenu } from "react-icons/gi";
-import { IoMdClose } from "react-icons/io";
+import MobileMenu from "./MobileMenu"
+import { visibleNavItems } from "./navItems"
 
-
-
-const NavegationStyle = styled.nav`
-    display: flex;
-    justify-content: space-between;
-    padding: 0 2rem;
-    background-color: ${Gray};
-    align-items: center;
-    button {
-        background: none;
+const HeaderStyle = styled.header`
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background-color: ${Cream};
+    border-bottom: 1px solid ${Border};
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    .bar {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        max-width: 80rem;
+        height: 4.25rem;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    .bar__logo img {
+        display: block;
+        width: 4rem;
+    }
+    .bar__links {
+        display: flex;
+        align-items: stretch;
+        align-self: stretch;
+        gap: 0.25rem;
+    }
+    .bar__link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0 0.75rem;
+        color: ${Black};
+        font-weight: 500;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: color 150ms ease;
+    }
+    .bar__link::after {
+        content: "";
+        position: absolute;
+        right: 0.75rem;
+        bottom: 0;
+        left: 0.75rem;
+        height: 3px;
+        border-radius: 3px 3px 0 0;
+        background-color: ${DarkRed};
+        transform: scaleX(0);
+        transition: transform 180ms ease;
+    }
+    .bar__link:hover, .bar__link.active {
+        color: ${DarkRed};
+    }
+    .bar__link:hover::after, .bar__link.active::after {
+        transform: scaleX(1);
+    }
+    .bar__end {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        flex: 1;
+        min-width: 0;
+    }
+    .bar__search {
+        flex: 1;
+        min-width: 0;
+        max-width: 18rem;
+    }
+    .bar__menu {
+        display: none;
+        padding: 0.5rem;
         border: none;
+        border-radius: 8px;
+        background: none;
+        color: ${Black};
+        font-size: 1.75rem;
+        line-height: 0;
+    }
+    .bar__menu:hover {
+        background-color: ${White};
+    }
+    .bar__timer {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.625rem;
+        border-radius: 999px;
+        background-color: ${DarkRed};
+        color: ${White};
+        font-size: 0.875rem;
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+        text-decoration: none;
+    }
+    @media (max-width: 1080px) {
+        .bar__link svg {
+            display: none;
+        }
+    }
+    @media (max-width: 899px) {
+        .bar {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0.5rem;
+            height: 3.75rem;
+        }
+        .bar__menu {
+            display: block;
+            justify-self: start;
+        }
+        .bar__links, .bar__search {
+            display: none;
+        }
     }
 `
 
-const LogoStyle = styled.div`
-    padding: 0.5rem;
-    img {
-        width: 6rem;
-    }
-`
-
-const MyHeader = ({handleMenu, isOpen}) => {
+const PomodoroPill = () => {
+    const { timer } = usePomodoro()
+    if (timer.status === "idle") return null
     return (
-        <NavegationStyle>
-            <button onClick={() => {handleMenu()}}>
-                {isOpen ? 
-                    <IoMdClose size={"3rem"} />
-                    :
-                    <GiHamburgerMenu size={"3rem"} />
-                }
-            </button>
-            <LogoStyle>
-                <img src="/imgs/logo.png" alt="Logo Site" />
-            </LogoStyle>
-            <LoginTab/>
-        </NavegationStyle>
+        <Link to="/pomodoro" className="bar__timer" aria-label={`Pomodoro: ${formatTime(timer.remaining)} restantes`}>
+            <FiClock aria-hidden="true" /> {formatTime(timer.remaining)}
+        </Link>
+    )
+}
+
+const PAGES_WITH_SEARCH = ["/", "/books"]
+
+const MyHeader = () => {
+    const { user } = useAuth()
+    const location = useLocation()
+    const [menuOpen, setMenuOpen] = useState(false)
+    const menuButtonRef = useRef(null)
+
+    const closeMenu = useCallback(() => setMenuOpen(false), [])
+
+    useEffect(closeMenu, [location.pathname, location.search, closeMenu])
+
+    useEffect(() => {
+        const desktop = window.matchMedia?.("(min-width: 900px)")
+        desktop?.addEventListener("change", closeMenu)
+        return () => desktop?.removeEventListener("change", closeMenu)
+    }, [closeMenu])
+
+    return (
+        <HeaderStyle>
+            <div className="bar">
+                <button
+                    ref={menuButtonRef}
+                    type="button"
+                    className="bar__menu"
+                    aria-label="Abrir menu"
+                    aria-expanded={menuOpen}
+                    aria-controls="mobile-menu"
+                    onClick={() => setMenuOpen(true)}
+                >
+                    <FiMenu aria-hidden="true" />
+                </button>
+
+                <Link to="/" className="bar__logo" aria-label="Página inicial">
+                    <img src="/imgs/logo.png" alt="SAB" />
+                </Link>
+
+                <nav className="bar__links" aria-label="Principal">
+                    {visibleNavItems(user).map(({ to, label, icon: Icon, end }) => (
+                        <NavLink key={to} to={to} end={end} className="bar__link">
+                            <Icon aria-hidden="true" /> {label}
+                        </NavLink>
+                    ))}
+                </nav>
+
+                <div className="bar__end">
+                    {!PAGES_WITH_SEARCH.includes(location.pathname) && (
+                        <div className="bar__search">
+                            <Search compact />
+                        </div>
+                    )}
+                    <PomodoroPill />
+                    <LoginTab />
+                </div>
+            </div>
+            <MobileMenu open={menuOpen} onClose={closeMenu} returnFocusRef={menuButtonRef} />
+        </HeaderStyle>
     )
 }
 
