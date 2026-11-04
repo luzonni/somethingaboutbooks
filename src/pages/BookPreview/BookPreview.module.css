@@ -112,12 +112,17 @@
   display: flex;
   gap: 0.25rem;
   overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
   border-bottom: 2px solid #d9d5c7;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab,
 .tabActive {
-  margin-bottom: -2px;
   padding: 0.6rem 1.25rem;
   border: none;
   border-bottom: 3px solid transparent;
