@@ -1,6 +1,8 @@
+import { useCallback, useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import { Link } from "react-router-dom"
-import { DarkGray, DarkRed } from "../../assets/Colors"
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
+import { Border, Cream, DarkGray, DarkRed, White } from "../../assets/Colors"
 
 const ListCardStyle = styled.section`
     width: 100%;
@@ -10,7 +12,7 @@ const ListCardStyle = styled.section`
     .head {
         display: flex;
         justify-content: space-between;
-        align-items: baseline;
+        align-items: center;
         gap: 1rem;
         margin-bottom: 1rem;
     }
@@ -18,13 +20,43 @@ const ListCardStyle = styled.section`
         font-weight: 700;
         font-size: clamp(1.25rem, 3vw, 1.75rem);
     }
-    .link__mais {
+    .head__actions {
+        display: flex;
         flex-shrink: 0;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .link__mais {
         color: ${DarkGray};
         font-size: 1rem;
     }
     .link__mais:hover {
         color: ${DarkRed};
+    }
+    .carousel__arrow {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border: 1px solid ${Border};
+        border-radius: 50%;
+        background-color: ${Cream};
+        color: ${DarkRed};
+        font-size: 1.25rem;
+        transition: background-color 150ms ease, color 150ms ease;
+    }
+    .carousel__arrow:hover:not(:disabled) {
+        background-color: ${DarkRed};
+        color: ${White};
+    }
+    .carousel__arrow:disabled {
+        opacity: 0.4;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .carousel__arrow {
+            display: flex;
+        }
     }
     .list--carousel {
         display: grid;
@@ -34,6 +66,11 @@ const ListCardStyle = styled.section`
         padding: 0.5rem 0.25rem 1rem;
         overflow-x: auto;
         scroll-snap-type: x proximity;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+    }
+    .list--carousel::-webkit-scrollbar {
+        display: none;
     }
     .list--carousel > * {
         scroll-snap-align: start;
@@ -45,18 +82,83 @@ const ListCardStyle = styled.section`
     }
 `
 
-const ListCards = ({ title, moreLink, layout = "carousel", children }) => (
-    <ListCardStyle>
-        <div className="head">
-            <h2>{title}</h2>
-            {moreLink && (
-                <Link to={moreLink} className="link__mais">
-                    Ver mais
-                </Link>
-            )}
-        </div>
-        <div className={`list--${layout}`}>{children}</div>
-    </ListCardStyle>
-)
+const useCarousel = () => {
+    const listRef = useRef(null)
+    const [position, setPosition] = useState({ canPrev: false, canNext: false })
+
+    const update = useCallback(() => {
+        const list = listRef.current
+        if (!list) return
+        const canPrev = list.scrollLeft > 1
+        const canNext = list.scrollLeft + list.clientWidth < list.scrollWidth - 1
+        setPosition((current) =>
+            current.canPrev === canPrev && current.canNext === canNext ? current : { canPrev, canNext }
+        )
+    }, [])
+
+    useEffect(() => {
+        const list = listRef.current
+        if (!list) return undefined
+        list.addEventListener("scroll", update, { passive: true })
+        window.addEventListener("resize", update)
+        return () => {
+            list.removeEventListener("scroll", update)
+            window.removeEventListener("resize", update)
+        }
+    }, [update])
+
+    // O conteúdo chega depois (skeleton > livros), então recalcula a cada render.
+    useEffect(update)
+
+    const scroll = (direction) => {
+        const list = listRef.current
+        list?.scrollBy({ left: direction * list.clientWidth * 0.8 })
+    }
+
+    return { listRef, scroll, ...position }
+}
+
+const ListCards = ({ title, moreLink, layout = "carousel", children }) => {
+    const { listRef, scroll, canPrev, canNext } = useCarousel()
+    const isCarousel = layout === "carousel"
+
+    return (
+        <ListCardStyle>
+            <div className="head">
+                <h2>{title}</h2>
+                <div className="head__actions">
+                    {moreLink && (
+                        <Link to={moreLink} className="link__mais">
+                            Ver mais
+                        </Link>
+                    )}
+                    {isCarousel && (canPrev || canNext) && (
+                        <>
+                            <button
+                                type="button"
+                                className="carousel__arrow"
+                                aria-label={`Voltar em ${title}`}
+                                disabled={!canPrev}
+                                onClick={() => scroll(-1)}
+                            >
+                                <FiChevronLeft aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                className="carousel__arrow"
+                                aria-label={`Avançar em ${title}`}
+                                disabled={!canNext}
+                                onClick={() => scroll(1)}
+                            >
+                                <FiChevronRight aria-hidden="true" />
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+            <div ref={listRef} className={`list--${layout}`}>{children}</div>
+        </ListCardStyle>
+    )
+}
 
 export default ListCards
