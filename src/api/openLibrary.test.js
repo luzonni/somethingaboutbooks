@@ -6,9 +6,10 @@ import {
     coverUrl,
     curateBooks,
     getBookExtras,
-    getBooksByGenre,
+    genreList,
     getTrendingBooks,
     getWork,
+    trendingList,
     idFromKey,
     searchBooks,
 } from "./openLibrary"
@@ -125,7 +126,7 @@ describe("openLibrary", () => {
     it("busca gêneros por etiquetas precisas e mais lidos", async () => {
         const fetchMock = mockFetch(() => ({ body: { numFound: 0, docs: [] } }))
 
-        await getBooksByGenre({ genre: "fantasy" })
+        await genreList("fantasy").load()
 
         const url = new URL(fetchMock.mock.calls[0][0])
         expect(url.pathname).toBe("/search.json")
@@ -154,6 +155,17 @@ describe("openLibrary", () => {
 
         expect(fetchMock).toHaveBeenCalledTimes(1)
         expect(books[0].id).toBe("OL1W")
+    })
+
+    it("permite ler a lista guardada sem esperar a rede", async () => {
+        mockFetch(() => ({ body: { works: [{ key: "/works/OL1W", title: "Livro" }] } }))
+        const list = genreList("x")
+        expect(list.peek()).toBeNull()
+
+        const trending = trendingList()
+        expect(trending.peek()).toBeNull()
+        await trending.load()
+        expect(trending.peek()[0].id).toBe("OL1W")
     })
 
     it("não guarda listas vazias", async () => {

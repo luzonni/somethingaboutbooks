@@ -4,7 +4,7 @@ import Search from "../../components/Search"
 import BookSection from "../../components/BookSection"
 import { CardBook } from "../../components/CardBook"
 import ListCards from "../../components/ListCards"
-import { getBooksByGenre, getTopRatedBooks, getTrendingBooks } from "../../api/openLibrary"
+import { genreList, topRatedList, trendingList } from "../../api/openLibrary"
 import { useLibrary } from "../../context/LibraryContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import { byRecent } from "../../services/library"
@@ -65,28 +65,28 @@ const Home = () => {
             <BookSection
                 title="Em alta nesta semana"
                 moreLink="/books"
-                loader={(signal) => getTrendingBooks({ signal })}
+                source={trendingList()}
             />
             <BookSection
                 title="Mais bem avaliados"
                 layout="grid"
                 skeletons={3}
-                loader={(signal) => getTopRatedBooks({ signal })}
+                source={topRatedList()}
             />
             <BookSection
                 title="Fantasia"
                 moreLink="/books?genero=fantasy"
-                loader={(signal) => getBooksByGenre({ genre: "fantasy", signal })}
+                source={genreList("fantasy")}
             />
             <BookSection
                 title="Ficção científica"
                 moreLink="/books?genero=science_fiction"
-                loader={(signal) => getBooksByGenre({ genre: "science_fiction", signal })}
+                source={genreList("science_fiction")}
             />
             <BookSection
                 title="Terror"
                 moreLink="/books?genero=horror"
-                loader={(signal) => getBooksByGenre({ genre: "horror", signal })}
+                source={genreList("horror")}
             />
         </HomeStyle>
     )

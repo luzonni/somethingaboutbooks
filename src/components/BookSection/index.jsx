@@ -13,8 +13,17 @@ const Placeholders = ({ layout, count }) =>
         )
     )
 
-const LoadedSection = ({ title, moreLink, loader, layout, skeletons }) => {
-    const { data: books, error, loading, retry } = useAsync(loader, [])
+const BookList = ({ title, moreLink, layout, books }) => {
+    const Card = layout === "grid" ? RowCardBook : CardBook
+    return (
+        <ListCards title={title} moreLink={moreLink} layout={layout}>
+            {books.map((book) => <Card key={book.id} book={book} />)}
+        </ListCards>
+    )
+}
+
+const FetchedSection = ({ title, moreLink, source, layout, skeletons }) => {
+    const { data: books, error, loading, retry } = useAsync((signal) => source.load(signal), [])
 
     if (error) {
         return (
@@ -23,24 +32,20 @@ const LoadedSection = ({ title, moreLink, loader, layout, skeletons }) => {
             </ListCards>
         )
     }
-
-    const Card = layout === "grid" ? RowCardBook : CardBook
-
-    return (
-        <ListCards title={title} moreLink={moreLink} layout={layout}>
-            {loading ? (
+    if (loading) {
+        return (
+            <ListCards title={title} moreLink={moreLink} layout={layout}>
                 <Placeholders layout={layout} count={skeletons} />
-            ) : (
-                books.map((book) => <Card key={book.id} book={book} />)
-            )}
-        </ListCards>
-    )
+            </ListCards>
+        )
+    }
+    return <BookList title={title} moreLink={moreLink} layout={layout} books={books} />
 }
 
 // Só busca os livros quando a seção está perto de aparecer na tela.
-const useNearViewport = () => {
+const useNearViewport = (enabled) => {
     const ref = useRef(null)
-    const [isNear, setIsNear] = useState(() => typeof IntersectionObserver === "undefined")
+    const [isNear, setIsNear] = useState(() => !enabled || typeof IntersectionObserver === "undefined")
 
     useEffect(() => {
         if (isNear || !ref.current) return undefined
@@ -57,13 +62,17 @@ const useNearViewport = () => {
     return [ref, isNear]
 }
 
-const BookSection = ({ title, moreLink, loader, layout = "carousel", skeletons = 8 }) => {
-    const [ref, isNear] = useNearViewport()
+const BookSection = ({ title, moreLink, source, layout = "carousel", skeletons = 8 }) => {
+    // Listas já guardadas aparecem no primeiro render, sem skeleton.
+    const [savedBooks] = useState(() => source.peek())
+    const [ref, isNear] = useNearViewport(!savedBooks)
 
     return (
         <div ref={ref}>
-            {isNear ? (
-                <LoadedSection title={title} moreLink={moreLink} loader={loader} layout={layout} skeletons={skeletons} />
+            {savedBooks ? (
+                <BookList title={title} moreLink={moreLink} layout={layout} books={savedBooks} />
+            ) : isNear ? (
+                <FetchedSection title={title} moreLink={moreLink} source={source} layout={layout} skeletons={skeletons} />
             ) : (
                 <ListCards title={title} moreLink={moreLink} layout={layout}>
                     <Placeholders layout={layout} count={skeletons} />

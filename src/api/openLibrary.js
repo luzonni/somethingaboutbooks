@@ -67,14 +67,20 @@ const cache = new Map()
 export const clearApiCache = () => cache.clear()
 
 // Listas da home quase não mudam: guardá-las no navegador deixa as próximas visitas instantâneas.
-const cachedList = async (key, loader) => {
+const listSource = (key, loader) => {
     const storageKey = `sab:cache:${key}`
-    const saved = readJson(storageKey, null)
-    if (saved && Date.now() - saved.savedAt < LIST_CACHE_TTL) return saved.books
-
-    const books = await loader()
-    if (books.length > 0) writeJson(storageKey, { books, savedAt: Date.now() })
-    return books
+    const peek = () => {
+        const saved = readJson(storageKey, null)
+        return saved && Date.now() - saved.savedAt < LIST_CACHE_TTL ? saved.books : null
+    }
+    const load = async (signal) => {
+        const saved = peek()
+        if (saved) return saved
+        const books = await loader(signal)
+        if (books.length > 0) writeJson(storageKey, { books, savedAt: Date.now() })
+        return books
+    }
+    return { peek, load }
 }
 
 export const curateBooks = (books, { maxPerAuthor = 2, limit = books.length } = {}) => {
@@ -206,8 +212,8 @@ export const searchBooks = async ({ query = "", genre = "", page = 1, limit = PA
     }
 }
 
-export const getTrendingBooks = ({ period = "weekly", limit = 12, signal } = {}) =>
-    cachedList(`trending:${period}:${limit}`, async () => {
+export const trendingList = ({ period = "weekly", limit = 12 } = {}) =>
+    listSource(`trending:${period}:${limit}`, async (signal) => {
         const data = await request(`/trending/${period}.json`, { params: { limit }, signal })
         return (data.works ?? []).map((work) =>
             normalizeBook({
@@ -220,17 +226,19 @@ export const getTrendingBooks = ({ period = "weekly", limit = 12, signal } = {})
         )
     })
 
-export const getBooksByGenre = ({ genre, limit = 12, signal }) =>
-    cachedList(`genre:${genre}:${limit}`, async () => {
+export const genreList = (genre, { limit = 12 } = {}) =>
+    listSource(`genre:${genre}:${limit}`, async (signal) => {
         const { books } = await runSearch({ terms: genreQuery(genre), sort: "readinglog", limit: limit * 3, signal })
         return curateBooks(books, { limit })
     })
 
-export const getTopRatedBooks = ({ limit = 3, signal } = {}) =>
-    cachedList(`top-rated:${limit}`, async () => {
+export const topRatedList = ({ limit = 3 } = {}) =>
+    listSource(`top-rated:${limit}`, async (signal) => {
         const { books } = await runSearch({ terms: TOP_RATED_QUERY, sort: "rating", limit: limit * 5, signal })
         return curateBooks(books, { maxPerAuthor: 1, limit })
     })
+
+export const getTrendingBooks = ({ signal, ...options } = {}) => trendingList(options).load(signal)
 
 export const getAuthor = async (authorId, { signal } = {}) => {
     const data = await request(`/authors/${authorId}.json`, { signal })
