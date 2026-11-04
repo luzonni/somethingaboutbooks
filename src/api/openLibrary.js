@@ -238,6 +238,38 @@ export const topRatedList = ({ limit = 3 } = {}) =>
         return curateBooks(books, { maxPerAuthor: 1, limit })
     })
 
+// Listas ligadas a um livro: ficam só no cache em memória para não encher o armazenamento do navegador.
+const relatedSource = (terms, excludeId, curation) => ({
+    peek: () => null,
+    load: async (signal) => {
+        const { books } = await runSearch({ terms, sort: "readinglog", limit: curation.limit * 2, signal })
+        return curateBooks(books.filter((book) => book.id !== excludeId), curation)
+    },
+})
+
+export const authorBooksList = (authorName, excludeId, { limit = 12 } = {}) =>
+    relatedSource(`author:"${authorName.replace(/"/g, "")}"`, excludeId, { limit, maxPerAuthor: limit })
+
+const GENRE_HINTS = [
+    ["science fiction", "science_fiction"],
+    ["fantasy", "fantasy"],
+    ["horror", "horror"],
+    ["romance", "romance"],
+    ["love stories", "romance"],
+    ["detective", "mystery"],
+    ["mystery", "mystery"],
+    ["biograph", "biography"],
+    ["history", "history"],
+]
+
+export const similarBooksList = (subjects, excludeId, { limit = 12 } = {}) => {
+    if (subjects.length === 0) return null
+    const text = subjects.join(" | ").toLowerCase()
+    const genre = GENRE_HINTS.find(([hint]) => text.includes(hint))?.[1]
+    const terms = genre ? genreQuery(genre) : `subject:"${subjects[0].replace(/"/g, "")}"`
+    return relatedSource(terms, excludeId, { limit, maxPerAuthor: 2 })
+}
+
 export const getTrendingBooks = ({ signal, ...options } = {}) => trendingList(options).load(signal)
 
 export const getAuthor = async (authorId, { signal } = {}) => {
@@ -292,5 +324,6 @@ export const getBookExtras = async ({ id, authorIds }, { signal } = {}) => {
         author: authorList[0]?.name ?? "Autor desconhecido",
         rating: summary?.average ?? null,
         ratingCount: summary?.count ?? 0,
+        ratingCounts: valueOrNull(ratings)?.counts ?? {},
     }
 }

@@ -39,6 +39,7 @@ const FetchedSection = ({ title, moreLink, source, layout, skeletons }) => {
             </ListCards>
         )
     }
+    if (books.length === 0) return null
     return <BookList title={title} moreLink={moreLink} layout={layout} books={books} />
 }
 

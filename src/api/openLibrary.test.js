@@ -10,7 +10,9 @@ import {
     getTrendingBooks,
     getWork,
     trendingList,
+    authorBooksList,
     idFromKey,
+    similarBooksList,
     searchBooks,
 } from "./openLibrary"
 
@@ -120,7 +122,7 @@ describe("openLibrary", () => {
 
         const extras = await getBookExtras({ id: "OL1W", authorIds: ["OL9A"] })
 
-        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0 })
+        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0, ratingCounts: {} })
     })
 
     it("busca gêneros por etiquetas precisas e mais lidos", async () => {
@@ -166,6 +168,31 @@ describe("openLibrary", () => {
         expect(trending.peek()).toBeNull()
         await trending.load()
         expect(trending.peek()[0].id).toBe("OL1W")
+    })
+
+    it("lista outros livros do autor sem repetir o atual", async () => {
+        const docs = [
+            { key: "/works/OL1W", title: "Atual", author_name: ["Ana"], cover_i: 1 },
+            { key: "/works/OL2W", title: "Outro", author_name: ["Ana"], cover_i: 2 },
+        ]
+        const fetchMock = mockFetch(() => ({ body: { numFound: 2, docs } }))
+
+        const books = await authorBooksList('Ana "A" Lima', "OL1W").load()
+
+        expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get("q")).toBe('author:"Ana A Lima"')
+        expect(books.map(({ id }) => id)).toEqual(["OL2W"])
+    })
+
+    it("usa o gênero do livro para sugerir parecidos", async () => {
+        const fetchMock = mockFetch(() => ({ body: { numFound: 0, docs: [] } }))
+
+        await similarBooksList(["Dragons", "Fantasy fiction"], "OL1W").load()
+        expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get("q")).toContain("subject_key:fantasy_fiction")
+
+        await similarBooksList(["Power"], "OL1W").load()
+        expect(new URL(fetchMock.mock.calls[1][0]).searchParams.get("q")).toBe('subject:"Power"')
+
+        expect(similarBooksList([], "OL1W")).toBeNull()
     })
 
     it("não guarda listas vazias", async () => {
