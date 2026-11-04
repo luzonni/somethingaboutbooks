@@ -1,40 +1,65 @@
+import { useState } from "react"
 import styled from "styled-components"
-import { FaSearch } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { FaSearch } from "react-icons/fa"
+import { useNavigate } from "react-router-dom"
+import { Border, Coral, Black, Cream } from "../../assets/Colors"
 
-
-const SearchStyle = styled.div`
+const SearchStyle = styled.form`
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
+    width: 100%;
+    max-width: 40rem;
+    margin: 0 auto;
     input {
-        padding: 0.5rem 1rem;
-        background-color: #F0EEE2;
-        border: 2px solid #F0EEE2;
-        font-size: 2rem;
-        border-radius: 12px;
+        flex: 1;
+        min-width: 0;
+        padding: 0.75rem 1rem;
+        background-color: ${Cream};
+        border: 2px solid ${Border};
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        font-size: 1.125rem;
     }
     button {
-        padding: 0.5rem 1rem;
-        background-color: #E36065;
+        display: flex;
+        align-items: center;
+        padding: 0 1.25rem;
+        background-color: ${Coral};
         border: none;
-        color: #F0EEE2;
-        font-size: 2rem;
+        border-radius: 0 12px 12px 0;
+        color: ${Black};
+        font-size: 1.25rem;
     }
-    
+    button:hover {
+        filter: brightness(0.92);
+    }
 `
 
-const Search = () => {
+const Search = ({ initialValue = "", extraParams = "" }) => {
+    const [value, setValue] = useState(initialValue)
+    const navigate = useNavigate()
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        const params = new URLSearchParams(extraParams)
+        const query = value.trim()
+        if (query) params.set("q", query)
+        else params.delete("q")
+        const search = params.toString()
+        navigate(search ? `/books?${search}` : "/books")
+    }
+
     return (
-        <SearchStyle>
-            <NavLink to="/books">
-                <input type="text" placeholder="What book do you thinking?"/>
-            </NavLink>
-            <button><FaSearch/></button>
+        <SearchStyle role="search" onSubmit={handleSubmit}>
+            <input
+                type="search"
+                aria-label="Buscar livros"
+                placeholder="Título, autor ou assunto"
+                value={value}
+                onChange={(event) => setValue(event.target.value)}
+            />
+            <button type="submit" aria-label="Buscar">
+                <FaSearch aria-hidden="true" />
+            </button>
         </SearchStyle>
     )
 }
