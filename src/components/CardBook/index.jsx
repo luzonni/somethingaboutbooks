@@ -95,7 +95,7 @@ export const CardBook = ({ book }) => {
     const shelf = getEntry(book.id)?.shelf
     return (
         <CardBookStyle>
-            <Link to={`/books/${book.id}`}>
+            <Link to={`/books/${book.id}`} state={{ book }}>
                 <BookCover className="card__cover" src={book.cover} title={book.title} />
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
@@ -107,7 +107,7 @@ export const CardBook = ({ book }) => {
 
 export const RowCardBook = ({ book }) => (
     <RowCardBookStyle>
-        <Link to={`/books/${book.id}`}>
+        <Link to={`/books/${book.id}`} state={{ book }}>
             <BookCover className="row__cover" src={book.cover} title={book.title} />
             <div className="row__content">
                 <h3>{book.title}</h3>
