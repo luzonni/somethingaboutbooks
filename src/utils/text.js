@@ -39,10 +39,3 @@ export const formatLifespan = (birthDate, deathDate) => {
     if (birth) return `Nascimento: ${birth}`
     return death ? `Falecimento: ${death}` : ""
 }
-
-export const truncateText = (text, limit) => {
-    if (text.length <= limit) return text
-    const cut = text.slice(0, limit + 1)
-    const lastSpace = cut.search(/\s\S*$/)
-    return `${(lastSpace > 0 ? cut.slice(0, lastSpace) : text.slice(0, limit)).replace(/[\s.,;:!?-]+$/, "")}…`
-}

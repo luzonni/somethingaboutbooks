@@ -30,9 +30,30 @@ const ReviewsStyle = styled.div`
         background: none;
         font-size: 2rem;
         color: ${Gray};
+        transition: color 150ms ease, transform 150ms ease;
+    }
+    .rating__star:hover {
+        transform: scale(1.2);
     }
     .rating__star--on {
         color: ${Coral};
+    }
+    .reviews__empty {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 1.25rem;
+        border-radius: 12px;
+        background-color: ${Cream};
+    }
+    .reviews__empty a {
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        background-color: ${DarkRed};
+        color: ${White};
+        text-decoration: none;
     }
     textarea {
         width: 100%;
@@ -85,25 +106,30 @@ const ReviewsStyle = styled.div`
     }
 `
 
-const RatingInput = ({ value, onChange }) => (
-    <fieldset>
-        <legend>Sua nota</legend>
-        <div className="rating__options">
-            {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                    key={star}
-                    type="button"
-                    className={`rating__star ${star <= value ? "rating__star--on" : ""}`}
-                    aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
-                    aria-pressed={star === value}
-                    onClick={() => onChange(star)}
-                >
-                    <IoIosStar aria-hidden="true" />
-                </button>
-            ))}
-        </div>
-    </fieldset>
-)
+const RatingInput = ({ value, onChange }) => {
+    const [hovered, setHovered] = useState(0)
+    const shown = hovered || value
+    return (
+        <fieldset>
+            <legend>Sua nota</legend>
+            <div className="rating__options" onMouseLeave={() => setHovered(0)}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                        key={star}
+                        type="button"
+                        className={`rating__star ${star <= shown ? "rating__star--on" : ""}`}
+                        aria-label={`${star} ${star === 1 ? "estrela" : "estrelas"}`}
+                        aria-pressed={star === value}
+                        onMouseEnter={() => setHovered(star)}
+                        onClick={() => onChange(star)}
+                    >
+                        <IoIosStar aria-hidden="true" />
+                    </button>
+                ))}
+            </div>
+        </fieldset>
+    )
+}
 
 const ReviewForm = ({ book, entry, onDone }) => {
     const { saveReview } = useLibrary()
@@ -152,7 +178,10 @@ const BookReviews = ({ book }) => {
     if (!canSave) {
         return (
             <ReviewsStyle>
-                <p><Link to="/login" state={{ from: location.pathname }}>Entre</Link> para avaliar este livro.</p>
+                <div className="reviews__empty">
+                    <span>Já leu este livro? Conte o que achou.</span>
+                    <Link to="/login" state={{ from: location.pathname }}>Entrar para avaliar</Link>
+                </div>
             </ReviewsStyle>
         )
     }

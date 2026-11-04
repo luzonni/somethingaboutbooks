@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
     ApiError,
     clearApiCache,
+    cleanTags,
     cleanText,
+    cleanTitle,
     coverUrl,
     curateBooks,
     getBookExtras,
@@ -10,7 +12,9 @@ import {
     getTrendingBooks,
     getWork,
     trendingList,
+    authorBooksList,
     idFromKey,
+    similarBooksList,
     searchBooks,
 } from "./openLibrary"
 
@@ -115,12 +119,37 @@ describe("openLibrary", () => {
         expect(work.cover).toContain("/b/id/7-L.jpg")
     })
 
+    it("segue obras redirecionadas até a obra final", async () => {
+        mockFetch((url) =>
+            url.includes("/works/OLvelhaW.json")
+                ? { body: { type: { key: "/type/redirect" }, location: "/works/OLnovaW" } }
+                : { body: { key: "/works/OLnovaW", title: "Obra final", type: { key: "/type/work" } } }
+        )
+
+        const work = await getWork("OLvelhaW")
+
+        expect(work).toMatchObject({ id: "OLnovaW", title: "Obra final" })
+        expect(work.url).toContain("/works/OLnovaW")
+    })
+
+    it("trata obras excluídas ou sem título como não encontradas", async () => {
+        mockFetch((url) => ({ body: url.includes("OLapagadaW") ? { type: { key: "/type/delete" } } : { key: "/works/OLvaziaW" } }))
+
+        await expect(getWork("OLapagadaW")).rejects.toMatchObject({ status: 404 })
+        await expect(getWork("OLvaziaW")).rejects.toMatchObject({ status: 404 })
+    })
+
+    it("não entra em laço com redirecionamentos circulares", async () => {
+        mockFetch(() => ({ body: { type: { key: "/type/redirect" }, location: "/works/OLcicloW" } }))
+        await expect(getWork("OLcicloW")).rejects.toMatchObject({ status: 404 })
+    })
+
     it("não falha quando autor e notas estão indisponíveis", async () => {
         mockFetch(() => ({ status: 500 }))
 
         const extras = await getBookExtras({ id: "OL1W", authorIds: ["OL9A"] })
 
-        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0 })
+        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0, ratingCounts: {} })
     })
 
     it("busca gêneros por etiquetas precisas e mais lidos", async () => {
@@ -168,6 +197,31 @@ describe("openLibrary", () => {
         expect(trending.peek()[0].id).toBe("OL1W")
     })
 
+    it("lista outros livros do autor sem repetir o atual", async () => {
+        const docs = [
+            { key: "/works/OL1W", title: "Atual", author_name: ["Ana"], cover_i: 1 },
+            { key: "/works/OL2W", title: "Outro", author_name: ["Ana"], cover_i: 2 },
+        ]
+        const fetchMock = mockFetch(() => ({ body: { numFound: 2, docs } }))
+
+        const books = await authorBooksList('Ana "A" Lima', "OL1W").load()
+
+        expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get("q")).toBe('author:"Ana A Lima"')
+        expect(books.map(({ id }) => id)).toEqual(["OL2W"])
+    })
+
+    it("usa o gênero do livro para sugerir parecidos", async () => {
+        const fetchMock = mockFetch(() => ({ body: { numFound: 0, docs: [] } }))
+
+        await similarBooksList(["Dragons", "Fantasy fiction"], "OL1W").load()
+        expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get("q")).toContain("subject_key:fantasy_fiction")
+
+        await similarBooksList(["Power"], "OL1W").load()
+        expect(new URL(fetchMock.mock.calls[1][0]).searchParams.get("q")).toBe('subject:"Power"')
+
+        expect(similarBooksList([], "OL1W")).toBeNull()
+    })
+
     it("não guarda listas vazias", async () => {
         const fetchMock = mockFetch(() => ({ body: { works: [] } }))
 
@@ -176,6 +230,49 @@ describe("openLibrary", () => {
         await getTrendingBooks()
 
         expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+})
+
+describe("cleanTags", () => {
+    it("deixa legíveis as etiquetas de série", () => {
+        expect(cleanTags(["series:Harry_Potter", "Ghosts"])).toEqual(["Harry Potter", "Ghosts"])
+    })
+
+    it("descarta etiquetas técnicas e de catalogação", () => {
+        const tags = [
+            "nyt:hardcover-fiction=2008-01-01",
+            "award:hugo=1990",
+            "open_syllabus_project",
+            "Open Library Staff Picks",
+            "Reading Level-Grade 9",
+            "Translations into Marathi",
+            "English Translations",
+            "Accessible book",
+            "Fantasy",
+        ]
+        expect(cleanTags(tags)).toEqual(["Fantasy"])
+    })
+
+    it("mantém assuntos normais com dois-pontos e remove repetidos", () => {
+        const history = "Modern history: c 1700 to c 1900"
+        expect(cleanTags([history, "Magic", "magic"])).toEqual([history, "Magic"])
+    })
+
+    it("aplica o limite depois da limpeza", () => {
+        expect(cleanTags(["Accessible book", "A", "B", "C"], 2)).toEqual(["A", "B"])
+        expect(cleanTags(undefined, 2)).toEqual([])
+    })
+})
+
+describe("cleanTitle", () => {
+    it("remove anotações de catálogo", () => {
+        expect(cleanTitle("The Adventures of Sherlock Holmes [12 stories]")).toBe("The Adventures of Sherlock Holmes")
+        expect(cleanTitle("... Trotzdem Ja zum Leben sagen")).toBe("Trotzdem Ja zum Leben sagen")
+    })
+
+    it("mantém títulos normais", () => {
+        expect(cleanTitle("1984")).toBe("1984")
+        expect(cleanTitle("O Hobbit (edição de bolso)")).toBe("O Hobbit (edição de bolso)")
     })
 })
 
