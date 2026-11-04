@@ -29,11 +29,16 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/prop-types': 'off',
+      'no-unused-vars': ['error', { ignoreRestSiblings: true }],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
     },
+  },
+  {
+    files: ['src/context/**/*.jsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
   },
   {
     files: ['*.config.js'],

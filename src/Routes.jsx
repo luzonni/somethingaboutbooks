@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Reset from "./components/Reset";
+import { AuthProvider } from "./context/AuthContext";
 import NotFound from "./pages/NotFound";
 import DefaultPage from "./pages/DefaultPage";
 import SignUp from "./pages/SignUp";
@@ -17,6 +18,7 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Reset />
+      <AuthProvider>
       <Routes>
         <Route path="/" element={<DefaultPage />}>
           <Route index element={<Home />} />
@@ -33,6 +35,7 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
