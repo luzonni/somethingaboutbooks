@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Reset from "./components/Reset";
 import { AuthProvider } from "./context/AuthContext";
+import RequireAuth from "./components/RequireAuth";
 import NotFound from "./pages/NotFound";
 import DefaultPage from "./pages/DefaultPage";
 import SignUp from "./pages/SignUp";
@@ -23,9 +24,9 @@ function AppRoutes() {
         <Route path="/" element={<DefaultPage />}>
           <Route index element={<Home />} />
           <Route path="/pomodoro" element={<Pomodoro />} />
-          <Route path="/userconfig" element={<UserConfig />} />
-          <Route path="/preuserconfigs" element={<PreConfigs />} />
-          <Route path="/readinghistorylist" element={<ReadingHistoryList />} /> 
+          <Route path="/userconfig" element={<RequireAuth><UserConfig /></RequireAuth>} />
+          <Route path="/preuserconfigs" element={<RequireAuth><PreConfigs /></RequireAuth>} />
+          <Route path="/readinghistorylist" element={<RequireAuth><ReadingHistoryList /></RequireAuth>} /> 
           <Route path="/books" element={<AllBooksPage />} />
           <Route path="/user/:username" element={<UserProfile />} />
           <Route path="/books/:id" element={<BookPreview />} />
