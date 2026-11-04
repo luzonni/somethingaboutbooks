@@ -4,7 +4,11 @@ import {
     clearApiCache,
     cleanText,
     coverUrl,
-    getBookDetails,
+    curateBooks,
+    getBookExtras,
+    getBooksByGenre,
+    getTrendingBooks,
+    getWork,
     idFromKey,
     searchBooks,
 } from "./openLibrary"
@@ -66,10 +70,11 @@ describe("openLibrary", () => {
             },
         }))
 
-        const result = await searchBooks({ query: "o hobbit & cia", genre: "fantasy" })
+        const result = await searchBooks({ query: "o hobbit & cia" })
 
         const url = new URL(fetchMock.mock.calls[0][0])
-        expect(url.searchParams.get("q")).toBe("o hobbit & cia subject_key:fantasy")
+        expect(url.searchParams.get("q")).toBe("o hobbit & cia")
+        expect(url.searchParams.get("sort")).toBeNull()
         expect(result.hasMore).toBe(true)
         expect(result.books[0]).toMatchObject({ id: "OL1W", title: "O Hobbit", author: "J.R.R. Tolkien" })
         expect(result.books[0].cover).toContain("/b/id/2-M.jpg")
@@ -98,25 +103,85 @@ describe("openLibrary", () => {
         await expect(searchBooks({ query: "x" })).rejects.toThrow("Não foi possível conectar")
     })
 
-    it("mantém os detalhes do livro quando autor e notas falham", async () => {
-        mockFetch((url) => {
-            if (url.includes("/works/OL1W.json")) {
-                return {
-                    body: {
-                        title: "Livro",
-                        covers: [-1, 7],
-                        authors: [{ author: { key: "/authors/OL9A" } }],
-                    },
-                }
-            }
-            return { status: 500 }
-        })
+    it("carrega a obra sem depender de autor e notas", async () => {
+        mockFetch(() => ({
+            body: { title: "Livro", covers: [-1, 7], authors: [{ author: { key: "/authors/OL9A" } }] },
+        }))
 
-        const book = await getBookDetails("OL1W")
+        const work = await getWork("OL1W")
 
-        expect(book.title).toBe("Livro")
-        expect(book.author).toBe("Autor desconhecido")
-        expect(book.rating).toBeNull()
-        expect(book.cover).toContain("/b/id/7-L.jpg")
+        expect(work).toMatchObject({ title: "Livro", authorIds: ["OL9A"] })
+        expect(work.cover).toContain("/b/id/7-L.jpg")
+    })
+
+    it("não falha quando autor e notas estão indisponíveis", async () => {
+        mockFetch(() => ({ status: 500 }))
+
+        const extras = await getBookExtras({ id: "OL1W", authorIds: ["OL9A"] })
+
+        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0 })
+    })
+
+    it("busca gêneros por etiquetas precisas e mais lidos", async () => {
+        const fetchMock = mockFetch(() => ({ body: { numFound: 0, docs: [] } }))
+
+        await getBooksByGenre({ genre: "fantasy" })
+
+        const url = new URL(fetchMock.mock.calls[0][0])
+        expect(url.pathname).toBe("/search.json")
+        expect(url.searchParams.get("q")).toContain("subject_key:fantasy_fiction")
+        expect(url.searchParams.get("q")).toContain("-subject_key:science_fiction")
+        expect(url.searchParams.get("sort")).toBe("readinglog")
+    })
+
+    it("mantém a ordem por relevância quando há texto na busca do gênero", async () => {
+        const fetchMock = mockFetch(() => ({ body: { numFound: 0, docs: [] } }))
+
+        await searchBooks({ query: "dragão", genre: "fantasy" })
+
+        const url = new URL(fetchMock.mock.calls[0][0])
+        expect(url.searchParams.get("q")).toMatch(/^dragão subject_key:fantasy_fiction/)
+        expect(url.searchParams.get("sort")).toBeNull()
+    })
+
+    it("guarda as listas no navegador entre visitas", async () => {
+        const works = [{ key: "/works/OL1W", title: "Livro", author_name: ["A"], cover_i: 1 }]
+        const fetchMock = mockFetch(() => ({ body: { works } }))
+
+        await getTrendingBooks()
+        clearApiCache()
+        const books = await getTrendingBooks()
+
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(books[0].id).toBe("OL1W")
+    })
+
+    it("não guarda listas vazias", async () => {
+        const fetchMock = mockFetch(() => ({ body: { works: [] } }))
+
+        await getTrendingBooks()
+        clearApiCache()
+        await getTrendingBooks()
+
+        expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+})
+
+describe("curateBooks", () => {
+    const book = (id, author, title = "Título", cover = "c.jpg") => ({ id, author, title, cover })
+
+    it("limita livros por autor para variar a lista", () => {
+        const books = [book("1", "A"), book("2", "A"), book("3", "A"), book("4", "B")]
+        expect(curateBooks(books).map(({ id }) => id)).toEqual(["1", "2", "4"])
+    })
+
+    it("remove livros sem capa e títulos em alfabetos não latinos", () => {
+        const books = [book("1", "A", "Преступление"), book("2", "B", "海辺のカフカ"), book("3", "C", "O Hobbit", ""), book("4", "D", "Coração: 1984!")]
+        expect(curateBooks(books).map(({ id }) => id)).toEqual(["4"])
+    })
+
+    it("respeita o limite", () => {
+        const books = [book("1", "A"), book("2", "B"), book("3", "C")]
+        expect(curateBooks(books, { limit: 2 })).toHaveLength(2)
     })
 })

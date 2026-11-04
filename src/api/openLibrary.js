@@ -1,3 +1,5 @@
+import { readJson, writeJson } from "../services/storage"
+
 const BASE_URL = "https://openlibrary.org"
 const COVERS_URL = "https://covers.openlibrary.org"
 const CACHE_TTL = 5 * 60 * 1000
@@ -17,22 +19,75 @@ const SEARCH_FIELDS = [
 
 export const PAGE_SIZE = 24
 
+// As etiquetas da Open Library são ruidosas: uma etiqueta só traz muito livro fora do gênero.
+// Por isso cada gênero combina as etiquetas mais confiáveis e exclui as que costumam confundir.
 export const GENRES = [
-    { slug: "fantasy", label: "Fantasia" },
-    { slug: "romance", label: "Romance" },
-    { slug: "science_fiction", label: "Ficção científica" },
-    { slug: "horror", label: "Terror" },
-    { slug: "mystery", label: "Mistério" },
-    { slug: "classics", label: "Clássicos" },
-    { slug: "biography", label: "Biografia" },
-    { slug: "history", label: "História" },
+    {
+        slug: "fantasy",
+        label: "Fantasia",
+        query: "subject_key:fantasy_fiction (subject_key:magic OR subject_key:dragons OR subject_key:wizards OR subject_key:epic_fantasy OR subject_key:fantasy_fiction_english) -subject_key:science_fiction -subject_key:classic_literature",
+    },
+    {
+        slug: "romance",
+        label: "Romance",
+        query: "subject_key:romance_fiction -subject_key:fantasy_fiction -subject_key:science_fiction -subject_key:classic_literature",
+    },
+    {
+        slug: "science_fiction",
+        label: "Ficção científica",
+        query: "subject_key:science_fiction -subject_key:fantasy_fiction -subject_key:fantasy -subject_key:love_stories -subject_key:horror_stories",
+    },
+    {
+        slug: "horror",
+        label: "Terror",
+        query: "subject_key:horror_fiction -subject_key:love_stories -subject_key:romance_fiction -subject_key:fantasy_fiction",
+    },
+    {
+        slug: "mystery",
+        label: "Mistério",
+        query: "subject_key:detective_and_mystery_stories -subject_key:classic_literature -subject_key:fantasy_fiction",
+    },
+    { slug: "classics", label: "Clássicos", query: "subject_key:classic_literature subject_key:fiction" },
+    {
+        slug: "biography",
+        label: "Biografia",
+        query: "subject_key:autobiography subject_key:biography -subject_key:fiction -subject_key:national_socialism",
+    },
+    { slug: "history", label: "História", query: "subject_key:civilization -subject_key:fiction" },
 ]
+
+const TOP_RATED_QUERY = "subject_key:fiction ratings_count:[300 TO *]"
+const LATIN_TITLE = /^[\p{Script=Latin}\p{N}\p{P}\p{S}\s]+$/u
+const LIST_CACHE_TTL = 12 * 60 * 60 * 1000
 
 const HTML_ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" }
 
 const cache = new Map()
 
 export const clearApiCache = () => cache.clear()
+
+// Listas da home quase não mudam: guardá-las no navegador deixa as próximas visitas instantâneas.
+const cachedList = async (key, loader) => {
+    const storageKey = `sab:cache:${key}`
+    const saved = readJson(storageKey, null)
+    if (saved && Date.now() - saved.savedAt < LIST_CACHE_TTL) return saved.books
+
+    const books = await loader()
+    if (books.length > 0) writeJson(storageKey, { books, savedAt: Date.now() })
+    return books
+}
+
+export const curateBooks = (books, { maxPerAuthor = 2, limit = books.length } = {}) => {
+    const perAuthor = new Map()
+    return books
+        .filter((book) => book.cover && LATIN_TITLE.test(book.title))
+        .filter((book) => {
+            const count = (perAuthor.get(book.author) ?? 0) + 1
+            perAuthor.set(book.author, count)
+            return count <= maxPerAuthor
+        })
+        .slice(0, limit)
+}
 
 export class ApiError extends Error {
     constructor(message, status) {
@@ -120,42 +175,62 @@ const normalizeSearchDoc = (doc) => {
     })
 }
 
-export const searchBooks = async ({ query = "", genre = "", page = 1, limit = PAGE_SIZE, signal } = {}) => {
-    const terms = [query.trim(), genre && `subject_key:${genre}`].filter(Boolean).join(" ")
+const genreQuery = (slug) => GENRES.find((genre) => genre.slug === slug)?.query ?? `subject_key:${slug}`
+
+const runSearch = async ({ terms, sort, page = 1, limit, signal }) => {
     const data = await request("/search.json", {
-        params: { q: terms, page, limit, lang: "pt", fields: SEARCH_FIELDS },
+        params: { q: terms, sort, page, limit, lang: "pt", fields: SEARCH_FIELDS },
         signal,
     })
-    const books = (data.docs ?? []).map(normalizeSearchDoc)
-    const total = data.numFound ?? data.num_found ?? 0
-    return { books, total, hasMore: page * limit < total }
+    return {
+        books: (data.docs ?? []).map(normalizeSearchDoc),
+        total: data.numFound ?? data.num_found ?? 0,
+    }
 }
 
-export const getTrendingBooks = async ({ period = "weekly", limit = 12, signal } = {}) => {
-    const data = await request(`/trending/${period}.json`, { params: { limit }, signal })
-    return (data.works ?? []).map((work) =>
-        normalizeBook({
-            key: work.key,
-            title: work.title,
-            authors: work.author_name,
-            coverId: work.cover_i,
-            year: work.first_publish_year,
-        })
-    )
+export const searchBooks = async ({ query = "", genre = "", page = 1, limit = PAGE_SIZE, signal } = {}) => {
+    const text = query.trim()
+    const terms = [text, genre && genreQuery(genre)].filter(Boolean).join(" ")
+    const { books, total } = await runSearch({
+        terms,
+        // Sem texto digitado não há relevância para ordenar: mostra primeiro os mais lidos.
+        sort: text ? undefined : "readinglog",
+        page,
+        limit,
+        signal,
+    })
+    return {
+        books: text ? books : curateBooks(books, { maxPerAuthor: 3 }),
+        total,
+        hasMore: page * limit < total,
+    }
 }
 
-export const getBooksByGenre = async ({ genre, limit = 12, signal }) => {
-    const data = await request(`/subjects/${genre}.json`, { params: { limit }, signal })
-    return (data.works ?? []).map((work) =>
-        normalizeBook({
-            key: work.key,
-            title: work.title,
-            authors: work.authors?.map((author) => author.name),
-            coverId: work.cover_id,
-            year: work.first_publish_year,
-        })
-    )
-}
+export const getTrendingBooks = ({ period = "weekly", limit = 12, signal } = {}) =>
+    cachedList(`trending:${period}:${limit}`, async () => {
+        const data = await request(`/trending/${period}.json`, { params: { limit }, signal })
+        return (data.works ?? []).map((work) =>
+            normalizeBook({
+                key: work.key,
+                title: work.title,
+                authors: work.author_name,
+                coverId: work.cover_i,
+                year: work.first_publish_year,
+            })
+        )
+    })
+
+export const getBooksByGenre = ({ genre, limit = 12, signal }) =>
+    cachedList(`genre:${genre}:${limit}`, async () => {
+        const { books } = await runSearch({ terms: genreQuery(genre), sort: "readinglog", limit: limit * 3, signal })
+        return curateBooks(books, { limit })
+    })
+
+export const getTopRatedBooks = ({ limit = 3, signal } = {}) =>
+    cachedList(`top-rated:${limit}`, async () => {
+        const { books } = await runSearch({ terms: TOP_RATED_QUERY, sort: "rating", limit: limit * 5, signal })
+        return curateBooks(books, { maxPerAuthor: 1, limit })
+    })
 
 export const getAuthor = async (authorId, { signal } = {}) => {
     const data = await request(`/authors/${authorId}.json`, { signal })
@@ -171,24 +246,9 @@ export const getAuthor = async (authorId, { signal } = {}) => {
 
 const valueOrNull = (result) => (result.status === "fulfilled" ? result.value : null)
 
-export const getBookDetails = async (workId, { signal } = {}) => {
+export const getWork = async (workId, { signal } = {}) => {
     const work = await request(`/works/${workId}.json`, { signal })
-    const authorIds = (work.authors ?? [])
-        .map((entry) => idFromKey(entry.author?.key))
-        .filter(Boolean)
-        .slice(0, 3)
-
-    const [ratings, ...authors] = await Promise.allSettled([
-        request(`/works/${workId}/ratings.json`, { signal }),
-        ...authorIds.map((authorId) => getAuthor(authorId, { signal })),
-    ])
-
-    if (signal?.aborted) throw new DOMException("Aborted", "AbortError")
-
-    const authorList = authors.map(valueOrNull).filter(Boolean)
-    const summary = valueOrNull(ratings)?.summary
     const coverId = work.covers?.find((cover) => cover > 0)
-
     return {
         id: workId,
         title: work.title,
@@ -199,10 +259,30 @@ export const getBookDetails = async (workId, { signal } = {}) => {
         subjects: (work.subjects ?? []).slice(0, 12),
         places: (work.subject_places ?? []).slice(0, 6),
         characters: (work.subject_people ?? []).slice(0, 6),
+        authorIds: (work.authors ?? [])
+            .map((entry) => idFromKey(entry.author?.key))
+            .filter(Boolean)
+            .slice(0, 3),
+        url: `${BASE_URL}/works/${workId}`,
+    }
+}
+
+// Autores e notas chegam depois da obra e, se falharem, não impedem de mostrar o livro.
+export const getBookExtras = async ({ id, authorIds }, { signal } = {}) => {
+    const [ratings, ...authors] = await Promise.allSettled([
+        request(`/works/${id}/ratings.json`, { signal }),
+        ...authorIds.map((authorId) => getAuthor(authorId, { signal })),
+    ])
+
+    if (signal?.aborted) throw new DOMException("Aborted", "AbortError")
+
+    const authorList = authors.map(valueOrNull).filter(Boolean)
+    const summary = valueOrNull(ratings)?.summary
+
+    return {
         authors: authorList,
         author: authorList[0]?.name ?? "Autor desconhecido",
         rating: summary?.average ?? null,
         ratingCount: summary?.count ?? 0,
-        url: `${BASE_URL}/works/${workId}`,
     }
 }

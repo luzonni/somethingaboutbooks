@@ -85,9 +85,18 @@
   background-color: #f0eee2;
 }
 
-.author > div {
+.authorText {
   flex: 1;
   min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.authorText .description {
+  margin-top: 0.5rem;
+}
+
+.skeletonLine {
+  display: inline-block;
 }
 
 .author h3 {
@@ -97,12 +106,6 @@
 
 .author h3 a {
   color: #620000;
-}
-
-.authorBio {
-  margin-top: 0.5rem;
-  white-space: pre-line;
-  overflow-wrap: anywhere;
 }
 
 .tabs {
