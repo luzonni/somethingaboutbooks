@@ -9,16 +9,33 @@ import { PomodoroProvider } from "./context/PomodoroContext";
 import DefaultPage from "./pages/DefaultPage";
 import Home from "./pages/Home";
 
-const AllBooksPage = lazy(() => import("./pages/AllBooksPage"));
-const BookPreview = lazy(() => import("./pages/BookPreview"));
-const AuthPage = lazy(() => import("./pages/Auth"));
-const Info = lazy(() => import("./pages/Info"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const Pomodoro = lazy(() => import("./pages/Pomodoro"));
-const PreConfigs = lazy(() => import("./pages/PreConfigs"));
-const ReadingHistoryList = lazy(() => import("./pages/ReadingHistoryList"));
-const UserConfig = lazy(() => import("./pages/UserConfig"));
-const UserProfile = lazy(() => import("./pages/UserProfile"));
+const loadAllBooksPage = () => import("./pages/AllBooksPage");
+const AllBooksPage = lazy(loadAllBooksPage);
+const loadBookPreview = () => import("./pages/BookPreview");
+const BookPreview = lazy(loadBookPreview);
+const loadAuthPage = () => import("./pages/Auth");
+const AuthPage = lazy(loadAuthPage);
+const loadInfo = () => import("./pages/Info");
+const Info = lazy(loadInfo);
+const loadNotFound = () => import("./pages/NotFound");
+const NotFound = lazy(loadNotFound);
+const loadPomodoro = () => import("./pages/Pomodoro");
+const Pomodoro = lazy(loadPomodoro);
+const loadPreConfigs = () => import("./pages/PreConfigs");
+const PreConfigs = lazy(loadPreConfigs);
+const loadReadingHistoryList = () => import("./pages/ReadingHistoryList");
+const ReadingHistoryList = lazy(loadReadingHistoryList);
+const loadUserConfig = () => import("./pages/UserConfig");
+const UserConfig = lazy(loadUserConfig);
+const loadUserProfile = () => import("./pages/UserProfile");
+const UserProfile = lazy(loadUserProfile);
+
+// Baixa as outras páginas com o navegador ocioso para a navegação não mostrar carregamento.
+const preloadPages = () =>
+  [loadAllBooksPage, loadBookPreview, loadPomodoro, loadAuthPage].forEach((load) => load().catch(() => {}));
+
+const schedule = window.requestIdleCallback ?? ((callback) => setTimeout(callback, 1500));
+schedule(preloadPages);
 
 const isPrivate = (page) => <RequireAuth>{page}</RequireAuth>;
 
