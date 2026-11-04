@@ -11,13 +11,12 @@ import Home from "./pages/Home";
 
 const AllBooksPage = lazy(() => import("./pages/AllBooksPage"));
 const BookPreview = lazy(() => import("./pages/BookPreview"));
+const AuthPage = lazy(() => import("./pages/Auth"));
 const Info = lazy(() => import("./pages/Info"));
-const Login = lazy(() => import("./pages/Login"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Pomodoro = lazy(() => import("./pages/Pomodoro"));
 const PreConfigs = lazy(() => import("./pages/PreConfigs"));
 const ReadingHistoryList = lazy(() => import("./pages/ReadingHistoryList"));
-const SignUp = lazy(() => import("./pages/SignUp"));
 const UserConfig = lazy(() => import("./pages/UserConfig"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 
@@ -48,8 +47,8 @@ function AppRoutes() {
                   <Route path="bookpreview" element={<Navigate to="/books" replace />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
+                <Route path="/login" element={<AuthPage />} />
+                <Route path="/signup" element={<AuthPage />} />
               </Routes>
             </Suspense>
           </PomodoroProvider>
