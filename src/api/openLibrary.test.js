@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
     ApiError,
     clearApiCache,
+    cleanTags,
     cleanText,
+    cleanTitle,
     coverUrl,
     curateBooks,
     getBookExtras,
@@ -117,6 +119,31 @@ describe("openLibrary", () => {
         expect(work.cover).toContain("/b/id/7-L.jpg")
     })
 
+    it("segue obras redirecionadas até a obra final", async () => {
+        mockFetch((url) =>
+            url.includes("/works/OLvelhaW.json")
+                ? { body: { type: { key: "/type/redirect" }, location: "/works/OLnovaW" } }
+                : { body: { key: "/works/OLnovaW", title: "Obra final", type: { key: "/type/work" } } }
+        )
+
+        const work = await getWork("OLvelhaW")
+
+        expect(work).toMatchObject({ id: "OLnovaW", title: "Obra final" })
+        expect(work.url).toContain("/works/OLnovaW")
+    })
+
+    it("trata obras excluídas ou sem título como não encontradas", async () => {
+        mockFetch((url) => ({ body: url.includes("OLapagadaW") ? { type: { key: "/type/delete" } } : { key: "/works/OLvaziaW" } }))
+
+        await expect(getWork("OLapagadaW")).rejects.toMatchObject({ status: 404 })
+        await expect(getWork("OLvaziaW")).rejects.toMatchObject({ status: 404 })
+    })
+
+    it("não entra em laço com redirecionamentos circulares", async () => {
+        mockFetch(() => ({ body: { type: { key: "/type/redirect" }, location: "/works/OLcicloW" } }))
+        await expect(getWork("OLcicloW")).rejects.toMatchObject({ status: 404 })
+    })
+
     it("não falha quando autor e notas estão indisponíveis", async () => {
         mockFetch(() => ({ status: 500 }))
 
@@ -203,6 +230,49 @@ describe("openLibrary", () => {
         await getTrendingBooks()
 
         expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+})
+
+describe("cleanTags", () => {
+    it("deixa legíveis as etiquetas de série", () => {
+        expect(cleanTags(["series:Harry_Potter", "Ghosts"])).toEqual(["Harry Potter", "Ghosts"])
+    })
+
+    it("descarta etiquetas técnicas e de catalogação", () => {
+        const tags = [
+            "nyt:hardcover-fiction=2008-01-01",
+            "award:hugo=1990",
+            "open_syllabus_project",
+            "Open Library Staff Picks",
+            "Reading Level-Grade 9",
+            "Translations into Marathi",
+            "English Translations",
+            "Accessible book",
+            "Fantasy",
+        ]
+        expect(cleanTags(tags)).toEqual(["Fantasy"])
+    })
+
+    it("mantém assuntos normais com dois-pontos e remove repetidos", () => {
+        const history = "Modern history: c 1700 to c 1900"
+        expect(cleanTags([history, "Magic", "magic"])).toEqual([history, "Magic"])
+    })
+
+    it("aplica o limite depois da limpeza", () => {
+        expect(cleanTags(["Accessible book", "A", "B", "C"], 2)).toEqual(["A", "B"])
+        expect(cleanTags(undefined, 2)).toEqual([])
+    })
+})
+
+describe("cleanTitle", () => {
+    it("remove anotações de catálogo", () => {
+        expect(cleanTitle("The Adventures of Sherlock Holmes [12 stories]")).toBe("The Adventures of Sherlock Holmes")
+        expect(cleanTitle("... Trotzdem Ja zum Leben sagen")).toBe("Trotzdem Ja zum Leben sagen")
+    })
+
+    it("mantém títulos normais", () => {
+        expect(cleanTitle("1984")).toBe("1984")
+        expect(cleanTitle("O Hobbit (edição de bolso)")).toBe("O Hobbit (edição de bolso)")
     })
 })
 

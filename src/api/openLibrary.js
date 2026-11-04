@@ -129,6 +129,19 @@ const request = async (path, { params, signal } = {}) => {
     return data
 }
 
+// Obras e autores duplicados viram redirecionamentos dentro do próprio JSON, com status 200.
+const requestRecord = async (path, options, depth = 0) => {
+    const data = await request(path, options)
+    const type = data.type?.key
+    if (type === "/type/redirect" && data.location && depth < 3) {
+        return requestRecord(`${data.location}.json`, options, depth + 1)
+    }
+    if (type === "/type/redirect" || type === "/type/delete") {
+        throw new ApiError("Conteúdo não encontrado.", 404)
+    }
+    return data
+}
+
 export const idFromKey = (key = "") => key.split("/").pop()
 
 export const coverUrl = (coverId, size = "M") =>
@@ -157,9 +170,38 @@ export const cleanText = (value) => {
         .trim()
 }
 
+// Etiquetas de catalogação que não dizem nada ao leitor.
+const INTERNAL_TAG = /^(accessible book|protected daisy|in library|lending library|large type books|internet archive wishlist|overdrive|open library staff picks|open[ _]syllabus[ _]project|translations? (into|from) .*|[a-z ]* ?translations?|general|reading level.*|long now manual.*|nyt[ :-].*)$/i
+
+// Transforma "series:Harry_Potter" em "Harry Potter" e descarta etiquetas técnicas como "nyt:fiction=2008".
+export const cleanTags = (tags = [], limit = tags.length) => {
+    const seen = new Set()
+    return tags
+        .map((tag) => {
+            const value = String(tag).trim()
+            const series = value.match(/^series:(.+)$/i)
+            if (!series && /^[a-z_-]+[:=]\S/i.test(value)) return ""
+            return (series ? series[1] : value).replace(/_/g, " ").replace(/\s+/g, " ").trim()
+        })
+        .filter((tag) => {
+            const key = tag.toLowerCase()
+            if (!tag || INTERNAL_TAG.test(tag) || seen.has(key)) return false
+            seen.add(key)
+            return true
+        })
+        .slice(0, limit)
+}
+
+// Remove anotações de catálogo: "... Título", "Título [12 stories]", "Título [collection/set]".
+export const cleanTitle = (title = "") =>
+    title
+        .replace(/^[\s.…]+/, "")
+        .replace(/\s*\[[^\]]*\]\s*$/, "")
+        .trim() || title
+
 const normalizeBook = ({ key, title, authors, coverId, year, rating, ratingCount }) => ({
     id: idFromKey(key),
-    title,
+    title: cleanTitle(title),
     author: authors?.[0] ?? "Autor desconhecido",
     cover: coverUrl(coverId),
     year: year ?? null,
@@ -273,7 +315,7 @@ export const similarBooksList = (subjects, excludeId, { limit = 12 } = {}) => {
 export const getTrendingBooks = ({ signal, ...options } = {}) => trendingList(options).load(signal)
 
 export const getAuthor = async (authorId, { signal } = {}) => {
-    const data = await request(`/authors/${authorId}.json`, { signal })
+    const data = await requestRecord(`/authors/${authorId}.json`, { signal })
     return {
         id: authorId,
         name: data.name ?? data.personal_name ?? "Autor desconhecido",
@@ -287,23 +329,24 @@ export const getAuthor = async (authorId, { signal } = {}) => {
 const valueOrNull = (result) => (result.status === "fulfilled" ? result.value : null)
 
 export const getWork = async (workId, { signal } = {}) => {
-    const work = await request(`/works/${workId}.json`, { signal })
+    const work = await requestRecord(`/works/${workId}.json`, { signal })
+    if (!work.title) throw new ApiError("Conteúdo não encontrado.", 404)
     const coverId = work.covers?.find((cover) => cover > 0)
     return {
-        id: workId,
-        title: work.title,
+        id: idFromKey(work.key) || workId,
+        title: cleanTitle(work.title),
         description: cleanText(work.description),
         cover: coverUrl(coverId, "L"),
         coverThumb: coverUrl(coverId),
         firstPublished: work.first_publish_date ?? "",
-        subjects: (work.subjects ?? []).slice(0, 12),
-        places: (work.subject_places ?? []).slice(0, 6),
-        characters: (work.subject_people ?? []).slice(0, 6),
+        subjects: cleanTags(work.subjects, 12),
+        places: cleanTags(work.subject_places, 6),
+        characters: cleanTags(work.subject_people, 6),
         authorIds: (work.authors ?? [])
             .map((entry) => idFromKey(entry.author?.key))
             .filter(Boolean)
             .slice(0, 3),
-        url: `${BASE_URL}/works/${workId}`,
+        url: `${BASE_URL}${work.key ?? `/works/${workId}`}`,
     }
 }
 
