@@ -1,14 +1,35 @@
 import { useState } from "react"
-import styled from "styled-components"
+import styled, { css, keyframes } from "styled-components"
 import { FaSearch } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
 import { Border, Coral, Black, Cream } from "../../assets/Colors"
+import { useTypingPlaceholder } from "../../hooks/useTypingPlaceholder"
+
+const glow = keyframes`
+    0%, 100% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(227, 96, 101, 0.45); }
+    50% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 8px rgba(227, 96, 101, 0); }
+`
+
+const animatedStyles = css`
+    animation: ${glow} 3s ease-in-out infinite;
+    &:focus-within {
+        animation: none;
+        transform: translateY(-3px) scale(1.015);
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(227, 96, 101, 0.55);
+    }
+`
 
 const SearchStyle = styled.form`
     display: flex;
     width: 100%;
     max-width: ${({ $compact }) => ($compact ? "18rem" : "40rem")};
     margin: 0 auto;
+    border-radius: 12px;
+    transition: transform 250ms ease, box-shadow 250ms ease;
+    ${({ $animated }) => $animated && animatedStyles}
+    &:focus-within {
+        box-shadow: 0 0 0 3px rgba(227, 96, 101, 0.4);
+    }
     input {
         flex: 1;
         min-width: 0;
@@ -19,6 +40,9 @@ const SearchStyle = styled.form`
         border-radius: 12px 0 0 12px;
         font-size: ${({ $compact }) => ($compact ? "0.9375rem" : "1.125rem")};
     }
+    input:focus {
+        outline: none;
+    }
     button {
         display: flex;
         align-items: center;
@@ -28,15 +52,33 @@ const SearchStyle = styled.form`
         border-radius: 0 12px 12px 0;
         color: ${Black};
         font-size: ${({ $compact }) => ($compact ? "1rem" : "1.25rem")};
+        transition: filter 150ms ease;
     }
     button:hover {
         filter: brightness(0.92);
     }
+    button svg {
+        transition: transform 200ms ease;
+    }
+    button:hover svg {
+        transform: scale(1.2) rotate(-8deg);
+    }
+    button:active svg {
+        transform: scale(0.9);
+    }
 `
 
-const Search = ({ initialValue = "", extraParams = "", compact = false }) => {
+const SUGGESTIONS = ["O Hobbit", "Machado de Assis", "Duna", "Clarice Lispector", "Harry Potter", "ficção científica"]
+const DEFAULT_PLACEHOLDER = "Título, autor ou assunto"
+
+const Search = ({ initialValue = "", extraParams = "", compact = false, animated = false }) => {
     const [value, setValue] = useState(initialValue)
+    const [focused, setFocused] = useState(false)
     const navigate = useNavigate()
+    const placeholder = useTypingPlaceholder(SUGGESTIONS, {
+        active: animated && !focused && !value,
+        fallback: DEFAULT_PLACEHOLDER,
+    })
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -49,13 +91,15 @@ const Search = ({ initialValue = "", extraParams = "", compact = false }) => {
     }
 
     return (
-        <SearchStyle $compact={compact} role="search" onSubmit={handleSubmit}>
+        <SearchStyle $compact={compact} $animated={animated} role="search" onSubmit={handleSubmit}>
             <input
                 type="search"
                 aria-label="Buscar livros"
-                placeholder="Título, autor ou assunto"
+                placeholder={placeholder}
                 value={value}
                 onChange={(event) => setValue(event.target.value)}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
             />
             <button type="submit" aria-label="Buscar">
                 <FaSearch aria-hidden="true" />
