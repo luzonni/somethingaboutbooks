@@ -20,7 +20,9 @@
     <link rel="preconnect" href="https://covers.openlibrary.org" />
     <link rel="preconnect" href="https://openlibrary.org" />
     <link rel="dns-prefetch" href="https://archive.org" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <!-- A fonte carrega sem bloquear o primeiro desenho; até lá o navegador usa a fonte do sistema. -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
     <title>SAB</title>
     <script>
       // Aplica o tema antes do primeiro desenho para a página não piscar em branco.
