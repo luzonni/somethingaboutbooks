@@ -1,0 +1,74 @@
+name: Deploy
+
+# Publica no GitHub Pages só depois que o CI passa na main.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verificar:
+    name: Verificar GitHub Pages
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      ativo: ${{ steps.pages.outputs.ativo }}
+    steps:
+      # O Pages precisa ser ativado uma vez por alguém com acesso de admin ao repositório.
+      - id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" --jq '.build_type' 2>/dev/null | grep -q workflow; then
+            echo "ativo=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ativo=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=GitHub Pages desativado::Ative em Settings > Pages > Source: GitHub Actions para publicar o site."
+          fi
+
+  build:
+    name: Build para o Pages
+    needs: verificar
+    if: needs.verificar.outputs.ativo == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+      # O Pages não conhece as rotas do React: o 404.html devolve o app para qualquer endereço.
+      - run: cp dist/index.html dist/404.html
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    name: Publicar
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
