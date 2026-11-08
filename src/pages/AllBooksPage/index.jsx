@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./AllBooksPage.module.css";
-import { GENRES, SORT_OPTIONS, getTrendingBooks, searchBooks } from "../../api/openLibrary";
+import { GENRES, SORT_OPTIONS, dedupeBooks, getTrendingBooks, searchBooks } from "../../api/openLibrary";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState, ErrorState, Spinner } from "../../components/Feedback";
 import Search from "../../components/Search";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { useOnVisible } from "../../hooks/useOnVisible";
-
-const dedupe = (books) => [...new Map(books.map((book) => [book.id, book])).values()];
 
 const genreLink = (query, slug, sort = "") => {
   const params = new URLSearchParams();
@@ -44,7 +42,7 @@ function Results({ query, genre, sort }) {
         if (signal.aborted) return;
         setResults((previous) => ({
           ...data,
-          books: dedupe([...(page === 1 ? [] : previous.books), ...data.books]),
+          books: dedupeBooks([...(page === 1 ? [] : previous.books), ...data.books]),
         }));
         setStatus({ loading: false, error: null });
       })

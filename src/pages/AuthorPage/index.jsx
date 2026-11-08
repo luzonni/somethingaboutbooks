@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import styled, { keyframes } from "styled-components"
 import { FiBookOpen, FiCalendar, FiExternalLink, FiSearch } from "react-icons/fi"
-import { getAuthor, getAuthorWorks } from "../../api/openLibrary"
+import { dedupeBooks, getAuthor, getAuthorWorks } from "../../api/openLibrary"
 import { Border, BrandText, Cream, DarkGray, DarkRed, Night, Sand, White } from "../../assets/Colors"
 import { CardBook } from "../../components/CardBook"
 import ExpandableText from "../../components/ExpandableText"
@@ -163,6 +163,20 @@ const AuthorStyle = styled.article`
         color: ${White};
         font-weight: 500;
     }
+    .author__toggle {
+        display: block;
+        margin: 1.25rem auto 0;
+        padding: 0.4rem 1rem;
+        border: 1px solid ${Border};
+        border-radius: 999px;
+        background: none;
+        color: ${DarkGray};
+        font-size: 0.9375rem;
+    }
+    .author__toggle:hover {
+        color: ${BrandText};
+        border-color: currentColor;
+    }
     .author__search {
         display: inline-flex;
         align-items: center;
@@ -204,11 +218,10 @@ const AuthorWorks = ({ authorId, authorName }) => {
         getAuthorWorks(authorId, { page, signal: controller.signal })
             .then((data) => {
                 if (controller.signal.aborted) return
-                setWorks((previous) => {
-                    const seen = new Set(previous.books.map((book) => book.id))
-                    const books = page === 1 ? data.books : [...previous.books, ...data.books.filter((book) => !seen.has(book.id))]
-                    return { ...data, books }
-                })
+                setWorks((previous) => ({
+                    ...data,
+                    books: dedupeBooks(page === 1 ? data.books : [...previous.books, ...data.books]),
+                }))
                 setStatus({ loading: false, error: null })
             })
             .catch((error) => {
@@ -217,8 +230,14 @@ const AuthorWorks = ({ authorId, authorName }) => {
         return () => controller.abort()
     }, [authorId, page, attempt])
 
+    const [showUncovered, setShowUncovered] = useState(false)
     const canLoadMore = works.hasMore && !status.loading && !status.error
     const sentinelRef = useOnVisible(() => setPage((value) => value + 1), { enabled: canLoadMore })
+
+    // Obras sem capa costumam ser edições soltas ou cadastros incompletos: ficam escondidas por padrão.
+    const withCover = works.books.filter((book) => book.cover)
+    const hiddenCount = works.books.length - withCover.length
+    const visible = showUncovered || withCover.length === 0 ? works.books : withCover
 
     return (
         <section className="author__card" aria-labelledby="works-title">
@@ -226,10 +245,15 @@ const AuthorWorks = ({ authorId, authorName }) => {
                 <h2 id="works-title">Obras</h2>
                 {works.total > 0 && <span>{works.total.toLocaleString("pt-BR")} na Open Library</span>}
             </div>
-            {works.books.length > 0 && (
+            {visible.length > 0 && (
                 <div className="author__grid">
-                    {works.books.map((book) => <CardBook key={book.id} book={book} />)}
+                    {visible.map((book) => <CardBook key={book.id} book={book} />)}
                 </div>
+            )}
+            {hiddenCount > 0 && withCover.length > 0 && (
+                <button type="button" className="author__toggle" aria-pressed={showUncovered} onClick={() => setShowUncovered(!showUncovered)}>
+                    {showUncovered ? "Ocultar obras sem capa" : `Mostrar ${hiddenCount} ${hiddenCount === 1 ? "obra" : "obras"} sem capa`}
+                </button>
             )}
             {status.loading && <Spinner label="Carregando obras" />}
             {status.error && <ErrorState message={status.error.message} onRetry={() => setAttempt((value) => value + 1)} />}
