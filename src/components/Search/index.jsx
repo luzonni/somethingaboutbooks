@@ -94,6 +94,8 @@ const Search = ({ initialValue = "", extraParams = "", compact = false, animated
         <SearchStyle $compact={compact} $animated={animated} role="search" onSubmit={handleSubmit}>
             <input
                 type="search"
+                aria-keyshortcuts="/"
+                title="Atalho: /"
                 aria-label="Buscar livros"
                 placeholder={placeholder}
                 value={value}
