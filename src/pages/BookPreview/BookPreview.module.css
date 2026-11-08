@@ -550,3 +550,21 @@
     padding: 1.125rem;
   }
 }
+
+.authorMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  color: var(--color-brand);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.authorMore svg {
+  transition: transform 180ms ease;
+}
+
+.authorMore:hover svg {
+  transform: translateX(3px);
+}

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiCalendar, FiExternalLink } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiCalendar, FiExternalLink } from "react-icons/fi";
 import { authorBooksList, getBookExtras, getWork, similarBooksList } from "../../api/openLibrary";
 import BookActions from "../../components/BookActions";
 import BookCover from "../../components/BookCover";
@@ -67,18 +67,23 @@ function AuthorCard({ author }) {
   return (
     <div className={styles.author}>
       <div className={styles.authorHead}>
-        {author.photo ? (
-          <img src={author.photo} alt={`Foto de ${author.name}`} className={styles.authorPhoto} loading="lazy" />
-        ) : (
-          <span className={styles.authorInitial} aria-hidden="true">{author.name[0]}</span>
-        )}
+        <Link to={`/autores/${author.id}`} aria-hidden="true" tabIndex={-1}>
+          {author.photo ? (
+            <img src={author.photo} alt="" className={styles.authorPhoto} loading="lazy" />
+          ) : (
+            <span className={styles.authorInitial}>{author.name[0]}</span>
+          )}
+        </Link>
         <div className={styles.authorName}>
-          <h3><Link to={searchLink(author.name)}>{author.name}</Link></h3>
+          <h3><Link to={`/autores/${author.id}`}>{author.name}</Link></h3>
           {lifespan && <p className={styles.muted}>{lifespan}</p>}
         </div>
       </div>
       <div className={styles.authorText}>
         <ExpandableText text={author.bio} emptyText="Biografia não disponível." collapsedHeight="7.5rem" />
+        <Link className={styles.authorMore} to={`/autores/${author.id}`}>
+          Ver página do autor <FiArrowRight aria-hidden="true" />
+        </Link>
       </div>
     </div>
   );
@@ -221,7 +226,7 @@ function BookPage({ id }) {
                   authors.map((item, index) => (
                     <span key={item.id}>
                       {index > 0 && ", "}
-                      <Link to={searchLink(item.name)}>{item.name}</Link>
+                      <Link to={`/autores/${item.id}`}>{item.name}</Link>
                     </span>
                   ))
                 ) : author ? (
