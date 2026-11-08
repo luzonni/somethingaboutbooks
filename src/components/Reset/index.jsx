@@ -11,6 +11,34 @@ const Reset = createGlobalStyle`
 	color: ${Black};
 }
 
+:root[data-theme="dark"] {
+	--color-surface: #171312;
+	--color-surface-soft: #1e1917;
+	--color-surface-muted: #2a2321;
+	--color-surface-hover: #362d2a;
+	--color-border: #3d3431;
+	--color-border-soft: #2f2826;
+	--color-text: #ece7e2;
+	--color-text-muted: #a9a19b;
+	--color-gray: #4a4240;
+	--color-brand: #c2454b;
+	--color-brand-hover: #d4565c;
+	--color-on-brand: #f5f5f5;
+	--color-danger: #f2786f;
+	--color-success: #5cc48a;
+	--shadow-soft: rgba(0, 0, 0, 0.35);
+	color-scheme: dark;
+}
+
+/* O logo é preto: no tema escuro ele é invertido para continuar visível. */
+:root[data-theme="dark"] .logo-adaptive {
+	filter: invert(1);
+}
+
+body {
+	transition: background-color 250ms ease, color 250ms ease;
+}
+
 *, *::before, *::after {
 	box-sizing: border-box;
 }

@@ -12,6 +12,21 @@
     <link rel="preconnect" href="https://openlibrary.org" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
     <title>SAB</title>
+    <script>
+      // Aplica o tema antes do primeiro desenho para a página não piscar em branco.
+      (function () {
+        var theme
+        try {
+          theme = JSON.parse(localStorage.getItem("sab:theme"))
+        } catch (error) {
+          theme = null
+        }
+        if (theme !== "light" && theme !== "dark") {
+          theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        }
+        document.documentElement.dataset.theme = theme
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
