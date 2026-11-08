@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     FormError,
@@ -9,6 +9,9 @@ import {
     InputTextArea,
 } from "../../components/Inputs";
 import { useAuth } from "../../context/AuthContext";
+import { useLibrary } from "../../context/LibraryContext";
+import { useToast } from "../../context/ToastContext";
+import { backupFileName, backupSummary, createBackup, parseBackup } from "../../services/backup";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { clearLibrary } from "../../services/library";
 import { GENDER_OPTIONS } from "../../utils/profile";
@@ -202,6 +205,77 @@ function DeleteAccount() {
     );
 }
 
+const describe = ({ books, lists, sessions }) =>
+    `${books} ${books === 1 ? "livro" : "livros"}, ${lists} ${lists === 1 ? "lista" : "listas"} e ${sessions} ${sessions === 1 ? "sessão" : "sessões"}`;
+
+function DataBackup() {
+    const { user } = useAuth();
+    const { library, replaceLibrary } = useLibrary();
+    const { notify } = useToast();
+    const fileRef = useRef(null);
+    const [pending, setPending] = useState(null);
+    const [error, setError] = useState("");
+
+    const exportData = () => {
+        const blob = new Blob([JSON.stringify(createBackup(library), null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = backupFileName(user.username);
+        link.click();
+        URL.revokeObjectURL(url);
+        notify("Backup baixado");
+    };
+
+    const readFile = async (event) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file) return;
+        setError("");
+        try {
+            setPending(parseBackup(await file.text()));
+        } catch (failure) {
+            setPending(null);
+            setError(failure.message);
+        }
+    };
+
+    const confirmImport = () => {
+        replaceLibrary(pending);
+        setPending(null);
+        notify("Biblioteca restaurada a partir do backup");
+    };
+
+    return (
+        <section className={styles.card}>
+            <h2 className={styles.sectionTitle}>Seus dados</h2>
+            <p className={styles.hint}>
+                Sua biblioteca fica só neste navegador. Baixe um backup para guardar ou levar para outro aparelho.
+            </p>
+            <p>Hoje: {describe(backupSummary(library))}.</p>
+            {pending ? (
+                <div className={styles.confirmBox} role="alert">
+                    <p>
+                        Substituir a biblioteca atual pelo backup com {describe(backupSummary(pending))}? O que não estiver no
+                        backup será perdido.
+                    </p>
+                    <div className={styles.buttonGroup}>
+                        <button type="button" className={styles.btnUndo} onClick={() => setPending(null)}>Cancelar</button>
+                        <button type="button" className={styles.btnEdit} onClick={confirmImport}>Substituir</button>
+                    </div>
+                </div>
+            ) : (
+                <div className={styles.buttonGroup}>
+                    <button type="button" className={styles.btnUndo} onClick={() => fileRef.current?.click()}>Importar backup</button>
+                    <button type="button" className={styles.btnEdit} onClick={exportData}>Exportar backup</button>
+                </div>
+            )}
+            {error && <p className={styles.error} role="alert">{error}</p>}
+            <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={readFile} />
+        </section>
+    );
+}
+
 function UserConfig() {
     useDocumentTitle("Configurações");
 
@@ -210,6 +284,7 @@ function UserConfig() {
             <h1 className={styles.title}>Informações da conta</h1>
             <ProfileForm />
             <PasswordForm />
+            <DataBackup />
             <DeleteAccount />
         </section>
     );
