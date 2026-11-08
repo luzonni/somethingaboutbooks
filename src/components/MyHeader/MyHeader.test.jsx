@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router-dom"
@@ -25,6 +25,12 @@ const renderHeader = () =>
     )
 
 describe("MyHeader", () => {
+    afterEach(() => {
+        document.head.querySelectorAll("style").forEach((style) => {
+            if (style.textContent.includes(".mobile-menu")) style.remove()
+        })
+    })
+
     it("oferece entrar e criar conta para visitantes", () => {
         renderHeader()
         expect(screen.getAllByRole("link", { name: "Entrar", hidden: true }).length).toBeGreaterThan(0)
@@ -32,6 +38,11 @@ describe("MyHeader", () => {
     })
 
     it("abre o menu mobile e fecha com Esc devolvendo o foco", async () => {
+        // O jsdom avalia media queries numa largura fixa de 1024px e não foca elementos ocultos:
+        // forçamos a aparência de celular, onde o botão e o menu lateral existem.
+        const mobile = document.createElement("style")
+        mobile.textContent = ".bar__menu, .mobile-menu { display: block !important; }"
+        document.head.append(mobile)
         renderHeader()
         // O jsdom ignora media queries, então o botão mobile conta como oculto para getByRole.
         const toggle = screen.getByLabelText("Abrir menu")

@@ -166,7 +166,7 @@ const MobileMenu = ({ open, onClose, returnFocusRef }) => {
     }
 
     return (
-        <MobileMenuStyle className={open ? "is-open" : ""}>
+        <MobileMenuStyle className={open ? "mobile-menu is-open" : "mobile-menu"}>
             <div className="drawer__backdrop" onClick={onClose} aria-hidden="true" />
             <aside id="mobile-menu" className="drawer" aria-label="Menu" aria-hidden={!open}>
                 <div className="drawer__head">

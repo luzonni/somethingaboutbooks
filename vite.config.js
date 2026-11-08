@@ -7,8 +7,12 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom', 'styled-components'],
+        // Dependências mudam pouco: ficam num arquivo separado que o navegador reaproveita entre deploys.
+        manualChunks(id) {
+          const path = id.replaceAll('\\', '/')
+          if (/node_modules\/(react|react-dom|react-router|react-router-dom|scheduler|styled-components)\//.test(path)) {
+            return 'vendor'
+          }
         },
       },
     },
