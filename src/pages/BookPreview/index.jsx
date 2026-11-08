@@ -30,7 +30,7 @@ const MAX_TAG_LENGTH = 24;
 const searchLink = (term) => `/books?q=${encodeURIComponent(term)}`;
 const largerCover = (cover = "") => cover.replace("-M.jpg", "-L.jpg");
 
-function Book3D({ cover, lowRes, title }) {
+function Book3D({ cover, lowRes, title, author }) {
   const bookRef = useRef(null);
 
   const handlePointerMove = (event) => {
@@ -54,7 +54,7 @@ function Book3D({ cover, lowRes, title }) {
           <div className={styles.bookBack} />
           <div className={styles.bookPages} />
           <div className={styles.bookFront}>
-            <BookCover src={cover} lowResSrc={lowRes} title={title} />
+            <BookCover src={cover} lowResSrc={lowRes} title={title} author={author} />
           </div>
         </div>
       </div>
@@ -218,7 +218,7 @@ function BookPage({ id }) {
             <ShareButton title={title} text={author ? `${title}, de ${author}` : title} />
           </div>
           <div className={styles.heroGrid}>
-            <Book3D cover={cover} lowRes={preview?.cover} title={title} />
+            <Book3D cover={cover} lowRes={preview?.cover} title={title} author={author} />
             <div className={styles.heroInfo}>
               <h1 className={styles.rise}>{title}</h1>
               <p className={`${styles.byline} ${styles.rise}`}>

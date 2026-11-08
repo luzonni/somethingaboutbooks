@@ -95,7 +95,7 @@ const BookPanel = () => {
           {selected && (
             <div className={styles.bookInfo}>
               <Link to={`/books/${selected.id}`} className={styles.bookCover} aria-label={selected.title}>
-                <BookCover src={selected.cover} title={selected.title} />
+                <BookCover src={selected.cover} title={selected.title} author={selected.author} />
               </Link>
               <div>
                 <strong>{selected.title}</strong>

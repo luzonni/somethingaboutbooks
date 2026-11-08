@@ -99,7 +99,7 @@ export const CardBook = ({ book }) => {
     return (
         <CardBookStyle>
             <Link to={`/books/${book.id}`} state={{ book }}>
-                <BookCover className="card__cover" src={book.cover} title={book.title} />
+                <BookCover className="card__cover" src={book.cover} title={book.title} author={book.author} />
                 {progress !== null && <ProgressBar value={progress} label={`Progresso em ${book.title}`} />}
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
@@ -112,7 +112,7 @@ export const CardBook = ({ book }) => {
 export const RowCardBook = ({ book }) => (
     <RowCardBookStyle>
         <Link to={`/books/${book.id}`} state={{ book }}>
-            <BookCover className="row__cover" src={book.cover} title={book.title} />
+            <BookCover className="row__cover" src={book.cover} title={book.title} author={book.author} />
             <div className="row__content">
                 <h3>{book.title}</h3>
                 <p>{book.year ? `${book.author} - ${book.year}` : book.author}</p>
