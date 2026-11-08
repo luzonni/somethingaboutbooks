@@ -83,9 +83,9 @@ const ListCardStyle = styled.section`
     .list--carousel {
         display: grid;
         grid-auto-flow: column;
-        grid-auto-columns: 9.5rem;
+        grid-auto-columns: 10.5rem;
         gap: 1rem;
-        padding: 0.5rem 0.25rem 1rem;
+        padding: 0.5rem 0.25rem 1.25rem;
         overflow-x: auto;
         scroll-snap-type: x proximity;
         scroll-behavior: smooth;

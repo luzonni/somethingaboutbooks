@@ -10,18 +10,32 @@ import { SHELVES, readingProgress } from "../../services/library"
 const CardBookStyle = styled.article`
     position: relative;
     width: 100%;
+    height: 100%;
+    /* Capa, título e autor no mesmo cartão: deixa claro o que pertence a cada livro. */
     a {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.375rem;
+        height: 100%;
+        padding: 0.5rem 0.5rem 0.75rem;
+        border: 1px solid var(--color-border-soft);
+        border-radius: 12px;
+        background-color: var(--color-surface-soft);
         color: ${Black};
         text-decoration: none;
+        transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease, background-color 250ms ease;
+    }
+    a:hover {
+        border-color: var(--color-border);
+        background-color: var(--color-surface);
+        box-shadow: 0 10px 24px rgba(41, 20, 16, 0.12);
+        transform: translateY(-3px);
     }
     .card__cover {
-        transition: transform 300ms ease;
+        margin-bottom: 0.25rem;
     }
-    a:hover .card__cover {
-        transform: translateY(-4px);
+    h3, p {
+        padding: 0 0.125rem;
     }
     h3 {
         font-size: 1rem;
@@ -41,8 +55,8 @@ const CardBookStyle = styled.article`
     }
     .card__badge {
         position: absolute;
-        top: 0.5rem;
-        left: 0.5rem;
+        top: 0.875rem;
+        left: 0.875rem;
         padding: 0.125rem 0.5rem;
         border-radius: 4px;
         background-color: ${Coral};
