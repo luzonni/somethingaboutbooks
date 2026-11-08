@@ -18,5 +18,11 @@ export default defineConfig({
     restoreMocks: true,
     unstubGlobals: true,
     setupFiles: './src/test/setup.js',
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/**/*.test.{js,jsx}', 'src/test/**', 'src/main.jsx'],
+      reporter: ['text-summary', 'html'],
+    },
   },
 })
