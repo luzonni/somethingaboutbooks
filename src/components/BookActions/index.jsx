@@ -4,6 +4,7 @@ import { FiBookmark, FiBookOpen, FiCheck, FiClock } from "react-icons/fi"
 import { FaHeart, FaRegHeart } from "react-icons/fa"
 import { Coral, Ink, Sand, White } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
+import { useToast } from "../../context/ToastContext"
 import { SHELVES } from "../../services/library"
 
 const pop = keyframes`
@@ -109,6 +110,7 @@ const BookActions = ({ book }) => {
     const { canSave, getEntry, setShelf, toggleFavorite, lists, toggleInList } = useLibrary()
     const location = useLocation()
     const navigate = useNavigate()
+    const { notify } = useToast()
 
     if (!canSave) {
         return (
@@ -141,7 +143,10 @@ const BookActions = ({ book }) => {
                             type="button"
                             className="actions__shelf"
                             aria-pressed={entry?.shelf === shelf}
-                            onClick={() => setShelf(book, shelf)}
+                            onClick={() => {
+                                setShelf(book, shelf)
+                                notify(entry?.shelf === shelf ? `Removido de ${label}` : `Movido para ${label}`)
+                            }}
                         >
                             <Icon aria-hidden="true" /> {label}
                         </button>
@@ -151,7 +156,10 @@ const BookActions = ({ book }) => {
                     type="button"
                     className="actions__favorite"
                     aria-pressed={Boolean(entry?.favorite)}
-                    onClick={() => toggleFavorite(book)}
+                    onClick={() => {
+                        toggleFavorite(book)
+                        notify(entry?.favorite ? "Removido dos favoritos" : "Adicionado aos favoritos")
+                    }}
                 >
                     {entry?.favorite ? <FaHeart aria-hidden="true" /> : <FaRegHeart aria-hidden="true" />}
                     Favorito
@@ -169,7 +177,11 @@ const BookActions = ({ book }) => {
                             <input
                                 type="checkbox"
                                 checked={list.bookIds.includes(book.id)}
-                                onChange={() => toggleInList(list.id, book)}
+                                onChange={() => {
+                                    const inList = list.bookIds.includes(book.id)
+                                    toggleInList(list.id, book)
+                                    notify(inList ? `Removido de "${list.name}"` : `Adicionado a "${list.name}"`)
+                                }}
                             />
                             {list.name}
                         </label>
