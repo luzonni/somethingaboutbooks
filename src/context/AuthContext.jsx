@@ -5,6 +5,15 @@ const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => authService.getSessionUser())
+    // Saída voluntária (sair ou excluir a conta): páginas protegidas levam ao início, não ao login.
+    const [signedOut, setSignedOut] = useState(false)
+
+    const signOut = useCallback(() => {
+        setSignedOut(true)
+        setUser(null)
+    }, [])
+
+    const acknowledgeSignOut = useCallback(() => setSignedOut(false), [])
 
     const login = useCallback(async (credentials) => {
         const loggedUser = await authService.login(credentials)
@@ -20,8 +29,8 @@ export const AuthProvider = ({ children }) => {
 
     const logout = useCallback(async () => {
         await authService.logout()
-        setUser(null)
-    }, [])
+        signOut()
+    }, [signOut])
 
     const updateProfile = useCallback(
         async (changes) => {
@@ -40,14 +49,14 @@ export const AuthProvider = ({ children }) => {
     const deleteAccount = useCallback(
         async (password) => {
             await authService.deleteAccount(user.id, password)
-            setUser(null)
+            signOut()
         },
-        [user?.id]
+        [user?.id, signOut]
     )
 
     const value = useMemo(
-        () => ({ user, login, register, logout, updateProfile, changePassword, deleteAccount }),
-        [user, login, register, logout, updateProfile, changePassword, deleteAccount]
+        () => ({ user, signedOut, acknowledgeSignOut, login, register, logout, updateProfile, changePassword, deleteAccount }),
+        [user, signedOut, acknowledgeSignOut, login, register, logout, updateProfile, changePassword, deleteAccount]
     )
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

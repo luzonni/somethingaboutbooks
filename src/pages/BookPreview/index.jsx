@@ -1,13 +1,15 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiCalendar, FiExternalLink } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiCalendar, FiExternalLink } from "react-icons/fi";
 import { authorBooksList, getBookExtras, getWork, similarBooksList } from "../../api/openLibrary";
 import BookActions from "../../components/BookActions";
 import BookCover from "../../components/BookCover";
 import BookReviews from "../../components/BookReviews";
 import BookSection from "../../components/BookSection";
+import ExpandableText from "../../components/ExpandableText";
 import { ErrorState, Skeleton, Spinner } from "../../components/Feedback";
 import Reveal from "../../components/Reveal";
+import ShareButton from "../../components/ShareButton";
 import Stars from "../../components/Stars";
 import { useLibrary } from "../../context/LibraryContext";
 import { useAsync } from "../../hooks/useAsync";
@@ -28,7 +30,7 @@ const MAX_TAG_LENGTH = 24;
 const searchLink = (term) => `/books?q=${encodeURIComponent(term)}`;
 const largerCover = (cover = "") => cover.replace("-M.jpg", "-L.jpg");
 
-function Book3D({ cover, lowRes, title }) {
+function Book3D({ cover, lowRes, title, author }) {
   const bookRef = useRef(null);
 
   const handlePointerMove = (event) => {
@@ -52,53 +54,10 @@ function Book3D({ cover, lowRes, title }) {
           <div className={styles.bookBack} />
           <div className={styles.bookPages} />
           <div className={styles.bookFront}>
-            <BookCover src={cover} lowResSrc={lowRes} title={title} />
+            <BookCover src={cover} lowResSrc={lowRes} title={title} author={author} />
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function ExpandableText({ text, emptyText, collapsedHeight = "10.5rem" }) {
-  const contentRef = useRef(null);
-  const [expanded, setExpanded] = useState(false);
-  const [size, setSize] = useState({ full: 0, overflows: false });
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      const element = contentRef.current;
-      if (!element) return;
-      const probe = element.style.maxHeight;
-      element.style.maxHeight = collapsedHeight;
-      const overflows = element.scrollHeight > element.clientHeight + 2;
-      const full = element.scrollHeight;
-      element.style.maxHeight = probe;
-      setSize({ full, overflows });
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [text, collapsedHeight]);
-
-  if (!text) return <p className={styles.muted}>{emptyText}</p>;
-
-  const isClamped = size.overflows && !expanded;
-
-  return (
-    <div>
-      <div
-        ref={contentRef}
-        className={`${styles.expandable} ${isClamped ? styles.expandableClamped : ""}`}
-        style={{ maxHeight: expanded ? size.full : collapsedHeight }}
-      >
-        {text}
-      </div>
-      {size.overflows && (
-        <button type="button" className={styles.textButton} aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
-          {expanded ? "Ler menos" : "Ler mais"}
-        </button>
-      )}
     </div>
   );
 }
@@ -108,18 +67,23 @@ function AuthorCard({ author }) {
   return (
     <div className={styles.author}>
       <div className={styles.authorHead}>
-        {author.photo ? (
-          <img src={author.photo} alt={`Foto de ${author.name}`} className={styles.authorPhoto} loading="lazy" />
-        ) : (
-          <span className={styles.authorInitial} aria-hidden="true">{author.name[0]}</span>
-        )}
+        <Link to={`/autores/${author.id}`} aria-hidden="true" tabIndex={-1}>
+          {author.photo ? (
+            <img src={author.photo} alt="" className={styles.authorPhoto} loading="lazy" />
+          ) : (
+            <span className={styles.authorInitial}>{author.name[0]}</span>
+          )}
+        </Link>
         <div className={styles.authorName}>
-          <h3><Link to={searchLink(author.name)}>{author.name}</Link></h3>
+          <h3><Link to={`/autores/${author.id}`}>{author.name}</Link></h3>
           {lifespan && <p className={styles.muted}>{lifespan}</p>}
         </div>
       </div>
       <div className={styles.authorText}>
         <ExpandableText text={author.bio} emptyText="Biografia não disponível." collapsedHeight="7.5rem" />
+        <Link className={styles.authorMore} to={`/autores/${author.id}`}>
+          Ver página do autor <FiArrowRight aria-hidden="true" />
+        </Link>
       </div>
     </div>
   );
@@ -236,20 +200,25 @@ function BookPage({ id }) {
   }
   if (!title) return <Spinner label="Carregando livro" />;
 
-  const savedBook = { id, title, author, cover: thumb ?? "" };
+  const savedBook = { id, title, author, cover: thumb ?? "", pages: extras?.pages || preview?.pages || undefined };
 
   return (
     <article className={styles.page}>
       <header className={styles.hero}>
         {thumb && <div className={styles.heroBackdrop} style={{ backgroundImage: `url("${thumb}")` }} aria-hidden="true" />}
         <div className={styles.heroInner}>
-          {canGoBack && (
-            <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
-              <FiArrowLeft aria-hidden="true" /> Voltar
-            </button>
-          )}
+          <div className={styles.heroTop}>
+            {canGoBack ? (
+              <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
+                <FiArrowLeft aria-hidden="true" /> Voltar
+              </button>
+            ) : (
+              <span />
+            )}
+            <ShareButton title={title} text={author ? `${title}, de ${author}` : title} />
+          </div>
           <div className={styles.heroGrid}>
-            <Book3D cover={cover} lowRes={preview?.cover} title={title} />
+            <Book3D cover={cover} lowRes={preview?.cover} title={title} author={author} />
             <div className={styles.heroInfo}>
               <h1 className={styles.rise}>{title}</h1>
               <p className={`${styles.byline} ${styles.rise}`}>
@@ -257,7 +226,7 @@ function BookPage({ id }) {
                   authors.map((item, index) => (
                     <span key={item.id}>
                       {index > 0 && ", "}
-                      <Link to={searchLink(item.name)}>{item.name}</Link>
+                      <Link to={`/autores/${item.id}`}>{item.name}</Link>
                     </span>
                   ))
                 ) : author ? (

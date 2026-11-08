@@ -1,26 +1,41 @@
 import styled from "styled-components"
 import { Link } from "react-router-dom"
 import BookCover from "../BookCover"
+import ProgressBar from "../ProgressBar"
 import Stars from "../Stars"
-import { Black, Coral, Cream, DarkGray, White } from "../../assets/Colors"
+import { Black, Coral, Cream, DarkGray, Ink, Surface } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
-import { SHELVES } from "../../services/library"
+import { SHELVES, readingProgress } from "../../services/library"
 
 const CardBookStyle = styled.article`
     position: relative;
     width: 100%;
+    height: 100%;
+    /* Capa, título e autor no mesmo cartão: deixa claro o que pertence a cada livro. */
     a {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.375rem;
+        height: 100%;
+        padding: 0.5rem 0.5rem 0.75rem;
+        border: 1px solid var(--color-border-soft);
+        border-radius: 12px;
+        background-color: var(--color-surface-soft);
         color: ${Black};
         text-decoration: none;
+        transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease, background-color 250ms ease;
+    }
+    a:hover {
+        border-color: var(--color-border);
+        background-color: var(--color-surface);
+        box-shadow: 0 10px 24px rgba(41, 20, 16, 0.12);
+        transform: translateY(-3px);
     }
     .card__cover {
-        transition: transform 300ms ease;
+        margin-bottom: 0.25rem;
     }
-    a:hover .card__cover {
-        transform: translateY(-4px);
+    h3, p {
+        padding: 0 0.125rem;
     }
     h3 {
         font-size: 1rem;
@@ -40,12 +55,12 @@ const CardBookStyle = styled.article`
     }
     .card__badge {
         position: absolute;
-        top: 0.5rem;
-        left: 0.5rem;
+        top: 0.875rem;
+        left: 0.875rem;
         padding: 0.125rem 0.5rem;
         border-radius: 4px;
         background-color: ${Coral};
-        color: ${Black};
+        color: ${Ink};
         font-size: 0.75rem;
         font-weight: 500;
     }
@@ -64,7 +79,7 @@ const RowCardBookStyle = styled.article`
         transition: background-color 200ms ease;
     }
     a:hover {
-        background-color: ${White};
+        background-color: ${Surface};
     }
     .row__cover {
         flex: 0 0 6rem;
@@ -92,11 +107,14 @@ const RowCardBookStyle = styled.article`
 
 export const CardBook = ({ book }) => {
     const { getEntry } = useLibrary()
-    const shelf = getEntry(book.id)?.shelf
+    const entry = getEntry(book.id)
+    const shelf = entry?.shelf
+    const progress = shelf === "reading" ? readingProgress(entry) : null
     return (
         <CardBookStyle>
             <Link to={`/books/${book.id}`} state={{ book }}>
-                <BookCover className="card__cover" src={book.cover} title={book.title} />
+                <BookCover className="card__cover" src={book.cover} title={book.title} author={book.author} />
+                {progress !== null && <ProgressBar value={progress} label={`Progresso em ${book.title}`} />}
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
             </Link>
@@ -108,7 +126,7 @@ export const CardBook = ({ book }) => {
 export const RowCardBook = ({ book }) => (
     <RowCardBookStyle>
         <Link to={`/books/${book.id}`} state={{ book }}>
-            <BookCover className="row__cover" src={book.cover} title={book.title} />
+            <BookCover className="row__cover" src={book.cover} title={book.title} author={book.author} />
             <div className="row__content">
                 <h3>{book.title}</h3>
                 <p>{book.year ? `${book.author} - ${book.year}` : book.author}</p>

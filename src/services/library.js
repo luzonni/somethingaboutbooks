@@ -6,7 +6,9 @@ export const SHELVES = {
     read: "Lido",
 }
 
-export const EMPTY_LIBRARY = { books: {}, lists: [], sessions: [] }
+export const EMPTY_LIBRARY = { books: {}, lists: [], sessions: [], goals: {} }
+
+export const MAX_GOAL = 365
 
 const storageKey = (userId) => `sab:library:${userId}`
 
@@ -14,7 +16,15 @@ export const loadLibrary = (userId) => ({ ...EMPTY_LIBRARY, ...readJson(storageK
 export const saveLibrary = (userId, library) => writeJson(storageKey(userId), library)
 export const clearLibrary = (userId) => removeKey(storageKey(userId))
 
-const snapshot = ({ id, title, author, cover }) => ({ id, title, author, cover })
+// Guarda só o essencial do livro; campos ausentes não apagam o que já estava salvo.
+const snapshot = ({ id, title, author, cover, pages }) =>
+    Object.fromEntries(Object.entries({ id, title, author, cover, pages }).filter(([, value]) => value !== undefined))
+
+const toPage = (value) => {
+    if (value === "" || value === null || value === undefined) return null
+    const page = Math.floor(Number(value))
+    return Number.isFinite(page) && page >= 0 ? Math.min(page, 100000) : null
+}
 
 const isEmptyEntry = (entry, lists) =>
     !entry.shelf &&
@@ -67,7 +77,9 @@ export const libraryReducer = (state, action) => {
         case "SET_PROGRESS": {
             const entry = state.books[bookId]
             if (!entry) return state
-            return withEntry(state, entry, { currentPage: action.currentPage }, now)
+            const changes = { currentPage: toPage(action.currentPage) }
+            if ("totalPages" in action) changes.totalPages = toPage(action.totalPages) || null
+            return withEntry(state, entry, changes, now)
         }
         case "REMOVE_BOOK": {
             const books = { ...state.books }
@@ -86,6 +98,14 @@ export const libraryReducer = (state, action) => {
                 ...state,
                 lists: [...state.lists, { id: action.id, name: action.name.trim(), bookIds: [], createdAt: now }],
             }
+        case "RENAME_LIST": {
+            const name = action.name.trim()
+            if (!name) return state
+            return {
+                ...state,
+                lists: state.lists.map((list) => (list.id === action.listId ? { ...list, name } : list)),
+            }
+        }
         case "DELETE_LIST": {
             const removed = state.lists.find((list) => list.id === action.listId)
             const next = { ...state, lists: state.lists.filter((list) => list.id !== action.listId) }
@@ -99,6 +119,15 @@ export const libraryReducer = (state, action) => {
             })
             return prune(withEntry({ ...state, lists }, book, {}, now), book.id)
         }
+        case "SET_GOAL": {
+            const goals = { ...state.goals }
+            const books = Math.floor(Number(action.books))
+            if (Number.isFinite(books) && books > 0) goals[action.year] = Math.min(books, MAX_GOAL)
+            else delete goals[action.year]
+            return { ...state, goals }
+        }
+        case "REPLACE":
+            return { ...EMPTY_LIBRARY, ...action.library }
         case "LOG_SESSION":
             return { ...state, sessions: [...state.sessions, action.session] }
         default:
@@ -121,7 +150,15 @@ export const libraryStats = (library, year = new Date().getFullYear()) => {
         readThisYear: read.filter((entry) => new Date(entry.finishedAt).getFullYear() === year).length,
         lists: library.lists.length,
         minutes: sumMinutes(library.sessions),
+        goal: library.goals?.[year] ?? null,
     }
+}
+
+// Fração lida (0 a 1), usando o total informado pela pessoa ou o da Open Library.
+export const readingProgress = (entry) => {
+    const total = entry?.totalPages || entry?.pages
+    if (!total || entry.currentPage === null || entry.currentPage === undefined) return null
+    return Math.min(entry.currentPage / total, 1)
 }
 
 export const byRecent = (field) => (a, b) => new Date(b[field] ?? 0) - new Date(a[field] ?? 0)

@@ -1,4 +1,8 @@
 # 📚 SAB PROJECT (SomethingAboutBooks)
+
+[![CI](https://github.com/luzonni/somethingaboutbooks/actions/workflows/ci.yml/badge.svg)](https://github.com/luzonni/somethingaboutbooks/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/luzonni/somethingaboutbooks/actions/workflows/codeql.yml/badge.svg)](https://github.com/luzonni/somethingaboutbooks/actions/workflows/codeql.yml)
+[![Deploy](https://github.com/luzonni/somethingaboutbooks/actions/workflows/deploy.yml/badge.svg)](https://github.com/luzonni/somethingaboutbooks/actions/workflows/deploy.yml)
 <img width="300" alt="Screen Shot 2024-11-10 at 18 27 25" src="https://github.com/user-attachments/assets/9add98d2-1b72-49ff-838d-cd5a30e8b6f2">
 
 ## Projeto de Engenharia de Software desenvolvido pela turma de Ciencia da Computacao da Unima Afya - AL.
@@ -7,7 +11,7 @@
 
 ## 🚀 Como rodar
 
-Requer Node.js 20 ou superior.
+Requer Node.js 22.12 ou superior (veja `.nvmrc`).
 
 ```bash
 npm install
@@ -19,12 +23,41 @@ npm run dev
 | `npm run dev` | Inicia o ambiente de desenvolvimento |
 | `npm run build` | Gera a versão de produção em `dist/` |
 | `npm run preview` | Serve a versão de produção localmente |
-| `npm test` | Roda os testes |
+| `npm test` | Roda os testes unitários |
+| `npm run test:coverage` | Testes unitários com relatório de cobertura em `coverage/` |
+| `npm run test:e2e` | Testes ponta a ponta e de acessibilidade com Playwright |
 | `npm run lint` | Verifica o código com ESLint |
+| `npm run check` | Lint e testes unitários, o que o CI exige |
 
 Não é preciso configurar chaves: a API usada é aberta.
 
 Como o site usa rotas no navegador, a hospedagem precisa redirecionar todas as URLs para o `index.html`.
+O repositório já traz essa configuração para Vercel (`vercel.json`), Netlify (`public/_redirects`) e GitHub Pages
+(`404.html` gerado no deploy).
+
+---
+
+## 🔁 CI/CD
+
+Tudo roda com recursos gratuitos do GitHub:
+
+| Workflow | Quando | O que faz |
+| --- | --- | --- |
+| **CI** | Toda PR e push na `main` | Lint, testes com resumo de cobertura, build, testes E2E com acessibilidade e auditoria de dependências |
+| **Deploy** | Depois que o CI passa na `main` | Publica no GitHub Pages em `/<repositório>/` |
+| **CodeQL** | PRs, `main` e toda segunda | Análise de segurança do código |
+| **Dependabot** | Toda segunda | PRs agrupadas de atualização de pacotes e actions |
+
+Para ativar o deploy, alguém com acesso de admin precisa abrir **Settings > Pages** uma vez e escolher
+**Source: GitHub Actions**. Antes disso, o workflow de deploy só registra um aviso.
+
+---
+
+## 📋 Documentação
+
+- [Relatório de QA](docs/QA.md): o que foi testado, bugs corrigidos e pendências
+- [Roadmap](docs/ROADMAP.md): aprimoramentos futuros
+- [Como contribuir](CONTRIBUTING.md) e [Segurança](SECURITY.md)
 
 ---
 
@@ -37,6 +70,12 @@ Como o site usa rotas no navegador, a hospedagem precisa redirecionar todas as U
 - **Reviews** com nota e comentário
 - **Pomodoro** ligado ao livro em leitura, com ciclos, som e tempo acumulado
 - **Perfil e conta**: estatísticas, edição de dados, troca de senha e exclusão da conta
+- **Página do autor** com biografia, links e obras sem repetições
+- **Meta anual** de leitura, gráfico dos últimos 7 dias e sequência de dias lendo
+- **Progresso por páginas** nos livros em leitura
+- **Backup**: exportar e importar a biblioteca em JSON
+- **Tema claro e escuro**, avisos na tela, atalhos de teclado e modo offline
+- **App instalável** (PWA)
 - **Layout responsivo**, com navbar para desktop e menu lateral para mobile
 
 ---
@@ -47,12 +86,13 @@ Como o site usa rotas no navegador, a hospedagem precisa redirecionar todas as U
 | --- | --- |
 | `src/api` | Cliente da [Open Library](https://openlibrary.org/developers/api), com cache e tratamento de erros |
 | `src/services` | Contas, biblioteca e acesso ao `localStorage` |
-| `src/context` | Estado global: autenticação, biblioteca e Pomodoro |
+| `src/context` | Estado global: autenticação, biblioteca, Pomodoro, tema e avisos |
 | `src/hooks` | Hooks reutilizáveis |
 | `src/utils` | Regras puras: validação, timer e formatação de texto |
 | `src/components` | Componentes compartilhados |
 | `src/pages` | Páginas da aplicação |
-| `public/sw.js` | Service worker que guarda as capas no navegador |
+| `public/sw.js` | Service worker: guarda capas e arquivos do site para abrir offline |
+| `e2e` | Testes ponta a ponta com a Open Library simulada |
 
 ### Armazenamento local
 
@@ -100,7 +140,7 @@ Ainda não há back-end: contas, estantes, reviews e sessões ficam no `localSto
   - **Front-End**: **React** com **Vite**, **React Router** e **styled-components**.
   - **Dados de livros**: **Open Library API**.
   - **Back-End**: planejado com **Firebase**; hoje os dados ficam no navegador.
-  - **Testes**: **Vitest** e **Testing Library**.
+  - **Testes**: **Vitest**, **Testing Library**, **Playwright** e **axe-core**.
 
 - **Divisão de Tarefas**:
   - **Front-End**:

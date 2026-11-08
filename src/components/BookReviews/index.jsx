@@ -2,8 +2,9 @@ import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { IoIosStar } from "react-icons/io"
-import { Border, Coral, Cream, Danger, DarkGray, DarkRed, Gray, White } from "../../assets/Colors"
+import { Border, BrandText, Coral, Cream, Danger, DarkGray, DarkRed, Gray, Surface, White } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
+import { useToast } from "../../context/ToastContext"
 import Stars from "../Stars"
 
 const ReviewsStyle = styled.div`
@@ -83,7 +84,7 @@ const ReviewsStyle = styled.div`
     }
     .reviews__secondary {
         border: 1px solid ${Border};
-        background-color: white;
+        background-color: ${Surface};
     }
     .reviews__card {
         display: flex;
@@ -101,7 +102,7 @@ const ReviewsStyle = styled.div`
         font-size: 0.875rem;
     }
     a {
-        color: ${DarkRed};
+        color: ${BrandText};
         font-weight: 500;
     }
 `
@@ -133,6 +134,7 @@ const RatingInput = ({ value, onChange }) => {
 
 const ReviewForm = ({ book, entry, onDone }) => {
     const { saveReview } = useLibrary()
+    const { notify } = useToast()
     const [rating, setRating] = useState(entry?.rating ?? 0)
     const [review, setReview] = useState(entry?.review ?? "")
     const [error, setError] = useState("")
@@ -144,6 +146,7 @@ const ReviewForm = ({ book, entry, onDone }) => {
             return
         }
         saveReview(book, rating, review)
+        notify("Review salva")
         onDone()
     }
 
@@ -172,6 +175,7 @@ const ReviewForm = ({ book, entry, onDone }) => {
 
 const BookReviews = ({ book }) => {
     const { canSave, getEntry, deleteReview } = useLibrary()
+    const { notify } = useToast()
     const location = useLocation()
     const [editing, setEditing] = useState(false)
 
@@ -200,7 +204,10 @@ const BookReviews = ({ book }) => {
                     </span>
                     <div className="reviews__actions">
                         <button type="button" className="reviews__secondary" onClick={() => setEditing(true)}>Editar</button>
-                        <button type="button" className="reviews__secondary" onClick={() => deleteReview(book.id)}>Excluir</button>
+                        <button type="button" className="reviews__secondary" onClick={() => {
+                            deleteReview(book.id)
+                            notify("Review excluída", { tone: "info" })
+                        }}>Excluir</button>
                     </div>
                 </div>
             ) : (

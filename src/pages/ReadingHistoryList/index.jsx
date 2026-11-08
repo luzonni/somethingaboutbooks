@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
+import { FiCheck, FiEdit2, FiX } from "react-icons/fi";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState } from "../../components/Feedback";
+import GoalCard from "../../components/GoalCard";
+import WeekChart from "../../components/WeekChart";
+import ProgressBar from "../../components/ProgressBar";
 import { useLibrary } from "../../context/LibraryContext";
+import { useToast } from "../../context/ToastContext";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
-import { SHELVES, byRecent, libraryStats } from "../../services/library";
+import { SHELVES, byRecent, libraryStats, readingProgress } from "../../services/library";
 import styles from "./ReadingHistoryList.module.css";
 
 const FILTERS = { all: "Todos", ...SHELVES };
@@ -23,14 +28,69 @@ const formatMinutes = (minutes) => {
   return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
 };
 
+function ListName({ list, count, onRename }) {
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(list.name);
+
+  const cancel = () => {
+    setName(list.name);
+    setEditing(false);
+  };
+
+  if (!editing) {
+    return (
+      <div className={styles.listTitle}>
+        <h3>{list.name} <span className={styles.muted}>({count})</span></h3>
+        <button
+          type="button"
+          className={styles.iconButton}
+          aria-label={`Renomear a lista ${list.name}`}
+          onClick={() => setEditing(true)}
+        >
+          <FiEdit2 aria-hidden="true" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      className={styles.listTitle}
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (name.trim() && name.trim() !== list.name) onRename(name);
+        setEditing(false);
+      }}
+    >
+      <input
+        className={styles.renameInput}
+        aria-label="Novo nome da lista"
+        maxLength={40}
+        value={name}
+        autoFocus
+        onChange={(event) => setName(event.target.value)}
+        onKeyDown={(event) => event.key === "Escape" && cancel()}
+      />
+      <button type="submit" className={styles.iconButton} aria-label="Salvar nome">
+        <FiCheck aria-hidden="true" />
+      </button>
+      <button type="button" className={styles.iconButton} aria-label="Cancelar" onClick={cancel}>
+        <FiX aria-hidden="true" />
+      </button>
+    </form>
+  );
+}
+
 function Lists() {
-  const { lists, createList, deleteList, getEntry } = useLibrary();
+  const { lists, createList, deleteList, renameList, getEntry } = useLibrary();
+  const { notify } = useToast();
   const [name, setName] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!name.trim()) return;
     createList(name);
+    notify(`Lista "${name.trim()}" criada`);
     setName("");
   };
 
@@ -57,12 +117,18 @@ function Lists() {
         return (
           <div key={list.id} className={styles.list}>
             <div className={styles.listHead}>
-              <h3>{list.name} <span className={styles.muted}>({books.length})</span></h3>
+              <ListName list={list} count={books.length} onRename={(name) => {
+                renameList(list.id, name);
+                notify(`Lista renomeada para "${name.trim()}"`);
+              }} />
               <button
                 type="button"
                 className={styles.iconButton}
                 aria-label={`Excluir a lista ${list.name}`}
-                onClick={() => deleteList(list.id)}
+                onClick={() => {
+                  deleteList(list.id);
+                  notify(`Lista "${list.name}" excluída`, { tone: "info" });
+                }}
               >
                 <FaTrash aria-hidden="true" />
               </button>
@@ -82,7 +148,8 @@ function Lists() {
 }
 
 const ReadingHistoryList = () => {
-  const { entries, library, removeBook } = useLibrary();
+  const { entries, library, removeBook, sessions } = useLibrary();
+  const { notify } = useToast();
   const [filter, setFilter] = useState("all");
   const stats = libraryStats(library);
 
@@ -102,6 +169,11 @@ const ReadingHistoryList = () => {
         <div><dt>Neste ano</dt><dd>{stats.readThisYear}</dd></div>
         <div><dt>Tempo de leitura</dt><dd>{formatMinutes(stats.minutes)}</dd></div>
       </dl>
+
+      <div className={styles.insights}>
+        <GoalCard />
+        <WeekChart sessions={sessions} />
+      </div>
 
       <div className={styles.filters} role="group" aria-label="Filtrar por estante">
         {Object.entries(FILTERS).map(([key, label]) => (
@@ -134,13 +206,19 @@ const ReadingHistoryList = () => {
                   <strong>{entry.title}</strong>
                   <span className={styles.muted}>{entry.author}</span>
                   <span className={styles.muted}>{SHELVES[entry.shelf]} · {entryDate(entry)}</span>
+                  {entry.shelf === "reading" && readingProgress(entry) !== null && (
+                    <ProgressBar className={styles.itemProgress} value={readingProgress(entry)} label={`Progresso em ${entry.title}`} />
+                  )}
                 </span>
               </Link>
               <button
                 type="button"
                 className={styles.iconButton}
                 aria-label={`Remover ${entry.title}`}
-                onClick={() => removeBook(entry.id)}
+                onClick={() => {
+                  removeBook(entry.id);
+                  notify(`"${entry.title}" removido da biblioteca`, { tone: "info" });
+                }}
               >
                 <FaTrash aria-hidden="true" />
               </button>

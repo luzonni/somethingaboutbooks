@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./AllBooksPage.module.css";
-import { GENRES, getTrendingBooks, searchBooks } from "../../api/openLibrary";
+import { GENRES, SORT_OPTIONS, dedupeBooks, getTrendingBooks, searchBooks } from "../../api/openLibrary";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState, ErrorState, Spinner } from "../../components/Feedback";
 import Search from "../../components/Search";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+import { useOnVisible } from "../../hooks/useOnVisible";
 
-const dedupe = (books) => [...new Map(books.map((book) => [book.id, book])).values()];
-
-const genreLink = (query, slug) => {
+const genreLink = (query, slug, sort = "") => {
   const params = new URLSearchParams();
   if (query) params.set("q", query);
   if (slug) params.set("genero", slug);
+  if (sort) params.set("ordem", sort);
   const search = params.toString();
   return search ? `/books?${search}` : "/books";
 };
 
-function Results({ query, genre }) {
+function Results({ query, genre, sort }) {
   const isBrowsing = !query && !genre;
   const [page, setPage] = useState(1);
   const [attempt, setAttempt] = useState(0);
@@ -35,14 +35,14 @@ function Results({ query, genre }) {
           total: books.length,
           hasMore: false,
         }))
-      : searchBooks({ query, genre, page, signal });
+      : searchBooks({ query, genre, sort, page, signal });
 
     load
       .then((data) => {
         if (signal.aborted) return;
         setResults((previous) => ({
           ...data,
-          books: dedupe([...(page === 1 ? [] : previous.books), ...data.books]),
+          books: dedupeBooks([...(page === 1 ? [] : previous.books), ...data.books]),
         }));
         setStatus({ loading: false, error: null });
       })
@@ -51,10 +51,12 @@ function Results({ query, genre }) {
       });
 
     return () => controller.abort();
-  }, [query, genre, page, isBrowsing, attempt]);
+  }, [query, genre, sort, page, isBrowsing, attempt]);
 
   const { books, total, hasMore } = results;
   const { loading, error } = status;
+  const canLoadMore = hasMore && !loading && !error;
+  const sentinelRef = useOnVisible(() => setPage((value) => value + 1), { enabled: canLoadMore });
 
   if (!loading && !error && books.length === 0) {
     return (
@@ -86,8 +88,9 @@ function Results({ query, genre }) {
         <ErrorState message={error.message} onRetry={() => setAttempt((value) => value + 1)} />
       )}
 
-      {hasMore && !loading && !error && (
+      {canLoadMore && (
         <button
+          ref={sentinelRef}
           type="button"
           onClick={() => setPage((value) => value + 1)}
           className={styles.loadMoreButton}
@@ -103,6 +106,8 @@ function AllBooksPage() {
   const [searchParams] = useSearchParams();
   const query = (searchParams.get("q") ?? "").trim();
   const genre = searchParams.get("genero") ?? "";
+  const sort = searchParams.get("ordem") ?? "";
+  const navigate = useNavigate();
   const genreLabel = GENRES.find((item) => item.slug === genre)?.label;
 
   useDocumentTitle(query ? `Busca: ${query}` : genreLabel ?? "Livros");
@@ -111,11 +116,11 @@ function AllBooksPage() {
     <div className={styles.container}>
       <h1 className={styles.title}>{genreLabel ?? "Livros"}</h1>
 
-      <Search key={query} initialValue={query} extraParams={genre ? `genero=${genre}` : ""} />
+      <Search key={query} initialValue={query} extraParams={genreLink("", genre, sort).split("?")[1] ?? ""} />
 
       <nav className={styles.genres} aria-label="Filtrar por gênero">
         <Link
-          to={genreLink(query, "")}
+          to={genreLink(query, "", sort)}
           className={`${styles.genre} ${!genre ? styles.genreActive : ""}`}
           aria-current={!genre ? "true" : undefined}
         >
@@ -124,7 +129,7 @@ function AllBooksPage() {
         {GENRES.map((item) => (
           <Link
             key={item.slug}
-            to={genreLink(query, item.slug)}
+            to={genreLink(query, item.slug, sort)}
             className={`${styles.genre} ${genre === item.slug ? styles.genreActive : ""}`}
             aria-current={genre === item.slug ? "true" : undefined}
           >
@@ -133,7 +138,18 @@ function AllBooksPage() {
         ))}
       </nav>
 
-      <Results key={`${query}|${genre}`} query={query} genre={genre} />
+      {(query || genre) && (
+        <label className={styles.sort}>
+          <span>Ordenar por</span>
+          <select value={sort} onChange={(event) => navigate(genreLink(query, genre, event.target.value), { replace: true })}>
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+      )}
+
+      <Results key={`${query}|${genre}|${sort}`} query={query} genre={genre} sort={sort} />
     </div>
   );
 }

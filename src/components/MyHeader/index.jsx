@@ -2,14 +2,16 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { FiClock, FiMenu } from "react-icons/fi"
-import { Black, Border, Cream, DarkRed, White } from "../../assets/Colors"
+import { Black, Border, BrandText, Cream, DarkRed, Surface, White } from "../../assets/Colors"
 import { useAuth } from "../../context/AuthContext"
 import { usePomodoro } from "../../context/PomodoroContext"
 import { formatTime } from "../../utils/pomodoro"
 import Search from "../Search"
+import ThemeToggle from "../ThemeToggle"
 import LoginTab from "./LoginTab"
 import MobileMenu from "./MobileMenu"
 import { visibleNavItems } from "./navItems"
+import { asset } from "../../utils/asset"
 
 const HeaderStyle = styled.header`
     position: sticky;
@@ -17,7 +19,13 @@ const HeaderStyle = styled.header`
     z-index: 20;
     background-color: ${Cream};
     border-bottom: 1px solid ${Border};
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: ${({ $scrolled }) => ($scrolled ? "0 6px 20px rgba(0, 0, 0, 0.12)" : "0 1px 0 rgba(0, 0, 0, 0.02)")};
+    transition: box-shadow 200ms ease, background-color 200ms ease;
+    /* Vidro fosco: quase opaco, mas deixa perceber o conteúdo passando por baixo. */
+    @supports (backdrop-filter: blur(1px)) {
+        background-color: color-mix(in srgb, var(--color-surface-muted) 90%, transparent);
+        backdrop-filter: saturate(1.4) blur(14px);
+    }
     .bar {
         display: flex;
         align-items: center;
@@ -62,7 +70,7 @@ const HeaderStyle = styled.header`
         transition: transform 180ms ease;
     }
     .bar__link:hover, .bar__link.active {
-        color: ${DarkRed};
+        color: ${BrandText};
     }
     .bar__link:hover::after, .bar__link.active::after {
         transform: scaleX(1);
@@ -91,7 +99,7 @@ const HeaderStyle = styled.header`
         line-height: 0;
     }
     .bar__menu:hover {
-        background-color: ${White};
+        background-color: ${Surface};
     }
     .bar__timer {
         display: flex;
@@ -122,7 +130,7 @@ const HeaderStyle = styled.header`
             display: block;
             justify-self: start;
         }
-        .bar__links, .bar__search {
+        .bar__links, .bar__search, .bar__theme {
             display: none;
         }
     }
@@ -150,6 +158,14 @@ const MyHeader = () => {
 
     useEffect(closeMenu, [location.pathname, location.search, closeMenu])
 
+    const [scrolled, setScrolled] = useState(false)
+    useEffect(() => {
+        const update = () => setScrolled(window.scrollY > 8)
+        update()
+        window.addEventListener("scroll", update, { passive: true })
+        return () => window.removeEventListener("scroll", update)
+    }, [])
+
     useEffect(() => {
         const desktop = window.matchMedia?.("(min-width: 900px)")
         desktop?.addEventListener("change", closeMenu)
@@ -157,7 +173,7 @@ const MyHeader = () => {
     }, [closeMenu])
 
     return (
-        <HeaderStyle>
+        <HeaderStyle $scrolled={scrolled}>
             <div className="bar">
                 <button
                     ref={menuButtonRef}
@@ -172,7 +188,7 @@ const MyHeader = () => {
                 </button>
 
                 <Link to="/" className="bar__logo" aria-label="Página inicial">
-                    <img src="/imgs/logo.png" alt="SAB" />
+                    <img className="logo-adaptive" src={asset("/imgs/logo.png")} alt="SAB" />
                 </Link>
 
                 <nav className="bar__links" aria-label="Principal">
@@ -190,6 +206,9 @@ const MyHeader = () => {
                         </div>
                     )}
                     <PomodoroPill />
+                    <div className="bar__theme">
+                        <ThemeToggle />
+                    </div>
                     <LoginTab />
                 </div>
             </div>

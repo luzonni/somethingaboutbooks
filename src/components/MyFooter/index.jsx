@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { Black, Coral, Gray, White } from "../../assets/Colors";
+import { Coral, Ink, White } from "../../assets/Colors";
+import { asset } from "../../utils/asset";
 
 const MyFooterStyle = styled.footer`
     padding: 2.5rem 1rem 1.5rem;
-    background-color: ${Black};
-    color: ${Gray};
+    background-color: ${Ink};
+    color: #dddddd;
     .footer__content {
         display: flex;
         flex-wrap: wrap;
@@ -36,7 +37,7 @@ const MyFooterStyle = styled.footer`
         gap: 0.5rem 1.75rem;
     }
     a {
-        color: ${Gray};
+        color: #dddddd;
         text-decoration: none;
         transition: color 150ms ease;
     }
@@ -74,7 +75,7 @@ const MyFooter = () => (
     <MyFooterStyle>
         <div className="footer__content">
             <div className="footer__brand">
-                <img src="/imgs/logo.png" alt="SAB" />
+                <img src={asset("/imgs/logo.png")} alt="SAB" />
                 <p>Organize suas leituras e descubra sua próxima história.</p>
             </div>
             <nav className="footer__links" aria-label="Institucional">

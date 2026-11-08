@@ -11,6 +11,7 @@ const SEARCH_FIELDS = [
     "first_publish_year",
     "ratings_average",
     "ratings_count",
+    "number_of_pages_median",
     "editions",
     "editions.title",
     "editions.language",
@@ -18,6 +19,14 @@ const SEARCH_FIELDS = [
 ].join(",")
 
 export const PAGE_SIZE = 24
+
+export const SORT_OPTIONS = [
+    { value: "", label: "Relevância" },
+    { value: "readinglog", label: "Mais lidos" },
+    { value: "rating", label: "Melhor avaliados" },
+    { value: "new", label: "Mais recentes" },
+]
+const SORT_VALUES = new Set(SORT_OPTIONS.map(({ value }) => value))
 
 // As etiquetas da Open Library são ruidosas: uma etiqueta só traz muito livro fora do gênero.
 // Por isso cada gênero combina as etiquetas mais confiáveis e exclui as que costumam confundir.
@@ -93,6 +102,37 @@ export const curateBooks = (books, { maxPerAuthor = 2, limit = books.length } = 
             return count <= maxPerAuthor
         })
         .slice(0, limit)
+}
+
+// "Hábitos Atômicos", "habitos atomicos!" e "Hábitos atômicos " viram a mesma chave.
+const normalize = (text = "") =>
+    text
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim()
+
+const titleKey = ({ title, author }) => `${normalize(title)}|${normalize(author)}`
+
+// A Open Library cadastra edições e traduções como obras separadas: mantém uma por título,
+// preferindo a que tem capa, sem mudar a ordem original.
+export const dedupeBooks = (books) => {
+    const seen = new Map()
+    const result = []
+    for (const book of books) {
+        const key = titleKey(book)
+        const index = seen.get(key)
+        if (seen.has(book.id)) continue
+        seen.set(book.id, -1)
+        if (index === undefined) {
+            seen.set(key, result.length)
+            result.push(book)
+        } else if (!result[index].cover && book.cover) {
+            result[index] = book
+        }
+    }
+    return result
 }
 
 export class ApiError extends Error {
@@ -199,7 +239,7 @@ export const cleanTitle = (title = "") =>
         .replace(/\s*\[[^\]]*\]\s*$/, "")
         .trim() || title
 
-const normalizeBook = ({ key, title, authors, coverId, year, rating, ratingCount }) => ({
+const normalizeBook = ({ key, title, authors, coverId, year, rating, ratingCount, pages }) => ({
     id: idFromKey(key),
     title: cleanTitle(title),
     author: authors?.[0] ?? "Autor desconhecido",
@@ -207,6 +247,7 @@ const normalizeBook = ({ key, title, authors, coverId, year, rating, ratingCount
     year: year ?? null,
     rating: rating ?? null,
     ratingCount: ratingCount ?? 0,
+    ...(pages > 0 ? { pages } : {}),
 })
 
 const normalizeSearchDoc = (doc) => {
@@ -220,6 +261,7 @@ const normalizeSearchDoc = (doc) => {
         year: doc.first_publish_year,
         rating: doc.ratings_average,
         ratingCount: doc.ratings_count,
+        pages: doc.number_of_pages_median,
     })
 }
 
@@ -236,19 +278,19 @@ const runSearch = async ({ terms, sort, page = 1, limit, signal }) => {
     }
 }
 
-export const searchBooks = async ({ query = "", genre = "", page = 1, limit = PAGE_SIZE, signal } = {}) => {
+export const searchBooks = async ({ query = "", genre = "", sort = "", page = 1, limit = PAGE_SIZE, signal } = {}) => {
     const text = query.trim()
     const terms = [text, genre && genreQuery(genre)].filter(Boolean).join(" ")
     const { books, total } = await runSearch({
         terms,
         // Sem texto digitado não há relevância para ordenar: mostra primeiro os mais lidos.
-        sort: text ? undefined : "readinglog",
+        sort: (SORT_VALUES.has(sort) && sort) || (text ? undefined : "readinglog"),
         page,
         limit,
         signal,
     })
     return {
-        books: text ? books : curateBooks(books, { maxPerAuthor: 3 }),
+        books: text || sort ? books : curateBooks(books, { maxPerAuthor: 3 }),
         total,
         hasMore: page * limit < total,
     }
@@ -323,7 +365,21 @@ export const getAuthor = async (authorId, { signal } = {}) => {
         birthDate: data.birth_date ?? "",
         deathDate: data.death_date ?? "",
         photo: authorPhotoUrl(data.photos?.find((photo) => photo > 0)),
+        photoLarge: authorPhotoUrl(data.photos?.find((photo) => photo > 0), "L"),
+        fullName: data.fuller_name && data.fuller_name !== data.name ? data.fuller_name : "",
+        links: (data.links ?? [])
+            .filter((link) => /^https?:\/\//.test(link.url ?? ""))
+            .slice(0, 5)
+            .map(({ title, url }) => ({ title: title || new URL(url).hostname, url })),
+        wikipedia: data.wikipedia || (data.remote_ids?.wikidata ? `https://www.wikidata.org/wiki/${data.remote_ids.wikidata}` : ""),
+        url: `${BASE_URL}/authors/${authorId}`,
     }
+}
+
+// Obras do autor, das mais lidas para as menos lidas.
+export const getAuthorWorks = async (authorId, { page = 1, limit = PAGE_SIZE, signal } = {}) => {
+    const { books, total } = await runSearch({ terms: `author_key:${authorId}`, sort: "readinglog", page, limit, signal })
+    return { books: books.filter((book) => book.title), total, hasMore: page * limit < total }
 }
 
 const valueOrNull = (result) => (result.status === "fulfilled" ? result.value : null)
@@ -352,8 +408,10 @@ export const getWork = async (workId, { signal } = {}) => {
 
 // Autores e notas chegam depois da obra e, se falharem, não impedem de mostrar o livro.
 export const getBookExtras = async ({ id, authorIds }, { signal } = {}) => {
-    const [ratings, ...authors] = await Promise.allSettled([
+    const [ratings, edition, ...authors] = await Promise.allSettled([
         request(`/works/${id}/ratings.json`, { signal }),
+        // O número de páginas fica nas edições: a busca devolve a mediana entre elas.
+        request("/search.json", { params: { q: `key:/works/${id}`, fields: "number_of_pages_median" }, signal }),
         ...authorIds.map((authorId) => getAuthor(authorId, { signal })),
     ])
 
@@ -368,5 +426,6 @@ export const getBookExtras = async ({ id, authorIds }, { signal } = {}) => {
         rating: summary?.average ?? null,
         ratingCount: summary?.count ?? 0,
         ratingCounts: valueOrNull(ratings)?.counts ?? {},
+        pages: valueOrNull(edition)?.docs?.[0]?.number_of_pages_median ?? null,
     }
 }

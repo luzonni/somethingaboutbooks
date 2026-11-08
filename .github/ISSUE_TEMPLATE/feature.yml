@@ -1,0 +1,14 @@
+name: Sugerir uma melhoria
+description: Uma ideia para deixar o SAB melhor
+labels: [melhoria]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Que problema isso resolve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Como você imagina a solução?

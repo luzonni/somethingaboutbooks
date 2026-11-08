@@ -18,8 +18,9 @@ import {
     FiStar,
     FiTrash2,
 } from "react-icons/fi"
-import { Border, Cream, DarkGray, DarkRed, White } from "../../assets/Colors"
+import { Border, BrandText, Cream, DarkGray, DarkRed, Sand, White } from "../../assets/Colors"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
+import { asset } from "../../utils/asset"
 
 const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
@@ -34,7 +35,7 @@ const InfoStyle = styled.div`
         background-color: #1d0f0c;
         background-image:
             linear-gradient(rgba(70, 4, 4, 0.85), rgba(29, 8, 6, 0.93)),
-            url("/imgs/hero-books.svg");
+            url("${asset("/imgs/hero-books.svg")}");
         background-size: cover;
         background-position: center;
     }
@@ -46,7 +47,7 @@ const InfoStyle = styled.div`
     .info__banner p {
         max-width: 38rem;
         margin: 0.5rem auto 0;
-        color: ${Cream};
+        color: ${Sand};
         font-size: 1.0625rem;
         font-weight: 300;
     }
@@ -112,7 +113,7 @@ const InfoStyle = styled.div`
         padding: 1.125rem;
         border: 1px solid ${Border};
         border-radius: 12px;
-        background-color: #fbfaf5;
+        background-color: var(--color-surface-soft);
     }
     .info__card h3 {
         font-weight: 700;
@@ -131,7 +132,7 @@ const InfoStyle = styled.div`
         height: 2.5rem;
         border-radius: 10px;
         background-color: ${Cream};
-        color: ${DarkRed};
+        color: ${BrandText};
         font-size: 1.25rem;
     }
     .info__team {
@@ -159,7 +160,7 @@ const InfoStyle = styled.div`
     .info__faq details {
         border: 1px solid ${Border};
         border-radius: 10px;
-        background-color: #fbfaf5;
+        background-color: var(--color-surface-soft);
     }
     .info__faq summary {
         display: flex;
@@ -201,7 +202,7 @@ const InfoStyle = styled.div`
         background-color: #7a0000;
     }
     .info__content a:not(.info__button) {
-        color: ${DarkRed};
+        color: ${BrandText};
         font-weight: 500;
     }
 

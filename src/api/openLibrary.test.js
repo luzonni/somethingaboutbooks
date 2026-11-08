@@ -7,6 +7,9 @@ import {
     cleanTitle,
     coverUrl,
     curateBooks,
+    dedupeBooks,
+    getAuthor,
+    getAuthorWorks,
     getBookExtras,
     genreList,
     getTrendingBooks,
@@ -85,6 +88,15 @@ describe("openLibrary", () => {
         expect(result.books[0].cover).toContain("/b/id/2-M.jpg")
     })
 
+    it("aplica só ordenações conhecidas", async () => {
+        const fetchMock = mockFetch(() => ({ body: { numFound: 0, docs: [] } }))
+        await searchBooks({ query: "x", sort: "rating" })
+        await searchBooks({ query: "x", sort: "hackeado" })
+        const sortOf = (call) => new URL(fetchMock.mock.calls[call][0]).searchParams.get("sort")
+        expect(sortOf(0)).toBe("rating")
+        expect(sortOf(1)).toBeNull()
+    })
+
     it("informa que não há mais páginas", async () => {
         mockFetch(() => ({ body: { numFound: 24, docs: [] } }))
         const result = await searchBooks({ query: "x", page: 1, limit: 24 })
@@ -144,12 +156,20 @@ describe("openLibrary", () => {
         await expect(getWork("OLcicloW")).rejects.toMatchObject({ status: 404 })
     })
 
+    it("traz o número de páginas das edições", async () => {
+        mockFetch((url) =>
+            url.includes("/search.json") ? { body: { docs: [{ number_of_pages_median: 310 }] } } : { body: {} }
+        )
+        const extras = await getBookExtras({ id: "OL1W", authorIds: [] })
+        expect(extras.pages).toBe(310)
+    })
+
     it("não falha quando autor e notas estão indisponíveis", async () => {
         mockFetch(() => ({ status: 500 }))
 
         const extras = await getBookExtras({ id: "OL1W", authorIds: ["OL9A"] })
 
-        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0, ratingCounts: {} })
+        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0, ratingCounts: {}, pages: null })
     })
 
     it("busca gêneros por etiquetas precisas e mais lidos", async () => {
@@ -233,6 +253,33 @@ describe("openLibrary", () => {
     })
 })
 
+describe("autor", () => {
+    beforeEach(() => clearApiCache())
+
+    it("traz links seguros e o Wikidata como alternativa", async () => {
+        mockFetch(() => ({
+            body: {
+                name: "Ana",
+                fuller_name: "Ana Maria",
+                links: [{ title: "Site", url: "https://ana.com" }, { title: "Ruim", url: "javascript:alert(1)" }],
+                remote_ids: { wikidata: "Q1" },
+            },
+        }))
+        const author = await getAuthor("OL1A")
+        expect(author).toMatchObject({ name: "Ana", fullName: "Ana Maria", wikipedia: "https://www.wikidata.org/wiki/Q1" })
+        expect(author.links).toEqual([{ title: "Site", url: "https://ana.com" }])
+    })
+
+    it("busca as obras do autor pelas mais lidas e pagina", async () => {
+        const fetchMock = mockFetch(() => ({ body: { numFound: 30, docs: [{ key: "/works/OL1W", title: "Obra" }] } }))
+        const result = await getAuthorWorks("OL1A")
+        const url = new URL(fetchMock.mock.calls[0][0])
+        expect(url.searchParams.get("q")).toBe("author_key:OL1A")
+        expect(url.searchParams.get("sort")).toBe("readinglog")
+        expect(result).toMatchObject({ total: 30, hasMore: true })
+    })
+})
+
 describe("cleanTags", () => {
     it("deixa legíveis as etiquetas de série", () => {
         expect(cleanTags(["series:Harry_Potter", "Ghosts"])).toEqual(["Harry Potter", "Ghosts"])
@@ -273,6 +320,25 @@ describe("cleanTitle", () => {
     it("mantém títulos normais", () => {
         expect(cleanTitle("1984")).toBe("1984")
         expect(cleanTitle("O Hobbit (edição de bolso)")).toBe("O Hobbit (edição de bolso)")
+    })
+})
+
+describe("dedupeBooks", () => {
+    const book = (id, title, cover = "", author = "James Clear") => ({ id, title, cover, author })
+
+    it("junta títulos iguais ignorando acentos, caixa e pontuação", () => {
+        const books = [book("1", "Hábitos Atômicos", "a.jpg"), book("2", "habitos atomicos!"), book("3", "Outro livro")]
+        expect(dedupeBooks(books).map(({ id }) => id)).toEqual(["1", "3"])
+    })
+
+    it("troca a versão sem capa pela que tem capa, mantendo a posição", () => {
+        const books = [book("1", "Duna"), book("2", "Fundação", "f.jpg"), book("3", "DUNA", "d.jpg")]
+        expect(dedupeBooks(books).map(({ id }) => id)).toEqual(["3", "2"])
+    })
+
+    it("mantém títulos iguais de autores diferentes e remove ids repetidos", () => {
+        const books = [book("1", "Poemas", "", "A"), book("2", "Poemas", "", "B"), book("1", "Poemas", "", "A")]
+        expect(dedupeBooks(books).map(({ id }) => id)).toEqual(["1", "2"])
     })
 })
 

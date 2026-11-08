@@ -2,12 +2,16 @@ import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FaForward, FaPause, FaPlay, FaUndo } from 'react-icons/fa';
 import BookCover from '../../components/BookCover';
+import ProgressBar from '../../components/ProgressBar';
 import { InputCheckBox } from '../../components/Inputs';
 import { useLibrary } from '../../context/LibraryContext';
 import { usePomodoro } from '../../context/PomodoroContext';
+import { useToast } from '../../context/ToastContext';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { sessionsOnDay, sumMinutes } from '../../services/library';
-import { MODES, cycleProgress, formatTime, sanitizeMinutes } from '../../utils/pomodoro';
+import { useShortcut } from '../../hooks/useShortcut';
+import { readingStreak } from '../../utils/readingStats';
+import { readingProgress, sessionsOnDay, sumMinutes } from '../../services/library';
+import { MODES, canNotify, cycleProgress, formatTime, sanitizeMinutes } from '../../utils/pomodoro';
 import styles from './Pomodoro.module.css';
 
 const RADIUS = 90;
@@ -51,7 +55,7 @@ const CycleDots = () => {
 };
 
 const BookPanel = () => {
-  const { canSave, entries, getEntry, sessions, setProgress } = useLibrary();
+  const { canSave, entries, getEntry, sessions, setProgress, setTotalPages } = useLibrary();
   const { timer, setBook } = usePomodoro();
 
   if (!canSave) {
@@ -91,21 +95,36 @@ const BookPanel = () => {
           {selected && (
             <div className={styles.bookInfo}>
               <Link to={`/books/${selected.id}`} className={styles.bookCover} aria-label={selected.title}>
-                <BookCover src={selected.cover} title={selected.title} />
+                <BookCover src={selected.cover} title={selected.title} author={selected.author} />
               </Link>
               <div>
                 <strong>{selected.title}</strong>
                 <p className={styles.muted}>{selected.author}</p>
                 <p className={styles.muted}>{bookMinutes} min de foco neste livro</p>
-                <label className={styles.field}>
-                  <span>Página atual</span>
-                  <input
-                    type="number"
-                    min="0"
-                    value={selected.currentPage ?? ''}
-                    onChange={(event) => setProgress(selected.id, event.target.value)}
-                  />
-                </label>
+                <div className={styles.pages}>
+                  <label className={styles.field}>
+                    <span>Página atual</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={selected.currentPage ?? ''}
+                      onChange={(event) => setProgress(selected.id, event.target.value)}
+                    />
+                  </label>
+                  <label className={styles.field}>
+                    <span>Total</span>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder={selected.pages ? String(selected.pages) : '—'}
+                      value={selected.totalPages ?? ''}
+                      onChange={(event) => setTotalPages(selected.id, selected.currentPage, event.target.value)}
+                    />
+                  </label>
+                </div>
+                {readingProgress(selected) !== null && (
+                  <ProgressBar value={readingProgress(selected)} label={`Progresso em ${selected.title}`} />
+                )}
               </div>
             </div>
           )}
@@ -124,6 +143,7 @@ const MINUTE_FIELDS = [
 
 const SettingsPanel = () => {
   const { settings, updateSettings } = usePomodoro();
+  const { notify } = useToast();
   return (
     <details className={styles.panel}>
       <summary>Configurações</summary>
@@ -156,6 +176,19 @@ const SettingsPanel = () => {
         checked={settings.sound}
         onChange={(event) => updateSettings({ sound: event.target.checked })}
       />
+      {canNotify() && (
+        <InputCheckBox
+          label="Notificar quando estiver em outra aba"
+          checked={settings.notify}
+          onChange={async (event) => {
+            const wanted = event.target.checked;
+            if (!wanted) return updateSettings({ notify: false });
+            const permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
+            updateSettings({ notify: permission === 'granted' });
+            if (permission !== 'granted') notify('Permita as notificações do site no navegador para usar este recurso.', { tone: 'error' });
+          }}
+        />
+      )}
     </details>
   );
 };
@@ -177,6 +210,11 @@ const Pomodoro = () => {
 
   const today = sessionsOnDay(sessions);
   const isRunning = timer.status === 'running';
+  const streak = readingStreak(sessions);
+
+  useShortcut(' ', () => (isRunning ? pause() : start()));
+  useShortcut(['r', 'R'], reset);
+  useShortcut(['p', 'P'], skip);
 
   return (
     <div className={styles.container}>
@@ -215,8 +253,13 @@ const Pomodoro = () => {
         {canSave && (
           <p className={styles.muted}>
             Hoje: {today.length} {today.length === 1 ? 'sessão' : 'sessões'} · {sumMinutes(today)} min de foco
+            {streak > 1 && ` · ${streak} dias seguidos`}
           </p>
         )}
+
+        <p className={styles.shortcuts} aria-hidden="true">
+          <kbd>Espaço</kbd> iniciar/pausar · <kbd>R</kbd> reiniciar · <kbd>P</kbd> pular
+        </p>
       </div>
 
       <div className={styles.sidebar}>

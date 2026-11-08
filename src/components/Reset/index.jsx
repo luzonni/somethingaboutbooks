@@ -4,11 +4,58 @@ import { Black, Coral, Cream, DarkRed } from "../../assets/Colors";
 const Reset = createGlobalStyle`
 
 :root {
+	--color-surface: #ffffff;
+	--color-surface-soft: #faf9f4;
+	--color-surface-muted: #f0eee2;
+	--color-surface-hover: #e5e2d2;
+	--color-border: #d9d5c7;
+	--color-border-soft: #ebe8dc;
+	--color-text: #292929;
+	--color-text-muted: #6b6b6b;
+	--color-gray: #dddddd;
+	--color-brand: #620000;
+	--color-brand-hover: #7a0000;
+	--color-link: #620000;
+	--color-on-brand: #f5f5f5;
+	--color-danger: #b3261e;
+	--color-success: #2e7d4f;
+	--shadow-soft: rgba(41, 20, 16, 0.05);
+	color-scheme: light;
+
 	font-family: "Roboto", sans-serif;
 	font-optical-sizing: auto;
 	font-weight: 400;
 	font-style: normal;
 	color: ${Black};
+}
+
+:root[data-theme="dark"] {
+	--color-surface: #171312;
+	--color-surface-soft: #1e1917;
+	--color-surface-muted: #2a2321;
+	--color-surface-hover: #362d2a;
+	--color-border: #3d3431;
+	--color-border-soft: #2f2826;
+	--color-text: #ece7e2;
+	--color-text-muted: #a9a19b;
+	--color-gray: #4a4240;
+	--color-brand: #c2454b;
+	--color-brand-hover: #d4565c;
+	--color-link: #f0898d;
+	--color-on-brand: #f5f5f5;
+	--color-danger: #f2786f;
+	--color-success: #5cc48a;
+	--shadow-soft: rgba(0, 0, 0, 0.35);
+	color-scheme: dark;
+}
+
+/* O logo é preto: no tema escuro ele é invertido para continuar visível. */
+:root[data-theme="dark"] .logo-adaptive {
+	filter: invert(1);
+}
+
+body {
+	transition: background-color 250ms ease, color 250ms ease;
 }
 
 *, *::before, *::after {
@@ -43,7 +90,7 @@ footer, header, hgroup, menu, nav, section {
 
 body {
 	line-height: 1.5;
-	background-color: white;
+	background-color: var(--color-surface);
 	overflow-wrap: break-word;
 }
 

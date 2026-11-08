@@ -6,12 +6,17 @@ import Reset from "./components/Reset";
 import { AuthProvider } from "./context/AuthContext";
 import { LibraryProvider } from "./context/LibraryContext";
 import { PomodoroProvider } from "./context/PomodoroContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
 import DefaultPage from "./pages/DefaultPage";
+import { routerBasename } from "./utils/asset";
 import Home from "./pages/Home";
 
 const loadAllBooksPage = () => import("./pages/AllBooksPage");
 const AllBooksPage = lazy(loadAllBooksPage);
 const loadBookPreview = () => import("./pages/BookPreview");
+const loadAuthorPage = () => import("./pages/AuthorPage");
+const AuthorPage = lazy(loadAuthorPage);
 const BookPreview = lazy(loadBookPreview);
 const loadAuthPage = () => import("./pages/Auth");
 const AuthPage = lazy(loadAuthPage);
@@ -41,8 +46,10 @@ const isPrivate = (page) => <RequireAuth>{page}</RequireAuth>;
 
 function AppRoutes() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <Reset />
+      <ThemeProvider>
+      <ToastProvider>
       <AuthProvider>
         <LibraryProvider>
           <PomodoroProvider>
@@ -52,6 +59,7 @@ function AppRoutes() {
                   <Route index element={<Home />} />
                   <Route path="books" element={<AllBooksPage />} />
                   <Route path="books/:id" element={<BookPreview />} />
+                  <Route path="autores/:id" element={<AuthorPage />} />
                   <Route path="pomodoro" element={<Pomodoro />} />
                   <Route path="user/:username" element={<UserProfile />} />
                   <Route path="userconfig" element={isPrivate(<UserConfig />)} />
@@ -71,6 +79,8 @@ function AppRoutes() {
           </PomodoroProvider>
         </LibraryProvider>
       </AuthProvider>
+      </ToastProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

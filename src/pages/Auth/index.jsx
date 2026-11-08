@@ -1,10 +1,11 @@
 import { Link, Navigate, useLocation } from "react-router-dom"
 import styled from "styled-components"
-import { Black, Border, Cream, DarkGray, DarkRed, White } from "../../assets/Colors"
+import { Black, Border, Cream, DarkGray, DarkRed, Sand, Surface, White } from "../../assets/Colors"
 import { useAuth } from "../../context/AuthContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import Login from "../Login"
 import SignUp from "../SignUp"
+import { asset } from "../../utils/asset"
 
 const SLIDE = "700ms cubic-bezier(0.7, 0, 0.25, 1)"
 
@@ -30,7 +31,7 @@ const AuthStyle = styled.main`
         width: min(64rem, 100%);
         border-radius: 20px;
         overflow: hidden;
-        background-color: white;
+        background-color: ${Surface};
         box-shadow: 0 20px 50px rgba(41, 20, 16, 0.18);
     }
     .auth__panes {
@@ -96,7 +97,7 @@ const AuthStyle = styled.main`
         background-color: #1d0f0c;
         background-image:
             linear-gradient(rgba(70, 4, 4, 0.82), rgba(29, 8, 6, 0.92)),
-            url("/imgs/hero-books.svg");
+            url("${asset("/imgs/hero-books.svg")}");
         background-size: cover;
         background-position: center;
         transition: transform ${SLIDE};
@@ -138,7 +139,7 @@ const AuthStyle = styled.main`
         line-height: 1.2;
     }
     .auth__message p {
-        color: ${Cream};
+        color: ${Sand};
         font-weight: 300;
     }
     .auth__cta {
@@ -152,7 +153,7 @@ const AuthStyle = styled.main`
     }
     .auth__cta:hover {
         background-color: ${White};
-        color: ${DarkRed};
+        color: #620000;
     }
 
     /* Alternador do mobile */
@@ -250,7 +251,7 @@ const AuthPage = () => {
     return (
         <AuthStyle data-mode={mode}>
             <Link to="/" className="auth__logo-mobile" aria-label="Voltar para a página inicial">
-                <img src="/imgs/logo.png" alt="SAB" />
+                <img className="logo-adaptive" src={asset("/imgs/logo.png")} alt="SAB" />
             </Link>
 
             <div className="auth__card">
@@ -279,7 +280,7 @@ const AuthPage = () => {
 
                 <aside className="auth__art">
                     <Link to="/" className="auth__art-logo" aria-label="Voltar para a página inicial">
-                        <img src="/imgs/logo.png" alt="SAB" />
+                        <img src={asset("/imgs/logo.png")} alt="SAB" />
                     </Link>
                     <div className="auth__messages">
                         <div className="auth__message" data-message="login">

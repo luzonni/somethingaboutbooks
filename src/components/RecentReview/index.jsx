@@ -40,7 +40,7 @@ const ReviewStyle = styled.article`
 const RecentReview = ({ book, date, rating, children }) => (
     <ReviewStyle>
         <Link to={`/books/${book.id}`} aria-label={book.title}>
-            <BookCover src={book.cover} title={book.title} />
+            <BookCover src={book.cover} title={book.title} author={book.author} />
         </Link>
         <div className="review__contents">
             <Link to={`/books/${book.id}`} className="review__title">{book.title}</Link>

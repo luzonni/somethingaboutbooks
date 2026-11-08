@@ -41,7 +41,12 @@ export default [
     rules: { 'react-refresh/only-export-components': 'off' },
   },
   {
-    files: ['*.config.js'],
+    files: ['*.config.js', 'e2e/**/*.js'],
     languageOptions: { globals: globals.node },
+  },
+  {
+    // O Playwright usa a função "use" nas fixtures, que não é o hook do React.
+    files: ['e2e/**/*.js'],
+    rules: { 'react-hooks/rules-of-hooks': 'off' },
   },
 ]

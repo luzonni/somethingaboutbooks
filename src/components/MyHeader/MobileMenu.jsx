@@ -2,10 +2,12 @@ import { useEffect, useRef } from "react"
 import { Link, NavLink, useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import { FiLogOut, FiX } from "react-icons/fi"
-import { Black, Border, Cream, DarkRed, White } from "../../assets/Colors"
+import { Black, Border, BrandText, Cream, DarkRed, White } from "../../assets/Colors"
 import { useAuth } from "../../context/AuthContext"
 import Search from "../Search"
+import ThemeToggle from "../ThemeToggle"
 import { accountLinks, visibleNavItems } from "./navItems"
+import { asset } from "../../utils/asset"
 
 const MobileMenuStyle = styled.div`
     .drawer__backdrop {
@@ -47,6 +49,11 @@ const MobileMenuStyle = styled.div`
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+    .drawer__tools {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
     }
     .drawer__head img {
         display: block;
@@ -117,7 +124,7 @@ const MobileMenuStyle = styled.div`
     .drawer__cta--secondary {
         margin-top: 0.5rem;
         border: 1.5px solid rgba(98, 0, 0, 0.3);
-        color: ${DarkRed};
+        color: ${BrandText};
     }
     @media (min-width: 900px) {
         display: none;
@@ -160,14 +167,17 @@ const MobileMenu = ({ open, onClose, returnFocusRef }) => {
     }
 
     return (
-        <MobileMenuStyle className={open ? "is-open" : ""}>
+        <MobileMenuStyle className={open ? "mobile-menu is-open" : "mobile-menu"}>
             <div className="drawer__backdrop" onClick={onClose} aria-hidden="true" />
             <aside id="mobile-menu" className="drawer" aria-label="Menu" aria-hidden={!open}>
                 <div className="drawer__head">
-                    <Link to="/" aria-label="Página inicial"><img src="/imgs/logo.png" alt="SAB" /></Link>
-                    <button ref={closeRef} type="button" className="drawer__close" aria-label="Fechar menu" onClick={onClose}>
-                        <FiX aria-hidden="true" />
-                    </button>
+                    <Link to="/" aria-label="Página inicial"><img className="logo-adaptive" src={asset("/imgs/logo.png")} alt="SAB" /></Link>
+                    <div className="drawer__tools">
+                        <ThemeToggle />
+                        <button ref={closeRef} type="button" className="drawer__close" aria-label="Fechar menu" onClick={onClose}>
+                            <FiX aria-hidden="true" />
+                        </button>
+                    </div>
                 </div>
 
                 <Search compact />

@@ -2,20 +2,35 @@ import { useState } from "react"
 import styled, { css, keyframes } from "styled-components"
 import { FaSearch } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
-import { Border, Coral, Black, Cream } from "../../assets/Colors"
+import { Border, Coral, Cream, Ink, Surface } from "../../assets/Colors"
 import { useTypingPlaceholder } from "../../hooks/useTypingPlaceholder"
 
+// Só opacidade e escala: o navegador anima na GPU, sem repintar a página a cada quadro.
 const glow = keyframes`
-    0%, 100% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(227, 96, 101, 0.45); }
-    50% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 8px rgba(227, 96, 101, 0); }
+    0% { opacity: 0.55; transform: scale(1); }
+    70%, 100% { opacity: 0; transform: scale(1.04, 1.3); }
 `
 
 const animatedStyles = css`
-    animation: ${glow} 3s ease-in-out infinite;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        background-color: rgba(227, 96, 101, 0.6);
+        animation: ${glow} 3s ease-out 1.5s infinite;
+        pointer-events: none;
+    }
     &:focus-within {
-        animation: none;
         transform: translateY(-3px) scale(1.015);
         box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(227, 96, 101, 0.55);
+    }
+    &:focus-within::before {
+        animation: none;
+        opacity: 0;
     }
 `
 
@@ -34,7 +49,7 @@ const SearchStyle = styled.form`
         flex: 1;
         min-width: 0;
         padding: ${({ $compact }) => ($compact ? "0.4rem 0.75rem" : "0.75rem 1rem")};
-        background-color: ${({ $compact }) => ($compact ? "white" : Cream)};
+        background-color: ${({ $compact }) => ($compact ? Surface : Cream)};
         border: 2px solid ${Border};
         border-right: none;
         border-radius: 12px 0 0 12px;
@@ -50,7 +65,7 @@ const SearchStyle = styled.form`
         background-color: ${Coral};
         border: none;
         border-radius: 0 12px 12px 0;
-        color: ${Black};
+        color: ${Ink};
         font-size: ${({ $compact }) => ($compact ? "1rem" : "1.25rem")};
         transition: filter 150ms ease;
     }
@@ -94,6 +109,8 @@ const Search = ({ initialValue = "", extraParams = "", compact = false, animated
         <SearchStyle $compact={compact} $animated={animated} role="search" onSubmit={handleSubmit}>
             <input
                 type="search"
+                aria-keyshortcuts="/"
+                title="Atalho: /"
                 aria-label="Buscar livros"
                 placeholder={placeholder}
                 value={value}

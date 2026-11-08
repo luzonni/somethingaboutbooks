@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components"
-import { Cream, White } from "../../assets/Colors"
+import { Sand, White } from "../../assets/Colors"
 import Search from "../../components/Search"
 import BookSection from "../../components/BookSection"
 import { CardBook } from "../../components/CardBook"
@@ -8,6 +8,7 @@ import { genreList, topRatedList, trendingList } from "../../api/openLibrary"
 import { useLibrary } from "../../context/LibraryContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import { byRecent } from "../../services/library"
+import { asset } from "../../utils/asset"
 
 const riseIn = keyframes`
     from { opacity: 0; transform: translateY(16px); }
@@ -27,7 +28,7 @@ const HomeStyle = styled.div`
         background-color: #1d0f0c;
         background-image:
             radial-gradient(ellipse at center, rgba(29, 8, 6, 0.93) 0%, rgba(29, 8, 6, 0.8) 42%, rgba(29, 8, 6, 0.42) 100%),
-            url("/imgs/hero-books.svg");
+            url("${asset("/imgs/hero-books.svg")}");
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
@@ -43,19 +44,16 @@ const HomeStyle = styled.div`
         max-width: 36rem;
         margin: 0 auto;
         text-align: center;
-        color: ${Cream};
+        color: ${Sand};
         font-size: clamp(1rem, 2vw, 1.25rem);
         font-weight: 300;
     }
-    h1, .hero__subtitle, .hero__search {
+    .hero__subtitle, .hero__search {
         animation: ${riseIn} 600ms ease both;
-    }
-    .hero__subtitle {
-        animation-delay: 120ms;
     }
     .hero__search {
         width: 100%;
-        animation-delay: 240ms;
+        animation-delay: 120ms;
     }
 `
 

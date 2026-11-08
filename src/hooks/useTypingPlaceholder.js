@@ -4,6 +4,8 @@ const TYPE_DELAY = 70
 const DELETE_DELAY = 35
 const HOLD_DELAY = 1600
 const NEXT_DELAY = 300
+// Começa depois que a página terminou de carregar, para não disputar a CPU com o primeiro desenho.
+const START_DELAY = 2000
 
 const prefersReducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
 
@@ -37,7 +39,7 @@ export const useTypingPlaceholder = (phrases, { active, fallback }) => {
             timer = setTimeout(step, delay)
         }
 
-        timer = setTimeout(step, NEXT_DELAY)
+        timer = setTimeout(step, START_DELAY)
         return () => clearTimeout(timer)
     }, [enabled, phrases])
 

@@ -3,6 +3,7 @@ import {
     EMPTY_LIBRARY,
     libraryReducer as reduce,
     libraryStats,
+    readingProgress,
     loadLibrary,
     saveLibrary,
     sessionsOnDay,
@@ -82,6 +83,12 @@ describe("libraryReducer", () => {
         expect(removed.books.OL1W).toBeUndefined()
     })
 
+    it("renomeia a lista e ignora nomes vazios", () => {
+        const created = apply({ type: "CREATE_LIST", id: "l1", name: "Antigo" })
+        expect(reduce(created, { type: "RENAME_LIST", listId: "l1", name: "  Novo " }).lists[0].name).toBe("Novo")
+        expect(reduce(created, { type: "RENAME_LIST", listId: "l1", name: "   " })).toBe(created)
+    })
+
     it("remove da biblioteca os livros que só estavam na lista excluída", () => {
         const state = apply(
             { type: "CREATE_LIST", id: "l1", name: "Lista" },
@@ -100,6 +107,63 @@ describe("libraryReducer", () => {
         )
         expect(state.books.OL1W).toBeUndefined()
         expect(state.lists[0].bookIds).toEqual([])
+    })
+})
+
+describe("progresso de leitura", () => {
+    const reading = (state) => state.books.OL1W
+
+    it("guarda páginas como números válidos", () => {
+        const state = apply(
+            { type: "SET_SHELF", book: { ...book, pages: 300 }, shelf: "reading" },
+            { type: "SET_PROGRESS", bookId: book.id, currentPage: "75.8" }
+        )
+        expect(reading(state).currentPage).toBe(75)
+        expect(readingProgress(reading(state))).toBe(0.25)
+    })
+
+    it("prefere o total informado pela pessoa", () => {
+        const state = apply(
+            { type: "SET_SHELF", book: { ...book, pages: 300 }, shelf: "reading" },
+            { type: "SET_PROGRESS", bookId: book.id, currentPage: 50, totalPages: "100" }
+        )
+        expect(readingProgress(reading(state))).toBe(0.5)
+    })
+
+    it("ignora valores inválidos e limita a 100%", () => {
+        const state = apply(
+            { type: "SET_SHELF", book: { ...book, pages: 100 }, shelf: "reading" },
+            { type: "SET_PROGRESS", bookId: book.id, currentPage: "-3" }
+        )
+        expect(reading(state).currentPage).toBeNull()
+        expect(readingProgress(reading(state))).toBeNull()
+        expect(readingProgress({ currentPage: 500, pages: 100 })).toBe(1)
+        expect(readingProgress({ currentPage: 10 })).toBeNull()
+    })
+
+    it("não perde o total de páginas ao salvar o livro sem esse dado", () => {
+        const state = apply(
+            { type: "SET_SHELF", book: { ...book, pages: 310 }, shelf: "reading" },
+            { type: "TOGGLE_FAVORITE", book }
+        )
+        expect(reading(state).pages).toBe(310)
+    })
+})
+
+describe("meta anual", () => {
+    it("define, limita e remove a meta do ano", () => {
+        const withGoal = apply({ type: "SET_GOAL", year: 2026, books: "12" })
+        expect(withGoal.goals).toEqual({ 2026: 12 })
+        expect(libraryStats(withGoal, 2026).goal).toBe(12)
+        expect(libraryStats(withGoal, 2025).goal).toBeNull()
+
+        expect(reduce(withGoal, { type: "SET_GOAL", year: 2026, books: 9999 }).goals[2026]).toBe(365)
+        expect(reduce(withGoal, { type: "SET_GOAL", year: 2026, books: "" }).goals).toEqual({})
+    })
+
+    it("aceita bibliotecas salvas antes das metas existirem", () => {
+        localStorage.setItem("sab:library:antigo", JSON.stringify({ books: {}, lists: [], sessions: [] }))
+        expect(loadLibrary("antigo").goals).toEqual({})
     })
 })
 

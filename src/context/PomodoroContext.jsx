@@ -2,7 +2,15 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useLibrary } from "./LibraryContext"
 import { readJson, writeJson } from "../services/storage"
 import { setTitlePrefix } from "../utils/documentTitle"
-import { DEFAULT_SETTINGS, MODES, createTimer, formatTime, playChime, timerReducer } from "../utils/pomodoro"
+import {
+    DEFAULT_SETTINGS,
+    MODES,
+    createTimer,
+    formatTime,
+    playChime,
+    showStageNotification,
+    timerReducer,
+} from "../utils/pomodoro"
 
 const TIMER_KEY = "sab:pomodoro:timer"
 const SETTINGS_KEY = "sab:pomodoro:settings"
@@ -32,6 +40,7 @@ export const PomodoroProvider = ({ children }) => {
         if (!stageFinished) return
 
         if (settingsRef.current.sound) playChime()
+        if (settingsRef.current.notify) showStageNotification(previous.mode, next.mode)
 
         const library = libraryRef.current
         if (previous.mode === "focus" && library.canSave) {
