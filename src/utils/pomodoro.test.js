@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import {
     DEFAULT_SETTINGS as settings,
     createTimer,
@@ -6,6 +6,7 @@ import {
     formatTime,
     nextMode,
     sanitizeMinutes,
+    showStageNotification,
     timerReducer as reduce,
 } from "./pomodoro"
 
@@ -75,6 +76,25 @@ describe("pomodoro", () => {
         const custom = { ...settings, focus: 50 }
         expect(reduce(createTimer(settings), { type: "APPLY_SETTINGS", settings: custom }).remaining).toBe(3000)
         expect(reduce(started(), { type: "APPLY_SETTINGS", settings: custom }).remaining).toBe(1500)
+    })
+
+    it("só notifica com permissão e com a aba escondida", () => {
+        const Notification = vi.fn()
+        Notification.permission = "granted"
+        vi.stubGlobal("Notification", Notification)
+        const hidden = vi.spyOn(document, "hidden", "get")
+
+        hidden.mockReturnValue(false)
+        showStageNotification("focus", "short")
+        expect(Notification).not.toHaveBeenCalled()
+
+        hidden.mockReturnValue(true)
+        showStageNotification("focus", "short")
+        expect(Notification).toHaveBeenCalledWith("Foco concluído!", expect.objectContaining({ body: "Próxima etapa: Pausa curta." }))
+
+        Notification.permission = "denied"
+        showStageNotification("short", "focus")
+        expect(Notification).toHaveBeenCalledTimes(1)
     })
 
     it("limita valores de minutos inválidos", () => {

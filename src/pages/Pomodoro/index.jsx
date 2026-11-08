@@ -6,11 +6,12 @@ import ProgressBar from '../../components/ProgressBar';
 import { InputCheckBox } from '../../components/Inputs';
 import { useLibrary } from '../../context/LibraryContext';
 import { usePomodoro } from '../../context/PomodoroContext';
+import { useToast } from '../../context/ToastContext';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useShortcut } from '../../hooks/useShortcut';
 import { readingStreak } from '../../utils/readingStats';
 import { readingProgress, sessionsOnDay, sumMinutes } from '../../services/library';
-import { MODES, cycleProgress, formatTime, sanitizeMinutes } from '../../utils/pomodoro';
+import { MODES, canNotify, cycleProgress, formatTime, sanitizeMinutes } from '../../utils/pomodoro';
 import styles from './Pomodoro.module.css';
 
 const RADIUS = 90;
@@ -142,6 +143,7 @@ const MINUTE_FIELDS = [
 
 const SettingsPanel = () => {
   const { settings, updateSettings } = usePomodoro();
+  const { notify } = useToast();
   return (
     <details className={styles.panel}>
       <summary>Configurações</summary>
@@ -174,6 +176,19 @@ const SettingsPanel = () => {
         checked={settings.sound}
         onChange={(event) => updateSettings({ sound: event.target.checked })}
       />
+      {canNotify() && (
+        <InputCheckBox
+          label="Notificar quando estiver em outra aba"
+          checked={settings.notify}
+          onChange={async (event) => {
+            const wanted = event.target.checked;
+            if (!wanted) return updateSettings({ notify: false });
+            const permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
+            updateSettings({ notify: permission === 'granted' });
+            if (permission !== 'granted') notify('Permita as notificações do site no navegador para usar este recurso.', { tone: 'error' });
+          }}
+        />
+      )}
     </details>
   );
 };

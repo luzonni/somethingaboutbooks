@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS = {
     longEvery: 4,
     autoStart: false,
     sound: true,
+    notify: false,
 }
 
 export const durationOf = (mode, settings) => settings[mode] * 60
@@ -93,6 +94,20 @@ export const sanitizeMinutes = (value, fallback) => {
     const minutes = Math.round(Number(value))
     if (!Number.isFinite(minutes) || minutes < 1) return fallback
     return Math.min(minutes, 180)
+}
+
+export const canNotify = () => typeof Notification !== "undefined"
+
+// Avisa pelo sistema quando a aba não está visível; com a aba aberta o som e a tela já bastam.
+export const showStageNotification = (finishedMode, nextStage) => {
+    if (!canNotify() || Notification.permission !== "granted" || !document.hidden) return
+    const title = finishedMode === "focus" ? "Foco concluído!" : "Pausa terminada"
+    const body = `Próxima etapa: ${MODES[nextStage]}.`
+    try {
+        new Notification(title, { body, icon: "/imgs/logo.png", tag: "sab-pomodoro" })
+    } catch {
+        // Alguns navegadores só permitem notificações pelo service worker.
+    }
 }
 
 export const playChime = () => {
