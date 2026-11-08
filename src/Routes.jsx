@@ -15,6 +15,8 @@ import Home from "./pages/Home";
 const loadAllBooksPage = () => import("./pages/AllBooksPage");
 const AllBooksPage = lazy(loadAllBooksPage);
 const loadBookPreview = () => import("./pages/BookPreview");
+const loadAuthorPage = () => import("./pages/AuthorPage");
+const AuthorPage = lazy(loadAuthorPage);
 const BookPreview = lazy(loadBookPreview);
 const loadAuthPage = () => import("./pages/Auth");
 const AuthPage = lazy(loadAuthPage);
@@ -57,6 +59,7 @@ function AppRoutes() {
                   <Route index element={<Home />} />
                   <Route path="books" element={<AllBooksPage />} />
                   <Route path="books/:id" element={<BookPreview />} />
+                  <Route path="autores/:id" element={<AuthorPage />} />
                   <Route path="pomodoro" element={<Pomodoro />} />
                   <Route path="user/:username" element={<UserProfile />} />
                   <Route path="userconfig" element={isPrivate(<UserConfig />)} />
