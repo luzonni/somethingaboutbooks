@@ -1,6 +1,6 @@
 import { Link, Navigate, useLocation } from "react-router-dom"
 import styled from "styled-components"
-import { Black, Border, Cream, DarkGray, DarkRed, White } from "../../assets/Colors"
+import { Black, Border, Cream, DarkGray, DarkRed, Sand, Surface, White } from "../../assets/Colors"
 import { useAuth } from "../../context/AuthContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import Login from "../Login"
@@ -30,7 +30,7 @@ const AuthStyle = styled.main`
         width: min(64rem, 100%);
         border-radius: 20px;
         overflow: hidden;
-        background-color: white;
+        background-color: ${Surface};
         box-shadow: 0 20px 50px rgba(41, 20, 16, 0.18);
     }
     .auth__panes {
@@ -138,7 +138,7 @@ const AuthStyle = styled.main`
         line-height: 1.2;
     }
     .auth__message p {
-        color: ${Cream};
+        color: ${Sand};
         font-weight: 300;
     }
     .auth__cta {

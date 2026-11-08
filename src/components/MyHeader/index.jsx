@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { FiClock, FiMenu } from "react-icons/fi"
-import { Black, Border, Cream, DarkRed, White } from "../../assets/Colors"
+import { Black, Border, Cream, DarkRed, Surface, White } from "../../assets/Colors"
 import { useAuth } from "../../context/AuthContext"
 import { usePomodoro } from "../../context/PomodoroContext"
 import { formatTime } from "../../utils/pomodoro"
@@ -91,7 +91,7 @@ const HeaderStyle = styled.header`
         line-height: 0;
     }
     .bar__menu:hover {
-        background-color: ${White};
+        background-color: ${Surface};
     }
     .bar__timer {
         display: flex;

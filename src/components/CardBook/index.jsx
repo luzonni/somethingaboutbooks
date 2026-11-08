@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { Link } from "react-router-dom"
 import BookCover from "../BookCover"
 import Stars from "../Stars"
-import { Black, Coral, Cream, DarkGray, White } from "../../assets/Colors"
+import { Black, Coral, Cream, DarkGray, Ink, Surface } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
 import { SHELVES } from "../../services/library"
 
@@ -45,7 +45,7 @@ const CardBookStyle = styled.article`
         padding: 0.125rem 0.5rem;
         border-radius: 4px;
         background-color: ${Coral};
-        color: ${Black};
+        color: ${Ink};
         font-size: 0.75rem;
         font-weight: 500;
     }
@@ -64,7 +64,7 @@ const RowCardBookStyle = styled.article`
         transition: background-color 200ms ease;
     }
     a:hover {
-        background-color: ${White};
+        background-color: ${Surface};
     }
     .row__cover {
         flex: 0 0 6rem;

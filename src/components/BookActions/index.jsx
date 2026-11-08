@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import styled, { keyframes } from "styled-components"
 import { FiBookmark, FiBookOpen, FiCheck, FiClock } from "react-icons/fi"
 import { FaHeart, FaRegHeart } from "react-icons/fa"
-import { Black, Coral, Cream, White } from "../../assets/Colors"
+import { Coral, Ink, Sand, White } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
 import { SHELVES } from "../../services/library"
 
@@ -51,9 +51,9 @@ const ActionsStyle = styled.div`
         transform: translateY(0) scale(0.97);
     }
     .actions__shelf[aria-pressed="true"] {
-        background-color: ${Cream};
-        border-color: ${Cream};
-        color: ${Black};
+        background-color: ${Sand};
+        border-color: ${Sand};
+        color: ${Ink};
         animation: ${pop} 300ms ease;
     }
     .actions__favorite svg {
@@ -65,7 +65,7 @@ const ActionsStyle = styled.div`
     button.actions__primary, .actions__cta {
         background-color: ${Coral};
         border-color: ${Coral};
-        color: ${Black};
+        color: ${Ink};
         font-weight: 700;
     }
     button.actions__primary:hover, .actions__cta:hover {
@@ -76,7 +76,7 @@ const ActionsStyle = styled.div`
         flex-wrap: wrap;
         align-items: center;
         gap: 0.375rem 0.875rem;
-        color: ${Cream};
+        color: ${Sand};
         font-size: 0.9375rem;
     }
     .actions__lists label {
@@ -89,7 +89,7 @@ const ActionsStyle = styled.div`
         accent-color: ${Coral};
     }
     .actions__hint {
-        color: ${Cream};
+        color: ${Sand};
         font-size: 0.9375rem;
     }
     @media (max-width: 640px) {

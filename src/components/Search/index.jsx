@@ -2,7 +2,7 @@ import { useState } from "react"
 import styled, { css, keyframes } from "styled-components"
 import { FaSearch } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
-import { Border, Coral, Black, Cream } from "../../assets/Colors"
+import { Border, Coral, Cream, Ink, Surface } from "../../assets/Colors"
 import { useTypingPlaceholder } from "../../hooks/useTypingPlaceholder"
 
 const glow = keyframes`
@@ -34,7 +34,7 @@ const SearchStyle = styled.form`
         flex: 1;
         min-width: 0;
         padding: ${({ $compact }) => ($compact ? "0.4rem 0.75rem" : "0.75rem 1rem")};
-        background-color: ${({ $compact }) => ($compact ? "white" : Cream)};
+        background-color: ${({ $compact }) => ($compact ? Surface : Cream)};
         border: 2px solid ${Border};
         border-right: none;
         border-radius: 12px 0 0 12px;
@@ -50,7 +50,7 @@ const SearchStyle = styled.form`
         background-color: ${Coral};
         border: none;
         border-radius: 0 12px 12px 0;
-        color: ${Black};
+        color: ${Ink};
         font-size: ${({ $compact }) => ($compact ? "1rem" : "1.25rem")};
         transition: filter 150ms ease;
     }

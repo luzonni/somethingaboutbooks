@@ -13,7 +13,7 @@ const LayoutStyle = styled.div`
     main {
         flex: 1;
         width: 100%;
-        background-color: white;
+        background-color: var(--color-surface);
     }
 `
 

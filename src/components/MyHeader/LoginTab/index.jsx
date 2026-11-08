@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { FiArrowRight, FiChevronDown, FiLogOut } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Black, Border, Cream, DarkRed, White } from "../../../assets/Colors";
+import { Black, Border, Cream, DarkRed, Surface, White } from "../../../assets/Colors";
 import { useAuth } from "../../../context/AuthContext";
 import { accountLinks } from "../navItems";
 
@@ -37,7 +37,7 @@ const LoginTabStyle = styled.div`
 
     .login__enter:hover {
         border-color: ${DarkRed};
-        background-color: ${White};
+        background-color: ${Surface};
     }
 
     .login__enter:hover svg {
@@ -90,7 +90,7 @@ const LoginTabStyle = styled.div`
     }
 
     .user__toggle:hover {
-        background-color: ${White};
+        background-color: ${Surface};
     }
 
     .user__avatar {
@@ -121,7 +121,7 @@ const LoginTabStyle = styled.div`
         padding: 0.375rem;
         border: 1px solid ${Border};
         border-radius: 10px;
-        background-color: white;
+        background-color: ${Surface};
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 

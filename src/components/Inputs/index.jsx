@@ -1,7 +1,7 @@
 import { useId, useState } from "react"
 import styled from "styled-components"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
-import { Black, Border, Danger, DarkGray, DarkRed, White } from "../../assets/Colors"
+import { Black, Border, Danger, DarkGray, DarkRed, Surface, White } from "../../assets/Colors"
 
 const InputStyle = styled.div`
     width: 100%;
@@ -46,7 +46,7 @@ const InputStyle = styled.div`
         padding: 0 0.75rem;
         font-size: 0.9375rem;
         color: ${Black};
-        background-color: white;
+        background-color: ${Surface};
         transition: border-color 150ms ease, box-shadow 150ms ease;
     }
 

@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components"
-import { Cream, White } from "../../assets/Colors"
+import { Sand, White } from "../../assets/Colors"
 import Search from "../../components/Search"
 import BookSection from "../../components/BookSection"
 import { CardBook } from "../../components/CardBook"
@@ -43,7 +43,7 @@ const HomeStyle = styled.div`
         max-width: 36rem;
         margin: 0 auto;
         text-align: center;
-        color: ${Cream};
+        color: ${Sand};
         font-size: clamp(1rem, 2vw, 1.25rem);
         font-weight: 300;
     }

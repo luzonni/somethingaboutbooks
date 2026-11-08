@@ -18,7 +18,7 @@ import {
     FiStar,
     FiTrash2,
 } from "react-icons/fi"
-import { Border, Cream, DarkGray, DarkRed, White } from "../../assets/Colors"
+import { Border, Cream, DarkGray, DarkRed, Sand, White } from "../../assets/Colors"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 
 const fadeIn = keyframes`
@@ -46,7 +46,7 @@ const InfoStyle = styled.div`
     .info__banner p {
         max-width: 38rem;
         margin: 0.5rem auto 0;
-        color: ${Cream};
+        color: ${Sand};
         font-size: 1.0625rem;
         font-weight: 300;
     }
@@ -112,7 +112,7 @@ const InfoStyle = styled.div`
         padding: 1.125rem;
         border: 1px solid ${Border};
         border-radius: 12px;
-        background-color: #fbfaf5;
+        background-color: var(--color-surface-soft);
     }
     .info__card h3 {
         font-weight: 700;
@@ -159,7 +159,7 @@ const InfoStyle = styled.div`
     .info__faq details {
         border: 1px solid ${Border};
         border-radius: 10px;
-        background-color: #fbfaf5;
+        background-color: var(--color-surface-soft);
     }
     .info__faq summary {
         display: flex;

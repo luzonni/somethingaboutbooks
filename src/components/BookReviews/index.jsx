@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { IoIosStar } from "react-icons/io"
-import { Border, Coral, Cream, Danger, DarkGray, DarkRed, Gray, White } from "../../assets/Colors"
+import { Border, Coral, Cream, Danger, DarkGray, DarkRed, Gray, Surface, White } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
 import Stars from "../Stars"
 
@@ -83,7 +83,7 @@ const ReviewsStyle = styled.div`
     }
     .reviews__secondary {
         border: 1px solid ${Border};
-        background-color: white;
+        background-color: ${Surface};
     }
     .reviews__card {
         display: flex;
