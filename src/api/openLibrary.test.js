@@ -85,6 +85,15 @@ describe("openLibrary", () => {
         expect(result.books[0].cover).toContain("/b/id/2-M.jpg")
     })
 
+    it("aplica só ordenações conhecidas", async () => {
+        const fetchMock = mockFetch(() => ({ body: { numFound: 0, docs: [] } }))
+        await searchBooks({ query: "x", sort: "rating" })
+        await searchBooks({ query: "x", sort: "hackeado" })
+        const sortOf = (call) => new URL(fetchMock.mock.calls[call][0]).searchParams.get("sort")
+        expect(sortOf(0)).toBe("rating")
+        expect(sortOf(1)).toBeNull()
+    })
+
     it("informa que não há mais páginas", async () => {
         mockFetch(() => ({ body: { numFound: 24, docs: [] } }))
         const result = await searchBooks({ query: "x", page: 1, limit: 24 })

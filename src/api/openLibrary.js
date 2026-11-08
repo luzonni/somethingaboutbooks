@@ -20,6 +20,14 @@ const SEARCH_FIELDS = [
 
 export const PAGE_SIZE = 24
 
+export const SORT_OPTIONS = [
+    { value: "", label: "Relevância" },
+    { value: "readinglog", label: "Mais lidos" },
+    { value: "rating", label: "Melhor avaliados" },
+    { value: "new", label: "Mais recentes" },
+]
+const SORT_VALUES = new Set(SORT_OPTIONS.map(({ value }) => value))
+
 // As etiquetas da Open Library são ruidosas: uma etiqueta só traz muito livro fora do gênero.
 // Por isso cada gênero combina as etiquetas mais confiáveis e exclui as que costumam confundir.
 export const GENRES = [
@@ -239,19 +247,19 @@ const runSearch = async ({ terms, sort, page = 1, limit, signal }) => {
     }
 }
 
-export const searchBooks = async ({ query = "", genre = "", page = 1, limit = PAGE_SIZE, signal } = {}) => {
+export const searchBooks = async ({ query = "", genre = "", sort = "", page = 1, limit = PAGE_SIZE, signal } = {}) => {
     const text = query.trim()
     const terms = [text, genre && genreQuery(genre)].filter(Boolean).join(" ")
     const { books, total } = await runSearch({
         terms,
         // Sem texto digitado não há relevância para ordenar: mostra primeiro os mais lidos.
-        sort: text ? undefined : "readinglog",
+        sort: (SORT_VALUES.has(sort) && sort) || (text ? undefined : "readinglog"),
         page,
         limit,
         signal,
     })
     return {
-        books: text ? books : curateBooks(books, { maxPerAuthor: 3 }),
+        books: text || sort ? books : curateBooks(books, { maxPerAuthor: 3 }),
         total,
         hasMore: page * limit < total,
     }
