@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
     FormError,
     InputDate,
@@ -161,7 +160,6 @@ function PasswordForm() {
 
 function DeleteAccount() {
     const { user, deleteAccount } = useAuth();
-    const navigate = useNavigate();
     const [confirming, setConfirming] = useState(false);
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -172,7 +170,6 @@ function DeleteAccount() {
         try {
             await deleteAccount(password);
             clearLibrary(userId);
-            navigate("/", { replace: true });
         } catch (failure) {
             setError(failure.message);
         }

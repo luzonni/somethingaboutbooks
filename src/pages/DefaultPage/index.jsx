@@ -7,6 +7,7 @@ import { Spinner } from "../../components/Feedback";
 import MyFooter from "../../components/MyFooter";
 import MyHeader from "../../components/MyHeader";
 import OfflineBanner from "../../components/OfflineBanner";
+import { useAuth } from "../../context/AuthContext";
 import { useShortcut } from "../../hooks/useShortcut";
 
 // Prefere a busca do conteúdo da página; se não houver, usa a da navbar.
@@ -49,6 +50,12 @@ const LayoutStyle = styled.div`
 
 const DefaultPage = () => {
     const { pathname } = useLocation()
+    const { signedOut, acknowledgeSignOut } = useAuth()
+
+    // Já na página inicial depois de sair: próximas visitas a páginas protegidas pedem login de novo.
+    useEffect(() => {
+        if (signedOut && pathname === "/") acknowledgeSignOut()
+    }, [signedOut, pathname, acknowledgeSignOut])
 
     useShortcut("/", focusSearch)
 
