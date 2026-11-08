@@ -19,7 +19,13 @@ const HeaderStyle = styled.header`
     z-index: 20;
     background-color: ${Cream};
     border-bottom: 1px solid ${Border};
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: ${({ $scrolled }) => ($scrolled ? "0 6px 20px rgba(0, 0, 0, 0.12)" : "0 1px 0 rgba(0, 0, 0, 0.02)")};
+    transition: box-shadow 200ms ease, background-color 200ms ease;
+    /* Vidro fosco: quase opaco, mas deixa perceber o conteúdo passando por baixo. */
+    @supports (backdrop-filter: blur(1px)) {
+        background-color: color-mix(in srgb, var(--color-surface-muted) 90%, transparent);
+        backdrop-filter: saturate(1.4) blur(14px);
+    }
     .bar {
         display: flex;
         align-items: center;
@@ -152,6 +158,14 @@ const MyHeader = () => {
 
     useEffect(closeMenu, [location.pathname, location.search, closeMenu])
 
+    const [scrolled, setScrolled] = useState(false)
+    useEffect(() => {
+        const update = () => setScrolled(window.scrollY > 8)
+        update()
+        window.addEventListener("scroll", update, { passive: true })
+        return () => window.removeEventListener("scroll", update)
+    }, [])
+
     useEffect(() => {
         const desktop = window.matchMedia?.("(min-width: 900px)")
         desktop?.addEventListener("change", closeMenu)
@@ -159,7 +173,7 @@ const MyHeader = () => {
     }, [closeMenu])
 
     return (
-        <HeaderStyle>
+        <HeaderStyle $scrolled={scrolled}>
             <div className="bar">
                 <button
                     ref={menuButtonRef}
