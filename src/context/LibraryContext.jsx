@@ -30,6 +30,8 @@ const LibraryStore = ({ userId, children }) => {
             saveReview: (book, rating, review) => dispatch({ type: "SAVE_REVIEW", book, rating, review }),
             deleteReview: (bookId) => dispatch({ type: "DELETE_REVIEW", bookId }),
             setProgress: (bookId, currentPage) => dispatch({ type: "SET_PROGRESS", bookId, currentPage }),
+            setTotalPages: (bookId, currentPage, totalPages) =>
+                dispatch({ type: "SET_PROGRESS", bookId, currentPage, totalPages }),
             removeBook: (bookId) => dispatch({ type: "REMOVE_BOOK", bookId }),
             createList: (name) => dispatch({ type: "CREATE_LIST", id: crypto.randomUUID(), name }),
             deleteList: (listId) => dispatch({ type: "DELETE_LIST", listId }),

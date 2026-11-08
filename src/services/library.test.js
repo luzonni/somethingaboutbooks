@@ -3,6 +3,7 @@ import {
     EMPTY_LIBRARY,
     libraryReducer as reduce,
     libraryStats,
+    readingProgress,
     loadLibrary,
     saveLibrary,
     sessionsOnDay,
@@ -100,6 +101,46 @@ describe("libraryReducer", () => {
         )
         expect(state.books.OL1W).toBeUndefined()
         expect(state.lists[0].bookIds).toEqual([])
+    })
+})
+
+describe("progresso de leitura", () => {
+    const reading = (state) => state.books.OL1W
+
+    it("guarda páginas como números válidos", () => {
+        const state = apply(
+            { type: "SET_SHELF", book: { ...book, pages: 300 }, shelf: "reading" },
+            { type: "SET_PROGRESS", bookId: book.id, currentPage: "75.8" }
+        )
+        expect(reading(state).currentPage).toBe(75)
+        expect(readingProgress(reading(state))).toBe(0.25)
+    })
+
+    it("prefere o total informado pela pessoa", () => {
+        const state = apply(
+            { type: "SET_SHELF", book: { ...book, pages: 300 }, shelf: "reading" },
+            { type: "SET_PROGRESS", bookId: book.id, currentPage: 50, totalPages: "100" }
+        )
+        expect(readingProgress(reading(state))).toBe(0.5)
+    })
+
+    it("ignora valores inválidos e limita a 100%", () => {
+        const state = apply(
+            { type: "SET_SHELF", book: { ...book, pages: 100 }, shelf: "reading" },
+            { type: "SET_PROGRESS", bookId: book.id, currentPage: "-3" }
+        )
+        expect(reading(state).currentPage).toBeNull()
+        expect(readingProgress(reading(state))).toBeNull()
+        expect(readingProgress({ currentPage: 500, pages: 100 })).toBe(1)
+        expect(readingProgress({ currentPage: 10 })).toBeNull()
+    })
+
+    it("não perde o total de páginas ao salvar o livro sem esse dado", () => {
+        const state = apply(
+            { type: "SET_SHELF", book: { ...book, pages: 310 }, shelf: "reading" },
+            { type: "TOGGLE_FAVORITE", book }
+        )
+        expect(reading(state).pages).toBe(310)
     })
 })
 

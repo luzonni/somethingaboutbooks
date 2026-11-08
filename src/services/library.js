@@ -14,7 +14,15 @@ export const loadLibrary = (userId) => ({ ...EMPTY_LIBRARY, ...readJson(storageK
 export const saveLibrary = (userId, library) => writeJson(storageKey(userId), library)
 export const clearLibrary = (userId) => removeKey(storageKey(userId))
 
-const snapshot = ({ id, title, author, cover }) => ({ id, title, author, cover })
+// Guarda só o essencial do livro; campos ausentes não apagam o que já estava salvo.
+const snapshot = ({ id, title, author, cover, pages }) =>
+    Object.fromEntries(Object.entries({ id, title, author, cover, pages }).filter(([, value]) => value !== undefined))
+
+const toPage = (value) => {
+    if (value === "" || value === null || value === undefined) return null
+    const page = Math.floor(Number(value))
+    return Number.isFinite(page) && page >= 0 ? Math.min(page, 100000) : null
+}
 
 const isEmptyEntry = (entry, lists) =>
     !entry.shelf &&
@@ -67,7 +75,9 @@ export const libraryReducer = (state, action) => {
         case "SET_PROGRESS": {
             const entry = state.books[bookId]
             if (!entry) return state
-            return withEntry(state, entry, { currentPage: action.currentPage }, now)
+            const changes = { currentPage: toPage(action.currentPage) }
+            if ("totalPages" in action) changes.totalPages = toPage(action.totalPages) || null
+            return withEntry(state, entry, changes, now)
         }
         case "REMOVE_BOOK": {
             const books = { ...state.books }
@@ -122,6 +132,13 @@ export const libraryStats = (library, year = new Date().getFullYear()) => {
         lists: library.lists.length,
         minutes: sumMinutes(library.sessions),
     }
+}
+
+// Fração lida (0 a 1), usando o total informado pela pessoa ou o da Open Library.
+export const readingProgress = (entry) => {
+    const total = entry?.totalPages || entry?.pages
+    if (!total || entry.currentPage === null || entry.currentPage === undefined) return null
+    return Math.min(entry.currentPage / total, 1)
 }
 
 export const byRecent = (field) => (a, b) => new Date(b[field] ?? 0) - new Date(a[field] ?? 0)
