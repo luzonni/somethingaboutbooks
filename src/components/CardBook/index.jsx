@@ -1,10 +1,11 @@
 import styled from "styled-components"
 import { Link } from "react-router-dom"
 import BookCover from "../BookCover"
+import ProgressBar from "../ProgressBar"
 import Stars from "../Stars"
 import { Black, Coral, Cream, DarkGray, Ink, Surface } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
-import { SHELVES } from "../../services/library"
+import { SHELVES, readingProgress } from "../../services/library"
 
 const CardBookStyle = styled.article`
     position: relative;
@@ -92,11 +93,14 @@ const RowCardBookStyle = styled.article`
 
 export const CardBook = ({ book }) => {
     const { getEntry } = useLibrary()
-    const shelf = getEntry(book.id)?.shelf
+    const entry = getEntry(book.id)
+    const shelf = entry?.shelf
+    const progress = shelf === "reading" ? readingProgress(entry) : null
     return (
         <CardBookStyle>
             <Link to={`/books/${book.id}`} state={{ book }}>
                 <BookCover className="card__cover" src={book.cover} title={book.title} />
+                {progress !== null && <ProgressBar value={progress} label={`Progresso em ${book.title}`} />}
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
             </Link>

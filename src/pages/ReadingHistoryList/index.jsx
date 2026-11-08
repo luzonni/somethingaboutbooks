@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState } from "../../components/Feedback";
+import ProgressBar from "../../components/ProgressBar";
 import { useLibrary } from "../../context/LibraryContext";
 import { useToast } from "../../context/ToastContext";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
-import { SHELVES, byRecent, libraryStats } from "../../services/library";
+import { SHELVES, byRecent, libraryStats, readingProgress } from "../../services/library";
 import styles from "./ReadingHistoryList.module.css";
 
 const FILTERS = { all: "Todos", ...SHELVES };
@@ -141,6 +142,9 @@ const ReadingHistoryList = () => {
                   <strong>{entry.title}</strong>
                   <span className={styles.muted}>{entry.author}</span>
                   <span className={styles.muted}>{SHELVES[entry.shelf]} · {entryDate(entry)}</span>
+                  {entry.shelf === "reading" && readingProgress(entry) !== null && (
+                    <ProgressBar className={styles.itemProgress} value={readingProgress(entry)} label={`Progresso em ${entry.title}`} />
+                  )}
                 </span>
               </Link>
               <button
