@@ -43,7 +43,7 @@ footer, header, hgroup, menu, nav, section {
 
 body {
 	line-height: 1.5;
-	background-color: white;
+	background-color: var(--color-surface);
 	overflow-wrap: break-word;
 }
 
