@@ -264,6 +264,27 @@ details.panel > div + div {
   gap: 0.75rem;
 }
 
+.shortcuts {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.shortcuts kbd {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--color-border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background-color: var(--color-surface-soft);
+  font-family: inherit;
+  font-size: 0.75rem;
+}
+
+@media (hover: none) {
+  .shortcuts {
+    display: none;
+  }
+}
+
 @media (max-width: 800px) {
   .container {
     grid-template-columns: minmax(0, 1fr);

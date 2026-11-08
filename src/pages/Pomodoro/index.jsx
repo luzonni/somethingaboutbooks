@@ -7,6 +7,8 @@ import { InputCheckBox } from '../../components/Inputs';
 import { useLibrary } from '../../context/LibraryContext';
 import { usePomodoro } from '../../context/PomodoroContext';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+import { useShortcut } from '../../hooks/useShortcut';
+import { readingStreak } from '../../utils/readingStats';
 import { readingProgress, sessionsOnDay, sumMinutes } from '../../services/library';
 import { MODES, cycleProgress, formatTime, sanitizeMinutes } from '../../utils/pomodoro';
 import styles from './Pomodoro.module.css';
@@ -193,6 +195,11 @@ const Pomodoro = () => {
 
   const today = sessionsOnDay(sessions);
   const isRunning = timer.status === 'running';
+  const streak = readingStreak(sessions);
+
+  useShortcut(' ', () => (isRunning ? pause() : start()));
+  useShortcut(['r', 'R'], reset);
+  useShortcut(['p', 'P'], skip);
 
   return (
     <div className={styles.container}>
@@ -231,8 +238,13 @@ const Pomodoro = () => {
         {canSave && (
           <p className={styles.muted}>
             Hoje: {today.length} {today.length === 1 ? 'sessão' : 'sessões'} · {sumMinutes(today)} min de foco
+            {streak > 1 && ` · ${streak} dias seguidos`}
           </p>
         )}
+
+        <p className={styles.shortcuts} aria-hidden="true">
+          <kbd>Espaço</kbd> iniciar/pausar · <kbd>R</kbd> reiniciar · <kbd>P</kbd> pular
+        </p>
       </div>
 
       <div className={styles.sidebar}>
