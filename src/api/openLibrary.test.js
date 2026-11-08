@@ -144,12 +144,20 @@ describe("openLibrary", () => {
         await expect(getWork("OLcicloW")).rejects.toMatchObject({ status: 404 })
     })
 
+    it("traz o número de páginas das edições", async () => {
+        mockFetch((url) =>
+            url.includes("/search.json") ? { body: { docs: [{ number_of_pages_median: 310 }] } } : { body: {} }
+        )
+        const extras = await getBookExtras({ id: "OL1W", authorIds: [] })
+        expect(extras.pages).toBe(310)
+    })
+
     it("não falha quando autor e notas estão indisponíveis", async () => {
         mockFetch(() => ({ status: 500 }))
 
         const extras = await getBookExtras({ id: "OL1W", authorIds: ["OL9A"] })
 
-        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0, ratingCounts: {} })
+        expect(extras).toEqual({ authors: [], author: "Autor desconhecido", rating: null, ratingCount: 0, ratingCounts: {}, pages: null })
     })
 
     it("busca gêneros por etiquetas precisas e mais lidos", async () => {

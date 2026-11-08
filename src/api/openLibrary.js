@@ -11,6 +11,7 @@ const SEARCH_FIELDS = [
     "first_publish_year",
     "ratings_average",
     "ratings_count",
+    "number_of_pages_median",
     "editions",
     "editions.title",
     "editions.language",
@@ -199,7 +200,7 @@ export const cleanTitle = (title = "") =>
         .replace(/\s*\[[^\]]*\]\s*$/, "")
         .trim() || title
 
-const normalizeBook = ({ key, title, authors, coverId, year, rating, ratingCount }) => ({
+const normalizeBook = ({ key, title, authors, coverId, year, rating, ratingCount, pages }) => ({
     id: idFromKey(key),
     title: cleanTitle(title),
     author: authors?.[0] ?? "Autor desconhecido",
@@ -207,6 +208,7 @@ const normalizeBook = ({ key, title, authors, coverId, year, rating, ratingCount
     year: year ?? null,
     rating: rating ?? null,
     ratingCount: ratingCount ?? 0,
+    ...(pages > 0 ? { pages } : {}),
 })
 
 const normalizeSearchDoc = (doc) => {
@@ -220,6 +222,7 @@ const normalizeSearchDoc = (doc) => {
         year: doc.first_publish_year,
         rating: doc.ratings_average,
         ratingCount: doc.ratings_count,
+        pages: doc.number_of_pages_median,
     })
 }
 
@@ -352,8 +355,10 @@ export const getWork = async (workId, { signal } = {}) => {
 
 // Autores e notas chegam depois da obra e, se falharem, não impedem de mostrar o livro.
 export const getBookExtras = async ({ id, authorIds }, { signal } = {}) => {
-    const [ratings, ...authors] = await Promise.allSettled([
+    const [ratings, edition, ...authors] = await Promise.allSettled([
         request(`/works/${id}/ratings.json`, { signal }),
+        // O número de páginas fica nas edições: a busca devolve a mediana entre elas.
+        request("/search.json", { params: { q: `key:/works/${id}`, fields: "number_of_pages_median" }, signal }),
         ...authorIds.map((authorId) => getAuthor(authorId, { signal })),
     ])
 
@@ -368,5 +373,6 @@ export const getBookExtras = async ({ id, authorIds }, { signal } = {}) => {
         rating: summary?.average ?? null,
         ratingCount: summary?.count ?? 0,
         ratingCounts: valueOrNull(ratings)?.counts ?? {},
+        pages: valueOrNull(edition)?.docs?.[0]?.number_of_pages_median ?? null,
     }
 }
