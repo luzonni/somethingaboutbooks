@@ -7,6 +7,7 @@ import {
     cleanTitle,
     coverUrl,
     curateBooks,
+    dedupeBooks,
     getAuthor,
     getAuthorWorks,
     getBookExtras,
@@ -319,6 +320,25 @@ describe("cleanTitle", () => {
     it("mantém títulos normais", () => {
         expect(cleanTitle("1984")).toBe("1984")
         expect(cleanTitle("O Hobbit (edição de bolso)")).toBe("O Hobbit (edição de bolso)")
+    })
+})
+
+describe("dedupeBooks", () => {
+    const book = (id, title, cover = "", author = "James Clear") => ({ id, title, cover, author })
+
+    it("junta títulos iguais ignorando acentos, caixa e pontuação", () => {
+        const books = [book("1", "Hábitos Atômicos", "a.jpg"), book("2", "habitos atomicos!"), book("3", "Outro livro")]
+        expect(dedupeBooks(books).map(({ id }) => id)).toEqual(["1", "3"])
+    })
+
+    it("troca a versão sem capa pela que tem capa, mantendo a posição", () => {
+        const books = [book("1", "Duna"), book("2", "Fundação", "f.jpg"), book("3", "DUNA", "d.jpg")]
+        expect(dedupeBooks(books).map(({ id }) => id)).toEqual(["3", "2"])
+    })
+
+    it("mantém títulos iguais de autores diferentes e remove ids repetidos", () => {
+        const books = [book("1", "Poemas", "", "A"), book("2", "Poemas", "", "B"), book("1", "Poemas", "", "A")]
+        expect(dedupeBooks(books).map(({ id }) => id)).toEqual(["1", "2"])
     })
 })
 

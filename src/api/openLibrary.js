@@ -104,6 +104,37 @@ export const curateBooks = (books, { maxPerAuthor = 2, limit = books.length } = 
         .slice(0, limit)
 }
 
+// "Hábitos Atômicos", "habitos atomicos!" e "Hábitos atômicos " viram a mesma chave.
+const normalize = (text = "") =>
+    text
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim()
+
+const titleKey = ({ title, author }) => `${normalize(title)}|${normalize(author)}`
+
+// A Open Library cadastra edições e traduções como obras separadas: mantém uma por título,
+// preferindo a que tem capa, sem mudar a ordem original.
+export const dedupeBooks = (books) => {
+    const seen = new Map()
+    const result = []
+    for (const book of books) {
+        const key = titleKey(book)
+        const index = seen.get(key)
+        if (seen.has(book.id)) continue
+        seen.set(book.id, -1)
+        if (index === undefined) {
+            seen.set(key, result.length)
+            result.push(book)
+        } else if (!result[index].cover && book.cover) {
+            result[index] = book
+        }
+    }
+    return result
+}
+
 export class ApiError extends Error {
     constructor(message, status) {
         super(message)
