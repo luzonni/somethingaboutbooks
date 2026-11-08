@@ -10,7 +10,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
-  workers: isCI ? 2 : 3,
+  // Dois navegadores em paralelo: mais que isso deixa máquinas comuns lentas e os testes instáveis.
+  workers: 2,
   timeout: 45_000,
   expect: { timeout: 10_000 },
   reporter: isCI ? [['github'], ['html', { open: 'never' }]] : [['list']],
