@@ -6,10 +6,12 @@ import MyHeader from "."
 import { AuthProvider } from "../../context/AuthContext"
 import { LibraryProvider } from "../../context/LibraryContext"
 import { PomodoroProvider } from "../../context/PomodoroContext"
+import { ThemeProvider } from "../../context/ThemeContext"
 import { register } from "../../services/authService"
 
 const renderHeader = () =>
     render(
+        <ThemeProvider>
         <AuthProvider>
             <LibraryProvider>
                 <PomodoroProvider>
@@ -19,6 +21,7 @@ const renderHeader = () =>
                 </PomodoroProvider>
             </LibraryProvider>
         </AuthProvider>
+        </ThemeProvider>
     )
 
 describe("MyHeader", () => {

@@ -5,6 +5,7 @@ import { FiLogOut, FiX } from "react-icons/fi"
 import { Black, Border, Cream, DarkRed, White } from "../../assets/Colors"
 import { useAuth } from "../../context/AuthContext"
 import Search from "../Search"
+import ThemeToggle from "../ThemeToggle"
 import { accountLinks, visibleNavItems } from "./navItems"
 
 const MobileMenuStyle = styled.div`
@@ -47,6 +48,11 @@ const MobileMenuStyle = styled.div`
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+    .drawer__tools {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
     }
     .drawer__head img {
         display: block;
@@ -164,10 +170,13 @@ const MobileMenu = ({ open, onClose, returnFocusRef }) => {
             <div className="drawer__backdrop" onClick={onClose} aria-hidden="true" />
             <aside id="mobile-menu" className="drawer" aria-label="Menu" aria-hidden={!open}>
                 <div className="drawer__head">
-                    <Link to="/" aria-label="Página inicial"><img src="/imgs/logo.png" alt="SAB" /></Link>
-                    <button ref={closeRef} type="button" className="drawer__close" aria-label="Fechar menu" onClick={onClose}>
-                        <FiX aria-hidden="true" />
-                    </button>
+                    <Link to="/" aria-label="Página inicial"><img className="logo-adaptive" src="/imgs/logo.png" alt="SAB" /></Link>
+                    <div className="drawer__tools">
+                        <ThemeToggle />
+                        <button ref={closeRef} type="button" className="drawer__close" aria-label="Fechar menu" onClick={onClose}>
+                            <FiX aria-hidden="true" />
+                        </button>
+                    </div>
                 </div>
 
                 <Search compact />
