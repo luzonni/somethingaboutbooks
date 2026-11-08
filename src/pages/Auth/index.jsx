@@ -250,7 +250,7 @@ const AuthPage = () => {
     return (
         <AuthStyle data-mode={mode}>
             <Link to="/" className="auth__logo-mobile" aria-label="Voltar para a página inicial">
-                <img src="/imgs/logo.png" alt="SAB" />
+                <img className="logo-adaptive" src="/imgs/logo.png" alt="SAB" />
             </Link>
 
             <div className="auth__card">
