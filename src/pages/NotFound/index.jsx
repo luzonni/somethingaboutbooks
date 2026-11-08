@@ -2,6 +2,7 @@ import styled from "styled-components"
 import { Link } from "react-router-dom"
 import { Black, DarkRed, White } from "../../assets/Colors"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
+import { asset } from "../../utils/asset"
 
 const NotFoundStyle = styled.div`
     display: flex;
@@ -37,7 +38,7 @@ const NotFound = () => {
     return (
         <NotFoundStyle>
             <h1>Página não encontrada</h1>
-            <img src="/imgs/cao-robo.jpg" alt="Cão-robô" />
+            <img src={asset("/imgs/cao-robo.jpg")} alt="Cão-robô" />
             <p>O endereço que você abriu não existe ou mudou de lugar.</p>
             <Link to="/">Voltar para o início</Link>
         </NotFoundStyle>

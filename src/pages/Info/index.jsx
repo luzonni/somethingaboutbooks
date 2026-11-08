@@ -20,6 +20,7 @@ import {
 } from "react-icons/fi"
 import { Border, Cream, DarkGray, DarkRed, Sand, White } from "../../assets/Colors"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
+import { asset } from "../../utils/asset"
 
 const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
@@ -34,7 +35,7 @@ const InfoStyle = styled.div`
         background-color: #1d0f0c;
         background-image:
             linear-gradient(rgba(70, 4, 4, 0.85), rgba(29, 8, 6, 0.93)),
-            url("/imgs/hero-books.svg");
+            url("${asset("/imgs/hero-books.svg")}");
         background-size: cover;
         background-position: center;
     }

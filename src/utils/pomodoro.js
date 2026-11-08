@@ -1,3 +1,5 @@
+import { asset } from "./asset"
+
 export const MODES = {
     focus: "Foco",
     short: "Pausa curta",
@@ -104,7 +106,7 @@ export const showStageNotification = (finishedMode, nextStage) => {
     const title = finishedMode === "focus" ? "Foco concluído!" : "Pausa terminada"
     const body = `Próxima etapa: ${MODES[nextStage]}.`
     try {
-        new Notification(title, { body, icon: "/icons/icon-192.png", tag: "sab-pomodoro" })
+        new Notification(title, { body, icon: asset("icons/icon-192.png"), tag: "sab-pomodoro" })
     } catch {
         // Alguns navegadores só permitem notificações pelo service worker.
     }

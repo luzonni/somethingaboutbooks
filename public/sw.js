@@ -4,9 +4,11 @@ const APP_CACHE = "sab-app-v1"
 const CURRENT_CACHES = [COVERS_CACHE, APP_CACHE]
 const COVERS_HOST = "covers.openlibrary.org"
 const MAX_COVERS = 500
+// Raiz do site, que pode ser um subcaminho (ex.: /somethingaboutbooks/ no GitHub Pages).
+const SCOPE = new URL(self.registration.scope).pathname
 
 self.addEventListener("install", (event) => {
-    event.waitUntil(caches.open(APP_CACHE).then((cache) => cache.add("/")).catch(() => {}))
+    event.waitUntil(caches.open(APP_CACHE).then((cache) => cache.add(SCOPE)).catch(() => {}))
     self.skipWaiting()
 })
 
@@ -49,10 +51,10 @@ const pageNetworkFirst = async (request) => {
     const cache = await caches.open(APP_CACHE)
     try {
         const response = await fetch(request)
-        if (response.ok) cache.put("/", response.clone())
+        if (response.ok) cache.put(SCOPE, response.clone())
         return response
     } catch {
-        return (await cache.match("/")) ?? Response.error()
+        return (await cache.match(SCOPE)) ?? Response.error()
     }
 }
 
@@ -75,6 +77,6 @@ self.addEventListener("fetch", (event) => {
         event.respondWith(coverFirst(request))
     } else if (url.origin === self.location.origin) {
         if (request.mode === "navigate") event.respondWith(pageNetworkFirst(request))
-        else if (/^\/(assets|icons|imgs)\//.test(url.pathname)) event.respondWith(assetCacheFirst(request))
+        else if (/^(assets|icons|imgs)\//.test(url.pathname.slice(SCOPE.length))) event.respondWith(assetCacheFirst(request))
     }
 })

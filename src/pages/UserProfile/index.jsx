@@ -12,6 +12,7 @@ import { useLibrary } from "../../context/LibraryContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import { findUserByUsername } from "../../services/authService"
 import { byRecent, libraryStats, loadLibrary } from "../../services/library"
+import { asset } from "../../utils/asset"
 
 const UserProfileStyle = styled.div`
     display: flex;
@@ -164,7 +165,7 @@ const UserProfile = () => {
     return (
         <UserProfileStyle>
             <div className="profile">
-                <img className="profile__avatar" src="/imgs/user.svg" alt="" />
+                <img className="profile__avatar" src={asset("/imgs/user.svg")} alt="" />
                 <div className="profile__content">
                     <h1>{profile.username}</h1>
                     {profile.location && <p className="profile__place"><MdPlace aria-hidden="true" /> {profile.location}</p>}

@@ -8,6 +8,7 @@ import { genreList, topRatedList, trendingList } from "../../api/openLibrary"
 import { useLibrary } from "../../context/LibraryContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import { byRecent } from "../../services/library"
+import { asset } from "../../utils/asset"
 
 const riseIn = keyframes`
     from { opacity: 0; transform: translateY(16px); }
@@ -27,7 +28,7 @@ const HomeStyle = styled.div`
         background-color: #1d0f0c;
         background-image:
             radial-gradient(ellipse at center, rgba(29, 8, 6, 0.93) 0%, rgba(29, 8, 6, 0.8) 42%, rgba(29, 8, 6, 0.42) 100%),
-            url("/imgs/hero-books.svg");
+            url("${asset("/imgs/hero-books.svg")}");
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;

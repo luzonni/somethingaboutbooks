@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Coral, Ink, White } from "../../assets/Colors";
+import { asset } from "../../utils/asset";
 
 const MyFooterStyle = styled.footer`
     padding: 2.5rem 1rem 1.5rem;
@@ -74,7 +75,7 @@ const MyFooter = () => (
     <MyFooterStyle>
         <div className="footer__content">
             <div className="footer__brand">
-                <img src="/imgs/logo.png" alt="SAB" />
+                <img src={asset("/imgs/logo.png")} alt="SAB" />
                 <p>Organize suas leituras e descubra sua próxima história.</p>
             </div>
             <nav className="footer__links" aria-label="Institucional">

@@ -11,6 +11,7 @@ import ThemeToggle from "../ThemeToggle"
 import LoginTab from "./LoginTab"
 import MobileMenu from "./MobileMenu"
 import { visibleNavItems } from "./navItems"
+import { asset } from "../../utils/asset"
 
 const HeaderStyle = styled.header`
     position: sticky;
@@ -173,7 +174,7 @@ const MyHeader = () => {
                 </button>
 
                 <Link to="/" className="bar__logo" aria-label="Página inicial">
-                    <img className="logo-adaptive" src="/imgs/logo.png" alt="SAB" />
+                    <img className="logo-adaptive" src={asset("/imgs/logo.png")} alt="SAB" />
                 </Link>
 
                 <nav className="bar__links" aria-label="Principal">

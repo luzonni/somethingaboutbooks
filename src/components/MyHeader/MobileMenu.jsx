@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext"
 import Search from "../Search"
 import ThemeToggle from "../ThemeToggle"
 import { accountLinks, visibleNavItems } from "./navItems"
+import { asset } from "../../utils/asset"
 
 const MobileMenuStyle = styled.div`
     .drawer__backdrop {
@@ -170,7 +171,7 @@ const MobileMenu = ({ open, onClose, returnFocusRef }) => {
             <div className="drawer__backdrop" onClick={onClose} aria-hidden="true" />
             <aside id="mobile-menu" className="drawer" aria-label="Menu" aria-hidden={!open}>
                 <div className="drawer__head">
-                    <Link to="/" aria-label="Página inicial"><img className="logo-adaptive" src="/imgs/logo.png" alt="SAB" /></Link>
+                    <Link to="/" aria-label="Página inicial"><img className="logo-adaptive" src={asset("/imgs/logo.png")} alt="SAB" /></Link>
                     <div className="drawer__tools">
                         <ThemeToggle />
                         <button ref={closeRef} type="button" className="drawer__close" aria-label="Fechar menu" onClick={onClose}>

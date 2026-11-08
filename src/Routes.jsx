@@ -9,6 +9,7 @@ import { PomodoroProvider } from "./context/PomodoroContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
 import DefaultPage from "./pages/DefaultPage";
+import { routerBasename } from "./utils/asset";
 import Home from "./pages/Home";
 
 const loadAllBooksPage = () => import("./pages/AllBooksPage");
@@ -43,7 +44,7 @@ const isPrivate = (page) => <RequireAuth>{page}</RequireAuth>;
 
 function AppRoutes() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <Reset />
       <ThemeProvider>
       <ToastProvider>

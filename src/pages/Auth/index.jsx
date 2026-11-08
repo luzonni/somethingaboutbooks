@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import Login from "../Login"
 import SignUp from "../SignUp"
+import { asset } from "../../utils/asset"
 
 const SLIDE = "700ms cubic-bezier(0.7, 0, 0.25, 1)"
 
@@ -96,7 +97,7 @@ const AuthStyle = styled.main`
         background-color: #1d0f0c;
         background-image:
             linear-gradient(rgba(70, 4, 4, 0.82), rgba(29, 8, 6, 0.92)),
-            url("/imgs/hero-books.svg");
+            url("${asset("/imgs/hero-books.svg")}");
         background-size: cover;
         background-position: center;
         transition: transform ${SLIDE};
@@ -250,7 +251,7 @@ const AuthPage = () => {
     return (
         <AuthStyle data-mode={mode}>
             <Link to="/" className="auth__logo-mobile" aria-label="Voltar para a página inicial">
-                <img className="logo-adaptive" src="/imgs/logo.png" alt="SAB" />
+                <img className="logo-adaptive" src={asset("/imgs/logo.png")} alt="SAB" />
             </Link>
 
             <div className="auth__card">
@@ -279,7 +280,7 @@ const AuthPage = () => {
 
                 <aside className="auth__art">
                     <Link to="/" className="auth__art-logo" aria-label="Voltar para a página inicial">
-                        <img src="/imgs/logo.png" alt="SAB" />
+                        <img src={asset("/imgs/logo.png")} alt="SAB" />
                     </Link>
                     <div className="auth__messages">
                         <div className="auth__message" data-message="login">
