@@ -126,6 +126,8 @@ export const libraryReducer = (state, action) => {
             else delete goals[action.year]
             return { ...state, goals }
         }
+        case "REPLACE":
+            return { ...EMPTY_LIBRARY, ...action.library }
         case "LOG_SESSION":
             return { ...state, sessions: [...state.sessions, action.session] }
         default:
