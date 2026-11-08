@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiCalendar, FiExternalLink } from "react-icons/fi";
 import { authorBooksList, getBookExtras, getWork, similarBooksList } from "../../api/openLibrary";
@@ -6,6 +6,7 @@ import BookActions from "../../components/BookActions";
 import BookCover from "../../components/BookCover";
 import BookReviews from "../../components/BookReviews";
 import BookSection from "../../components/BookSection";
+import ExpandableText from "../../components/ExpandableText";
 import { ErrorState, Skeleton, Spinner } from "../../components/Feedback";
 import Reveal from "../../components/Reveal";
 import ShareButton from "../../components/ShareButton";
@@ -57,49 +58,6 @@ function Book3D({ cover, lowRes, title }) {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function ExpandableText({ text, emptyText, collapsedHeight = "10.5rem" }) {
-  const contentRef = useRef(null);
-  const [expanded, setExpanded] = useState(false);
-  const [size, setSize] = useState({ full: 0, overflows: false });
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      const element = contentRef.current;
-      if (!element) return;
-      const probe = element.style.maxHeight;
-      element.style.maxHeight = collapsedHeight;
-      const overflows = element.scrollHeight > element.clientHeight + 2;
-      const full = element.scrollHeight;
-      element.style.maxHeight = probe;
-      setSize({ full, overflows });
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [text, collapsedHeight]);
-
-  if (!text) return <p className={styles.muted}>{emptyText}</p>;
-
-  const isClamped = size.overflows && !expanded;
-
-  return (
-    <div>
-      <div
-        ref={contentRef}
-        className={`${styles.expandable} ${isClamped ? styles.expandableClamped : ""}`}
-        style={{ maxHeight: expanded ? size.full : collapsedHeight }}
-      >
-        {text}
-      </div>
-      {size.overflows && (
-        <button type="button" className={styles.textButton} aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
-          {expanded ? "Ler menos" : "Ler mais"}
-        </button>
-      )}
     </div>
   );
 }
