@@ -123,7 +123,7 @@ const HeaderStyle = styled.header`
             display: block;
             justify-self: start;
         }
-        .bar__links, .bar__search {
+        .bar__links, .bar__search, .bar__theme {
             display: none;
         }
     }
@@ -191,7 +191,9 @@ const MyHeader = () => {
                         </div>
                     )}
                     <PomodoroPill />
-                    <ThemeToggle />
+                    <div className="bar__theme">
+                        <ThemeToggle />
+                    </div>
                     <LoginTab />
                 </div>
             </div>
