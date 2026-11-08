@@ -81,6 +81,11 @@ export const test = base.extend({
 
 export { expect }
 
+// Clica e espera o aviso ao mesmo tempo: o aviso dura 3,5 s e o clique pode demorar em máquinas lentas.
+export const clickAndExpectToast = async (page, button, text) => {
+  await Promise.all([page.locator('.toast', { hasText: text }).waitFor(), button.click()])
+}
+
 export const signUp = async (page, name = 'leitor') => {
   await page.goto('/signup')
   const form = page.locator('[data-pane="signup"]')

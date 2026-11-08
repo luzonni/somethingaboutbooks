@@ -1,4 +1,4 @@
-import { expect, signUp, test } from './fixtures'
+import { clickAndExpectToast, expect, signUp, test } from './fixtures'
 
 test.describe('página do livro e do autor', () => {
   test('mostra detalhes, notas e etiquetas limpas', async ({ page }) => {
@@ -35,8 +35,7 @@ test.describe('página do livro e do autor', () => {
   test('estante, favorito e review continuam após recarregar', async ({ page }) => {
     await signUp(page)
     await page.goto('/books/OL1W')
-    await page.getByRole('button', { name: 'Lendo' }).click()
-    await expect(page.locator('.toast', { hasText: 'Movido para Lendo' })).toBeVisible()
+    await clickAndExpectToast(page, page.getByRole('button', { name: 'Lendo' }), 'Movido para Lendo')
     await page.getByRole('button', { name: 'Favorito' }).click()
     await page.getByRole('button', { name: '5 estrelas' }).click()
     await page.getByRole('textbox').last().fill('Uma aventura incrível')
@@ -52,8 +51,7 @@ test.describe('página do livro e do autor', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
     await page.addInitScript(() => delete Navigator.prototype.share)
     await page.goto('/books/OL2W')
-    await page.getByRole('button', { name: 'Compartilhar' }).click()
-    await expect(page.locator('.toast', { hasText: 'Link copiado' })).toBeVisible()
+    await clickAndExpectToast(page, page.getByRole('button', { name: 'Compartilhar' }), 'Link copiado')
     expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(/\/books\/OL2W$/)
   })
 })

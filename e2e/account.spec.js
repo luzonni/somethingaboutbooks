@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { expect, signUp, test } from './fixtures'
+import { clickAndExpectToast, expect, signUp, test } from './fixtures'
 
 test.describe('conta, biblioteca e Pomodoro', () => {
   test('páginas da conta exigem login e voltam para onde a pessoa queria ir', async ({ page }) => {
@@ -82,7 +82,6 @@ test.describe('conta, biblioteca e Pomodoro', () => {
     await expect(page.getByText('Este arquivo não é um backup do SAB.')).toBeVisible()
 
     await input.setInputFiles(await download.path())
-    await page.getByRole('button', { name: 'Substituir' }).click()
-    await expect(page.locator('.toast', { hasText: 'Biblioteca restaurada' })).toBeVisible()
+    await clickAndExpectToast(page, page.getByRole('button', { name: 'Substituir' }), 'Biblioteca restaurada')
   })
 })
