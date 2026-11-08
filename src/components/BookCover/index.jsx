@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import { Cream, DarkGray } from "../../assets/Colors"
 
@@ -39,9 +39,21 @@ const CoverStyle = styled.div`
 const loadedCovers = new Set()
 
 const CoverImage = ({ src, alt, onError }) => {
+    const imageRef = useRef(null)
     const [loaded, setLoaded] = useState(() => loadedCovers.has(src))
+
+    // Imagem que já veio pronta do cache (ex.: depois de recarregar) aparece sem o fade.
+    useLayoutEffect(() => {
+        const image = imageRef.current
+        if (!loaded && image?.complete && image.naturalWidth > 0) {
+            loadedCovers.add(src)
+            setLoaded(true)
+        }
+    }, [loaded, src])
+
     return (
         <img
+            ref={imageRef}
             className={loaded ? "" : "cover__image--loading"}
             src={src}
             alt={alt}
