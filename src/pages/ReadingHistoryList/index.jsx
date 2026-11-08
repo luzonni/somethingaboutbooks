@@ -4,6 +4,7 @@ import { FaTrash } from "react-icons/fa";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState } from "../../components/Feedback";
 import { useLibrary } from "../../context/LibraryContext";
+import { useToast } from "../../context/ToastContext";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { SHELVES, byRecent, libraryStats } from "../../services/library";
 import styles from "./ReadingHistoryList.module.css";
@@ -25,12 +26,14 @@ const formatMinutes = (minutes) => {
 
 function Lists() {
   const { lists, createList, deleteList, getEntry } = useLibrary();
+  const { notify } = useToast();
   const [name, setName] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!name.trim()) return;
     createList(name);
+    notify(`Lista "${name.trim()}" criada`);
     setName("");
   };
 
@@ -62,7 +65,10 @@ function Lists() {
                 type="button"
                 className={styles.iconButton}
                 aria-label={`Excluir a lista ${list.name}`}
-                onClick={() => deleteList(list.id)}
+                onClick={() => {
+                  deleteList(list.id);
+                  notify(`Lista "${list.name}" excluída`, { tone: "info" });
+                }}
               >
                 <FaTrash aria-hidden="true" />
               </button>
@@ -83,6 +89,7 @@ function Lists() {
 
 const ReadingHistoryList = () => {
   const { entries, library, removeBook } = useLibrary();
+  const { notify } = useToast();
   const [filter, setFilter] = useState("all");
   const stats = libraryStats(library);
 
@@ -140,7 +147,10 @@ const ReadingHistoryList = () => {
                 type="button"
                 className={styles.iconButton}
                 aria-label={`Remover ${entry.title}`}
-                onClick={() => removeBook(entry.id)}
+                onClick={() => {
+                  removeBook(entry.id);
+                  notify(`"${entry.title}" removido da biblioteca`, { tone: "info" });
+                }}
               >
                 <FaTrash aria-hidden="true" />
               </button>
