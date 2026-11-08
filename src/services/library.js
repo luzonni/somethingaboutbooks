@@ -98,6 +98,14 @@ export const libraryReducer = (state, action) => {
                 ...state,
                 lists: [...state.lists, { id: action.id, name: action.name.trim(), bookIds: [], createdAt: now }],
             }
+        case "RENAME_LIST": {
+            const name = action.name.trim()
+            if (!name) return state
+            return {
+                ...state,
+                lists: state.lists.map((list) => (list.id === action.listId ? { ...list, name } : list)),
+            }
+        }
         case "DELETE_LIST": {
             const removed = state.lists.find((list) => list.id === action.listId)
             const next = { ...state, lists: state.lists.filter((list) => list.id !== action.listId) }

@@ -83,6 +83,12 @@ describe("libraryReducer", () => {
         expect(removed.books.OL1W).toBeUndefined()
     })
 
+    it("renomeia a lista e ignora nomes vazios", () => {
+        const created = apply({ type: "CREATE_LIST", id: "l1", name: "Antigo" })
+        expect(reduce(created, { type: "RENAME_LIST", listId: "l1", name: "  Novo " }).lists[0].name).toBe("Novo")
+        expect(reduce(created, { type: "RENAME_LIST", listId: "l1", name: "   " })).toBe(created)
+    })
+
     it("remove da biblioteca os livros que só estavam na lista excluída", () => {
         const state = apply(
             { type: "CREATE_LIST", id: "l1", name: "Lista" },

@@ -35,6 +35,7 @@ const LibraryStore = ({ userId, children }) => {
             removeBook: (bookId) => dispatch({ type: "REMOVE_BOOK", bookId }),
             createList: (name) => dispatch({ type: "CREATE_LIST", id: crypto.randomUUID(), name }),
             deleteList: (listId) => dispatch({ type: "DELETE_LIST", listId }),
+            renameList: (listId, name) => dispatch({ type: "RENAME_LIST", listId, name }),
             toggleInList: (listId, book) => dispatch({ type: "TOGGLE_IN_LIST", listId, book }),
             logSession: (session) => dispatch({ type: "LOG_SESSION", session }),
             setGoal: (year, books) => dispatch({ type: "SET_GOAL", year, books }),

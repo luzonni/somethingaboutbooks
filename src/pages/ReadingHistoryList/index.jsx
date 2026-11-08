@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
+import { FiCheck, FiEdit2, FiX } from "react-icons/fi";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState } from "../../components/Feedback";
 import GoalCard from "../../components/GoalCard";
@@ -27,8 +28,61 @@ const formatMinutes = (minutes) => {
   return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
 };
 
+function ListName({ list, count, onRename }) {
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(list.name);
+
+  const cancel = () => {
+    setName(list.name);
+    setEditing(false);
+  };
+
+  if (!editing) {
+    return (
+      <div className={styles.listTitle}>
+        <h3>{list.name} <span className={styles.muted}>({count})</span></h3>
+        <button
+          type="button"
+          className={styles.iconButton}
+          aria-label={`Renomear a lista ${list.name}`}
+          onClick={() => setEditing(true)}
+        >
+          <FiEdit2 aria-hidden="true" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      className={styles.listTitle}
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (name.trim() && name.trim() !== list.name) onRename(name);
+        setEditing(false);
+      }}
+    >
+      <input
+        className={styles.renameInput}
+        aria-label="Novo nome da lista"
+        maxLength={40}
+        value={name}
+        autoFocus
+        onChange={(event) => setName(event.target.value)}
+        onKeyDown={(event) => event.key === "Escape" && cancel()}
+      />
+      <button type="submit" className={styles.iconButton} aria-label="Salvar nome">
+        <FiCheck aria-hidden="true" />
+      </button>
+      <button type="button" className={styles.iconButton} aria-label="Cancelar" onClick={cancel}>
+        <FiX aria-hidden="true" />
+      </button>
+    </form>
+  );
+}
+
 function Lists() {
-  const { lists, createList, deleteList, getEntry } = useLibrary();
+  const { lists, createList, deleteList, renameList, getEntry } = useLibrary();
   const { notify } = useToast();
   const [name, setName] = useState("");
 
@@ -63,7 +117,10 @@ function Lists() {
         return (
           <div key={list.id} className={styles.list}>
             <div className={styles.listHead}>
-              <h3>{list.name} <span className={styles.muted}>({books.length})</span></h3>
+              <ListName list={list} count={books.length} onRename={(name) => {
+                renameList(list.id, name);
+                notify(`Lista renomeada para "${name.trim()}"`);
+              }} />
               <button
                 type="button"
                 className={styles.iconButton}
