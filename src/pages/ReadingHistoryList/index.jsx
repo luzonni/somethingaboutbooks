@@ -4,6 +4,7 @@ import { FaTrash } from "react-icons/fa";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState } from "../../components/Feedback";
 import GoalCard from "../../components/GoalCard";
+import WeekChart from "../../components/WeekChart";
 import ProgressBar from "../../components/ProgressBar";
 import { useLibrary } from "../../context/LibraryContext";
 import { useToast } from "../../context/ToastContext";
@@ -90,7 +91,7 @@ function Lists() {
 }
 
 const ReadingHistoryList = () => {
-  const { entries, library, removeBook } = useLibrary();
+  const { entries, library, removeBook, sessions } = useLibrary();
   const { notify } = useToast();
   const [filter, setFilter] = useState("all");
   const stats = libraryStats(library);
@@ -114,6 +115,7 @@ const ReadingHistoryList = () => {
 
       <div className={styles.insights}>
         <GoalCard />
+        <WeekChart sessions={sessions} />
       </div>
 
       <div className={styles.filters} role="group" aria-label="Filtrar por estante">
