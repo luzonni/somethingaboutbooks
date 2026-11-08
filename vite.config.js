@@ -22,6 +22,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     restoreMocks: true,
+    // Testes com a árvore inteira de providers podem passar de 5 s em máquinas de CI mais lentas.
+    testTimeout: 15000,
     unstubGlobals: true,
     setupFiles: './src/test/setup.js',
     coverage: {
