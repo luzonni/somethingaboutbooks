@@ -36,11 +36,18 @@
   padding: 2.5rem 1rem 3.5rem;
 }
 
+.heroTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: -1.25rem 0 1.25rem;
+}
+
 .backButton {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin: -1.25rem 0 1.25rem;
   padding: 0.35rem 0.75rem 0.35rem 0.5rem;
   border: none;
   border-radius: 8px;

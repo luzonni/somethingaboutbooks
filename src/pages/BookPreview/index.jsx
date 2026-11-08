@@ -8,6 +8,7 @@ import BookReviews from "../../components/BookReviews";
 import BookSection from "../../components/BookSection";
 import { ErrorState, Skeleton, Spinner } from "../../components/Feedback";
 import Reveal from "../../components/Reveal";
+import ShareButton from "../../components/ShareButton";
 import Stars from "../../components/Stars";
 import { useLibrary } from "../../context/LibraryContext";
 import { useAsync } from "../../hooks/useAsync";
@@ -243,11 +244,16 @@ function BookPage({ id }) {
       <header className={styles.hero}>
         {thumb && <div className={styles.heroBackdrop} style={{ backgroundImage: `url("${thumb}")` }} aria-hidden="true" />}
         <div className={styles.heroInner}>
-          {canGoBack && (
-            <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
-              <FiArrowLeft aria-hidden="true" /> Voltar
-            </button>
-          )}
+          <div className={styles.heroTop}>
+            {canGoBack ? (
+              <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
+                <FiArrowLeft aria-hidden="true" /> Voltar
+              </button>
+            ) : (
+              <span />
+            )}
+            <ShareButton title={title} text={author ? `${title}, de ${author}` : title} />
+          </div>
           <div className={styles.heroGrid}>
             <Book3D cover={cover} lowRes={preview?.cover} title={title} />
             <div className={styles.heroInfo}>
