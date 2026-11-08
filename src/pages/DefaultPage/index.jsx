@@ -1,6 +1,7 @@
 import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import BackToTop from "../../components/BackToTop";
 import ErrorBoundary from "../../components/ErrorBoundary";
 import { Spinner } from "../../components/Feedback";
 import MyFooter from "../../components/MyFooter";
@@ -66,6 +67,7 @@ const DefaultPage = () => {
                 </ErrorBoundary>
             </main>
             <MyFooter />
+            <BackToTop />
         </LayoutStyle>
     )
 }
