@@ -6,6 +6,7 @@ import ErrorBoundary from "../../components/ErrorBoundary";
 import { Spinner } from "../../components/Feedback";
 import MyFooter from "../../components/MyFooter";
 import MyHeader from "../../components/MyHeader";
+import OfflineBanner from "../../components/OfflineBanner";
 import { useShortcut } from "../../hooks/useShortcut";
 
 // Prefere a busca do conteúdo da página; se não houver, usa a da navbar.
@@ -58,6 +59,7 @@ const DefaultPage = () => {
     return (
         <LayoutStyle>
             <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
+            <OfflineBanner />
             <MyHeader />
             <main id="conteudo" tabIndex={-1}>
                 <ErrorBoundary key={pathname}>
