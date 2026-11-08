@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { IoIosStar } from "react-icons/io"
-import { Border, Coral, Cream, Danger, DarkGray, DarkRed, Gray, Surface, White } from "../../assets/Colors"
+import { Border, BrandText, Coral, Cream, Danger, DarkGray, DarkRed, Gray, Surface, White } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
 import { useToast } from "../../context/ToastContext"
 import Stars from "../Stars"
@@ -102,7 +102,7 @@ const ReviewsStyle = styled.div`
         font-size: 0.875rem;
     }
     a {
-        color: ${DarkRed};
+        color: ${BrandText};
         font-weight: 500;
     }
 `

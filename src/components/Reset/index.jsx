@@ -15,6 +15,7 @@ const Reset = createGlobalStyle`
 	--color-gray: #dddddd;
 	--color-brand: #620000;
 	--color-brand-hover: #7a0000;
+	--color-link: #620000;
 	--color-on-brand: #f5f5f5;
 	--color-danger: #b3261e;
 	--color-success: #2e7d4f;
@@ -40,6 +41,7 @@ const Reset = createGlobalStyle`
 	--color-gray: #4a4240;
 	--color-brand: #c2454b;
 	--color-brand-hover: #d4565c;
+	--color-link: #f0898d;
 	--color-on-brand: #f5f5f5;
 	--color-danger: #f2786f;
 	--color-success: #5cc48a;

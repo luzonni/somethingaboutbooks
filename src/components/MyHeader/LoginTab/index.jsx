@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { FiArrowRight, FiChevronDown, FiLogOut } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Black, Border, Cream, DarkRed, Surface, White } from "../../../assets/Colors";
+import { Black, Border, BrandText, Cream, DarkRed, Surface, White } from "../../../assets/Colors";
 import { useAuth } from "../../../context/AuthContext";
 import { accountLinks } from "../navItems";
 
@@ -32,7 +32,7 @@ const LoginTabStyle = styled.div`
 
     .login__enter {
         border: 1.5px solid rgba(98, 0, 0, 0.3);
-        color: ${DarkRed};
+        color: ${BrandText};
     }
 
     .login__enter:hover {
@@ -145,7 +145,7 @@ const LoginTabStyle = styled.div`
 
     .user__menu .user__logout {
         margin-top: 0.25rem;
-        color: ${DarkRed};
+        color: ${BrandText};
     }
 
     @media (max-width: 899px) {

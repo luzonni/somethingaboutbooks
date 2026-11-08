@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { Link, NavLink, useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import { FiLogOut, FiX } from "react-icons/fi"
-import { Black, Border, Cream, DarkRed, White } from "../../assets/Colors"
+import { Black, Border, BrandText, Cream, DarkRed, White } from "../../assets/Colors"
 import { useAuth } from "../../context/AuthContext"
 import Search from "../Search"
 import ThemeToggle from "../ThemeToggle"
@@ -124,7 +124,7 @@ const MobileMenuStyle = styled.div`
     .drawer__cta--secondary {
         margin-top: 0.5rem;
         border: 1.5px solid rgba(98, 0, 0, 0.3);
-        color: ${DarkRed};
+        color: ${BrandText};
     }
     @media (min-width: 900px) {
         display: none;

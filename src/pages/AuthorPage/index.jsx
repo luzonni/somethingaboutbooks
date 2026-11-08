@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom"
 import styled, { keyframes } from "styled-components"
 import { FiBookOpen, FiCalendar, FiExternalLink, FiSearch } from "react-icons/fi"
 import { getAuthor, getAuthorWorks } from "../../api/openLibrary"
-import { Border, Cream, DarkGray, DarkRed, Night, Sand, White } from "../../assets/Colors"
+import { Border, BrandText, Cream, DarkGray, DarkRed, Night, Sand, White } from "../../assets/Colors"
 import { CardBook } from "../../components/CardBook"
 import ExpandableText from "../../components/ExpandableText"
 import { EmptyState, ErrorState, Skeleton, Spinner } from "../../components/Feedback"
@@ -170,7 +170,7 @@ const AuthorStyle = styled.article`
         padding: 0.4rem 0.9rem;
         border-radius: 999px;
         background-color: ${Cream};
-        color: ${DarkRed};
+        color: ${BrandText};
         font-weight: 500;
         text-decoration: none;
     }

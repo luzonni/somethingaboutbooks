@@ -1,7 +1,7 @@
 import { useState } from "react"
 import styled, { keyframes } from "styled-components"
 import { FiEdit2, FiTarget } from "react-icons/fi"
-import { Border, Coral, Cream, DarkGray, DarkRed, Surface, White } from "../../assets/Colors"
+import { Border, BrandText, Coral, Cream, DarkGray, DarkRed, Surface, White } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
 import { useToast } from "../../context/ToastContext"
 import { MAX_GOAL, libraryStats } from "../../services/library"
@@ -108,7 +108,7 @@ const GoalStyle = styled.section`
         align-self: flex-start;
         padding: 0;
         background: none;
-        color: ${DarkRed};
+        color: ${BrandText};
     }
 `
 

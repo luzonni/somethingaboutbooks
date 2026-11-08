@@ -1,6 +1,6 @@
 import styled, { keyframes } from "styled-components"
 import { FiZap } from "react-icons/fi"
-import { Border, Coral, Cream, DarkGray, DarkRed } from "../../assets/Colors"
+import { Border, BrandText, Coral, Cream, DarkGray } from "../../assets/Colors"
 import { minutesByDay, readingStreak } from "../../utils/readingStats"
 
 const rise = keyframes`
@@ -31,7 +31,7 @@ const ChartStyle = styled.section`
         padding: 0.25rem 0.75rem;
         border-radius: 999px;
         background-color: ${Cream};
-        color: ${DarkRed};
+        color: ${BrandText};
         font-size: 0.875rem;
         font-weight: 500;
     }

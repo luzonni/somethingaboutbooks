@@ -1,7 +1,7 @@
 import styled, { keyframes } from "styled-components"
 import { Link } from "react-router-dom"
 import { MdErrorOutline, MdOutlineMenuBook } from "react-icons/md"
-import { Coral, Cream, DarkGray, DarkRed, Gray, White } from "../../assets/Colors"
+import { BrandText, Coral, Cream, DarkGray, DarkRed, Gray, White } from "../../assets/Colors"
 
 const spin = keyframes`
     to { transform: rotate(360deg); }
@@ -33,7 +33,7 @@ const MessageStyle = styled.div`
     color: ${DarkGray};
     svg {
         font-size: 3rem;
-        color: ${DarkRed};
+        color: ${BrandText};
     }
     h3 {
         font-size: 1.25rem;

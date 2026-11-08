@@ -5,6 +5,8 @@ export const Gray = "var(--color-gray)"
 export const Cream = "var(--color-surface-muted)"
 export const Border = "var(--color-border)"
 export const DarkRed = "var(--color-brand)"
+// Vermelho da marca para textos e links: mais claro no tema escuro para manter o contraste.
+export const BrandText = "var(--color-link)"
 export const Surface = "var(--color-surface)"
 export const Danger = "var(--color-danger)"
 export const Success = "var(--color-success)"

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react"
 import styled from "styled-components"
-import { DarkGray, DarkRed } from "../../assets/Colors"
+import { BrandText, DarkGray } from "../../assets/Colors"
 
 const ExpandableStyle = styled.div`
     .expandable__content {
@@ -19,7 +19,7 @@ const ExpandableStyle = styled.div`
         padding: 0;
         border: none;
         background: none;
-        color: ${DarkRed};
+        color: ${BrandText};
         font-weight: 500;
         text-decoration: underline;
         text-underline-offset: 3px;

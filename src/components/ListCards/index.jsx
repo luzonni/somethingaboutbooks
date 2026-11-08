@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import { Link } from "react-router-dom"
 import { FiArrowRight, FiChevronLeft, FiChevronRight } from "react-icons/fi"
-import { Border, Cream, DarkRed, White } from "../../assets/Colors"
+import { Border, BrandText, Cream, DarkRed, White } from "../../assets/Colors"
 
 const ListCardStyle = styled.section`
     width: 100%;
@@ -37,7 +37,7 @@ const ListCardStyle = styled.section`
         padding: 0.4rem 0.6rem 0.4rem 0.9rem;
         border: 1px solid ${Border};
         border-radius: 999px;
-        color: ${DarkRed};
+        color: ${BrandText};
         font-size: 0.9375rem;
         font-weight: 500;
         text-decoration: none;
@@ -64,7 +64,7 @@ const ListCardStyle = styled.section`
         border: 1px solid ${Border};
         border-radius: 50%;
         background-color: ${Cream};
-        color: ${DarkRed};
+        color: ${BrandText};
         font-size: 1.25rem;
         transition: background-color 150ms ease, color 150ms ease;
     }

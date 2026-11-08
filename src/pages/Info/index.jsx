@@ -18,7 +18,7 @@ import {
     FiStar,
     FiTrash2,
 } from "react-icons/fi"
-import { Border, Cream, DarkGray, DarkRed, Sand, White } from "../../assets/Colors"
+import { Border, BrandText, Cream, DarkGray, DarkRed, Sand, White } from "../../assets/Colors"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import { asset } from "../../utils/asset"
 
@@ -132,7 +132,7 @@ const InfoStyle = styled.div`
         height: 2.5rem;
         border-radius: 10px;
         background-color: ${Cream};
-        color: ${DarkRed};
+        color: ${BrandText};
         font-size: 1.25rem;
     }
     .info__team {
@@ -202,7 +202,7 @@ const InfoStyle = styled.div`
         background-color: #7a0000;
     }
     .info__content a:not(.info__button) {
-        color: ${DarkRed};
+        color: ${BrandText};
         font-weight: 500;
     }
 

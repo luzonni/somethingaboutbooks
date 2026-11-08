@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { FiClock, FiMenu } from "react-icons/fi"
-import { Black, Border, Cream, DarkRed, Surface, White } from "../../assets/Colors"
+import { Black, Border, BrandText, Cream, DarkRed, Surface, White } from "../../assets/Colors"
 import { useAuth } from "../../context/AuthContext"
 import { usePomodoro } from "../../context/PomodoroContext"
 import { formatTime } from "../../utils/pomodoro"
@@ -70,7 +70,7 @@ const HeaderStyle = styled.header`
         transition: transform 180ms ease;
     }
     .bar__link:hover, .bar__link.active {
-        color: ${DarkRed};
+        color: ${BrandText};
     }
     .bar__link:hover::after, .bar__link.active::after {
         transform: scaleX(1);

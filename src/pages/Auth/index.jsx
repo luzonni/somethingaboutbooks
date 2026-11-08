@@ -153,7 +153,7 @@ const AuthStyle = styled.main`
     }
     .auth__cta:hover {
         background-color: ${White};
-        color: ${DarkRed};
+        color: #620000;
     }
 
     /* Alternador do mobile */
