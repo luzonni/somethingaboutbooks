@@ -6,7 +6,9 @@ export const SHELVES = {
     read: "Lido",
 }
 
-export const EMPTY_LIBRARY = { books: {}, lists: [], sessions: [] }
+export const EMPTY_LIBRARY = { books: {}, lists: [], sessions: [], goals: {} }
+
+export const MAX_GOAL = 365
 
 const storageKey = (userId) => `sab:library:${userId}`
 
@@ -109,6 +111,13 @@ export const libraryReducer = (state, action) => {
             })
             return prune(withEntry({ ...state, lists }, book, {}, now), book.id)
         }
+        case "SET_GOAL": {
+            const goals = { ...state.goals }
+            const books = Math.floor(Number(action.books))
+            if (Number.isFinite(books) && books > 0) goals[action.year] = Math.min(books, MAX_GOAL)
+            else delete goals[action.year]
+            return { ...state, goals }
+        }
         case "LOG_SESSION":
             return { ...state, sessions: [...state.sessions, action.session] }
         default:
@@ -131,6 +140,7 @@ export const libraryStats = (library, year = new Date().getFullYear()) => {
         readThisYear: read.filter((entry) => new Date(entry.finishedAt).getFullYear() === year).length,
         lists: library.lists.length,
         minutes: sumMinutes(library.sessions),
+        goal: library.goals?.[year] ?? null,
     }
 }
 

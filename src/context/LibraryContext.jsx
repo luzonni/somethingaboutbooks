@@ -37,6 +37,7 @@ const LibraryStore = ({ userId, children }) => {
             deleteList: (listId) => dispatch({ type: "DELETE_LIST", listId }),
             toggleInList: (listId, book) => dispatch({ type: "TOGGLE_IN_LIST", listId, book }),
             logSession: (session) => dispatch({ type: "LOG_SESSION", session }),
+            setGoal: (year, books) => dispatch({ type: "SET_GOAL", year, books }),
         }
     }, [library, userId])
 

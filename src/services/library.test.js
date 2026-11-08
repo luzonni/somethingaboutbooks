@@ -144,6 +144,23 @@ describe("progresso de leitura", () => {
     })
 })
 
+describe("meta anual", () => {
+    it("define, limita e remove a meta do ano", () => {
+        const withGoal = apply({ type: "SET_GOAL", year: 2026, books: "12" })
+        expect(withGoal.goals).toEqual({ 2026: 12 })
+        expect(libraryStats(withGoal, 2026).goal).toBe(12)
+        expect(libraryStats(withGoal, 2025).goal).toBeNull()
+
+        expect(reduce(withGoal, { type: "SET_GOAL", year: 2026, books: 9999 }).goals[2026]).toBe(365)
+        expect(reduce(withGoal, { type: "SET_GOAL", year: 2026, books: "" }).goals).toEqual({})
+    })
+
+    it("aceita bibliotecas salvas antes das metas existirem", () => {
+        localStorage.setItem("sab:library:antigo", JSON.stringify({ books: {}, lists: [], sessions: [] }))
+        expect(loadLibrary("antigo").goals).toEqual({})
+    })
+})
+
 describe("estatísticas", () => {
     it("conta leituras do ano", () => {
         const state = apply(
