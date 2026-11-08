@@ -23,7 +23,7 @@
   gap: 0.25rem;
   padding: 0.25rem;
   border-radius: 12px;
-  background-color: #f0eee2;
+  background-color: var(--color-surface-muted);
 }
 
 .mode,
@@ -39,11 +39,11 @@
 }
 
 .mode:hover {
-  background-color: #e5e2d2;
+  background-color: var(--color-surface-hover);
 }
 
 .modeActive {
-  background-color: #620000;
+  background-color: var(--color-brand);
   color: #f5f5f5;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .ringTrack {
-  stroke: #f0eee2;
+  stroke: var(--color-surface-muted);
 }
 
 .ringFocus,
@@ -79,7 +79,7 @@
 }
 
 .ringBreak {
-  stroke: #2e7d4f;
+  stroke: var(--color-success);
 }
 
 .timer {
@@ -96,11 +96,11 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
-  color: #620000;
+  color: var(--color-brand);
 }
 
 .timer p {
-  color: #6b6b6b;
+  color: var(--color-text-muted);
   font-size: 1.125rem;
 }
 
@@ -123,21 +123,21 @@
 
 .primary {
   border: none;
-  background-color: #620000;
+  background-color: var(--color-brand);
   color: #f5f5f5;
 }
 
 .primary:hover {
-  background-color: #7a0000;
+  background-color: var(--color-brand-hover);
 }
 
 .secondary {
-  border: 1px solid #d9d5c7;
-  background-color: white;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
 }
 
 .secondary:hover {
-  background-color: #f0eee2;
+  background-color: var(--color-surface-muted);
 }
 
 .progressBar {
@@ -154,13 +154,13 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  background-color: #f0eee2;
-  color: #6b6b6b;
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
 .completed {
-  background-color: #620000;
+  background-color: var(--color-brand);
   color: #f5f5f5;
 }
 
@@ -170,11 +170,11 @@
 }
 
 .muted {
-  color: #6b6b6b;
+  color: var(--color-text-muted);
 }
 
 .muted a {
-  color: #620000;
+  color: var(--color-brand);
   font-weight: 500;
 }
 
@@ -189,9 +189,9 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.25rem;
-  border: 1px solid #d9d5c7;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
-  background-color: #f8f7f0;
+  background-color: var(--color-surface-soft);
 }
 
 .panel h2,
@@ -223,7 +223,7 @@ details.panel > div + div {
 }
 
 .field span {
-  color: #6b6b6b;
+  color: var(--color-text-muted);
   font-size: 0.875rem;
 }
 
@@ -231,9 +231,9 @@ details.panel > div + div {
 .field input {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #d9d5c7;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
-  background-color: white;
+  background-color: var(--color-surface);
 }
 
 .bookInfo {
