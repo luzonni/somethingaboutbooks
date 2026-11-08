@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import { Link } from "react-router-dom"
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
-import { Border, Cream, DarkGray, DarkRed, White } from "../../assets/Colors"
+import { FiArrowRight, FiChevronLeft, FiChevronRight } from "react-icons/fi"
+import { Border, Cream, DarkRed, White } from "../../assets/Colors"
 
 const ListCardStyle = styled.section`
     width: 100%;
@@ -24,14 +24,36 @@ const ListCardStyle = styled.section`
         display: flex;
         flex-shrink: 0;
         align-items: center;
+        gap: 1.25rem;
+    }
+    .head__arrows {
+        display: flex;
         gap: 0.5rem;
     }
     .link__mais {
-        color: ${DarkGray};
-        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.6rem 0.4rem 0.9rem;
+        border: 1px solid ${Border};
+        border-radius: 999px;
+        color: ${DarkRed};
+        font-size: 0.9375rem;
+        font-weight: 500;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+    }
+    .link__mais svg {
+        transition: transform 180ms ease;
     }
     .link__mais:hover {
-        color: ${DarkRed};
+        border-color: ${DarkRed};
+        background-color: ${DarkRed};
+        color: ${White};
+    }
+    .link__mais:hover svg {
+        transform: translateX(3px);
     }
     .carousel__arrow {
         display: none;
@@ -128,12 +150,12 @@ const ListCards = ({ title, moreLink, layout = "carousel", children }) => {
                 <h2>{title}</h2>
                 <div className="head__actions">
                     {moreLink && (
-                        <Link to={moreLink} className="link__mais">
-                            Ver mais
+                        <Link to={moreLink} className="link__mais" aria-label={`Ver mais: ${title}`}>
+                            Ver mais <FiArrowRight aria-hidden="true" />
                         </Link>
                     )}
                     {isCarousel && (canPrev || canNext) && (
-                        <>
+                        <div className="head__arrows">
                             <button
                                 type="button"
                                 className="carousel__arrow"
@@ -152,7 +174,7 @@ const ListCards = ({ title, moreLink, layout = "carousel", children }) => {
                             >
                                 <FiChevronRight aria-hidden="true" />
                             </button>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
