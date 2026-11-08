@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FaForward, FaPause, FaPlay, FaUndo } from 'react-icons/fa';
 import BookCover from '../../components/BookCover';
+import ProgressBar from '../../components/ProgressBar';
 import { InputCheckBox } from '../../components/Inputs';
 import { useLibrary } from '../../context/LibraryContext';
 import { usePomodoro } from '../../context/PomodoroContext';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { sessionsOnDay, sumMinutes } from '../../services/library';
+import { readingProgress, sessionsOnDay, sumMinutes } from '../../services/library';
 import { MODES, cycleProgress, formatTime, sanitizeMinutes } from '../../utils/pomodoro';
 import styles from './Pomodoro.module.css';
 
@@ -51,7 +52,7 @@ const CycleDots = () => {
 };
 
 const BookPanel = () => {
-  const { canSave, entries, getEntry, sessions, setProgress } = useLibrary();
+  const { canSave, entries, getEntry, sessions, setProgress, setTotalPages } = useLibrary();
   const { timer, setBook } = usePomodoro();
 
   if (!canSave) {
@@ -97,15 +98,30 @@ const BookPanel = () => {
                 <strong>{selected.title}</strong>
                 <p className={styles.muted}>{selected.author}</p>
                 <p className={styles.muted}>{bookMinutes} min de foco neste livro</p>
-                <label className={styles.field}>
-                  <span>Página atual</span>
-                  <input
-                    type="number"
-                    min="0"
-                    value={selected.currentPage ?? ''}
-                    onChange={(event) => setProgress(selected.id, event.target.value)}
-                  />
-                </label>
+                <div className={styles.pages}>
+                  <label className={styles.field}>
+                    <span>Página atual</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={selected.currentPage ?? ''}
+                      onChange={(event) => setProgress(selected.id, event.target.value)}
+                    />
+                  </label>
+                  <label className={styles.field}>
+                    <span>Total</span>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder={selected.pages ? String(selected.pages) : '—'}
+                      value={selected.totalPages ?? ''}
+                      onChange={(event) => setTotalPages(selected.id, selected.currentPage, event.target.value)}
+                    />
+                  </label>
+                </div>
+                {readingProgress(selected) !== null && (
+                  <ProgressBar value={readingProgress(selected)} label={`Progresso em ${selected.title}`} />
+                )}
               </div>
             </div>
           )}

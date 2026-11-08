@@ -236,7 +236,7 @@ function BookPage({ id }) {
   }
   if (!title) return <Spinner label="Carregando livro" />;
 
-  const savedBook = { id, title, author, cover: thumb ?? "" };
+  const savedBook = { id, title, author, cover: thumb ?? "", pages: extras?.pages || preview?.pages || undefined };
 
   return (
     <article className={styles.page}>
