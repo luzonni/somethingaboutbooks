@@ -1,0 +1,30 @@
+name: Relatar um problema
+description: Algo não funciona como deveria
+labels: [bug]
+body:
+  - type: textarea
+    id: descricao
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o problema e o que você esperava que acontecesse.
+    validations:
+      required: true
+  - type: textarea
+    id: passos
+    attributes:
+      label: Como reproduzir
+      placeholder: |
+        1. Abra a página...
+        2. Clique em...
+    validations:
+      required: true
+  - type: dropdown
+    id: tema
+    attributes:
+      label: Tema
+      options: [Claro, Escuro, Os dois]
+  - type: input
+    id: navegador
+    attributes:
+      label: Navegador e aparelho
+      placeholder: Chrome no Android, Safari no iPhone...
