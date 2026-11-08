@@ -7,6 +7,8 @@ import {
     cleanTitle,
     coverUrl,
     curateBooks,
+    getAuthor,
+    getAuthorWorks,
     getBookExtras,
     genreList,
     getTrendingBooks,
@@ -247,6 +249,33 @@ describe("openLibrary", () => {
         await getTrendingBooks()
 
         expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+})
+
+describe("autor", () => {
+    beforeEach(() => clearApiCache())
+
+    it("traz links seguros e o Wikidata como alternativa", async () => {
+        mockFetch(() => ({
+            body: {
+                name: "Ana",
+                fuller_name: "Ana Maria",
+                links: [{ title: "Site", url: "https://ana.com" }, { title: "Ruim", url: "javascript:alert(1)" }],
+                remote_ids: { wikidata: "Q1" },
+            },
+        }))
+        const author = await getAuthor("OL1A")
+        expect(author).toMatchObject({ name: "Ana", fullName: "Ana Maria", wikipedia: "https://www.wikidata.org/wiki/Q1" })
+        expect(author.links).toEqual([{ title: "Site", url: "https://ana.com" }])
+    })
+
+    it("busca as obras do autor pelas mais lidas e pagina", async () => {
+        const fetchMock = mockFetch(() => ({ body: { numFound: 30, docs: [{ key: "/works/OL1W", title: "Obra" }] } }))
+        const result = await getAuthorWorks("OL1A")
+        const url = new URL(fetchMock.mock.calls[0][0])
+        expect(url.searchParams.get("q")).toBe("author_key:OL1A")
+        expect(url.searchParams.get("sort")).toBe("readinglog")
+        expect(result).toMatchObject({ total: 30, hasMore: true })
     })
 })
 

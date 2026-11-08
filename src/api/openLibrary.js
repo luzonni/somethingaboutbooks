@@ -334,7 +334,21 @@ export const getAuthor = async (authorId, { signal } = {}) => {
         birthDate: data.birth_date ?? "",
         deathDate: data.death_date ?? "",
         photo: authorPhotoUrl(data.photos?.find((photo) => photo > 0)),
+        photoLarge: authorPhotoUrl(data.photos?.find((photo) => photo > 0), "L"),
+        fullName: data.fuller_name && data.fuller_name !== data.name ? data.fuller_name : "",
+        links: (data.links ?? [])
+            .filter((link) => /^https?:\/\//.test(link.url ?? ""))
+            .slice(0, 5)
+            .map(({ title, url }) => ({ title: title || new URL(url).hostname, url })),
+        wikipedia: data.wikipedia || (data.remote_ids?.wikidata ? `https://www.wikidata.org/wiki/${data.remote_ids.wikidata}` : ""),
+        url: `${BASE_URL}/authors/${authorId}`,
     }
+}
+
+// Obras do autor, das mais lidas para as menos lidas.
+export const getAuthorWorks = async (authorId, { page = 1, limit = PAGE_SIZE, signal } = {}) => {
+    const { books, total } = await runSearch({ terms: `author_key:${authorId}`, sort: "readinglog", page, limit, signal })
+    return { books: books.filter((book) => book.title), total, hasMore: page * limit < total }
 }
 
 const valueOrNull = (result) => (result.status === "fulfilled" ? result.value : null)
