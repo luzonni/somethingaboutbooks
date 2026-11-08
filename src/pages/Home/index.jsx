@@ -48,15 +48,12 @@ const HomeStyle = styled.div`
         font-size: clamp(1rem, 2vw, 1.25rem);
         font-weight: 300;
     }
-    h1, .hero__subtitle, .hero__search {
+    .hero__subtitle, .hero__search {
         animation: ${riseIn} 600ms ease both;
-    }
-    .hero__subtitle {
-        animation-delay: 120ms;
     }
     .hero__search {
         width: 100%;
-        animation-delay: 240ms;
+        animation-delay: 120ms;
     }
 `
 
