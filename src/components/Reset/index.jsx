@@ -4,6 +4,23 @@ import { Black, Coral, Cream, DarkRed } from "../../assets/Colors";
 const Reset = createGlobalStyle`
 
 :root {
+	--color-surface: #ffffff;
+	--color-surface-soft: #faf9f4;
+	--color-surface-muted: #f0eee2;
+	--color-surface-hover: #e5e2d2;
+	--color-border: #d9d5c7;
+	--color-border-soft: #ebe8dc;
+	--color-text: #292929;
+	--color-text-muted: #6b6b6b;
+	--color-gray: #dddddd;
+	--color-brand: #620000;
+	--color-brand-hover: #7a0000;
+	--color-on-brand: #f5f5f5;
+	--color-danger: #b3261e;
+	--color-success: #2e7d4f;
+	--shadow-soft: rgba(41, 20, 16, 0.05);
+	color-scheme: light;
+
 	font-family: "Roboto", sans-serif;
 	font-optical-sizing: auto;
 	font-weight: 400;
