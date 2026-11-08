@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { LibraryProvider } from "./context/LibraryContext";
 import { PomodoroProvider } from "./context/PomodoroContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
 import DefaultPage from "./pages/DefaultPage";
 import Home from "./pages/Home";
 
@@ -45,6 +46,7 @@ function AppRoutes() {
     <BrowserRouter>
       <Reset />
       <ThemeProvider>
+      <ToastProvider>
       <AuthProvider>
         <LibraryProvider>
           <PomodoroProvider>
@@ -73,6 +75,7 @@ function AppRoutes() {
           </PomodoroProvider>
         </LibraryProvider>
       </AuthProvider>
+      </ToastProvider>
       </ThemeProvider>
     </BrowserRouter>
   );
