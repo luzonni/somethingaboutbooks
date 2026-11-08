@@ -6,9 +6,11 @@ const COVERS_HOST = "covers.openlibrary.org"
 const MAX_COVERS = 500
 // Raiz do site, que pode ser um subcaminho (ex.: /somethingaboutbooks/ no GitHub Pages).
 const SCOPE = new URL(self.registration.scope).pathname
+// "covers" no ambiente de desenvolvimento: guarda só as capas e deixa os arquivos do app sempre frescos.
+const COVERS_ONLY = new URL(self.location.href).searchParams.get("mode") === "covers"
 
 self.addEventListener("install", (event) => {
-    event.waitUntil(caches.open(APP_CACHE).then((cache) => cache.add(SCOPE)).catch(() => {}))
+    if (!COVERS_ONLY) event.waitUntil(caches.open(APP_CACHE).then((cache) => cache.add(SCOPE)).catch(() => {}))
     self.skipWaiting()
 })
 
@@ -75,7 +77,7 @@ self.addEventListener("fetch", (event) => {
 
     if (url.hostname === COVERS_HOST) {
         event.respondWith(coverFirst(request))
-    } else if (url.origin === self.location.origin) {
+    } else if (!COVERS_ONLY && url.origin === self.location.origin) {
         if (request.mode === "navigate") event.respondWith(pageNetworkFirst(request))
         else if (/^(assets|icons|imgs)\//.test(url.pathname.slice(SCOPE.length))) event.respondWith(assetCacheFirst(request))
     }
