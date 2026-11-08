@@ -6,6 +6,7 @@ import { CardBook } from "../../components/CardBook";
 import { EmptyState, ErrorState, Spinner } from "../../components/Feedback";
 import Search from "../../components/Search";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+import { useOnVisible } from "../../hooks/useOnVisible";
 
 const dedupe = (books) => [...new Map(books.map((book) => [book.id, book])).values()];
 
@@ -56,6 +57,8 @@ function Results({ query, genre, sort }) {
 
   const { books, total, hasMore } = results;
   const { loading, error } = status;
+  const canLoadMore = hasMore && !loading && !error;
+  const sentinelRef = useOnVisible(() => setPage((value) => value + 1), { enabled: canLoadMore });
 
   if (!loading && !error && books.length === 0) {
     return (
@@ -87,8 +90,9 @@ function Results({ query, genre, sort }) {
         <ErrorState message={error.message} onRetry={() => setAttempt((value) => value + 1)} />
       )}
 
-      {hasMore && !loading && !error && (
+      {canLoadMore && (
         <button
+          ref={sentinelRef}
           type="button"
           onClick={() => setPage((value) => value + 1)}
           className={styles.loadMoreButton}
