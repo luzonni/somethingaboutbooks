@@ -5,17 +5,32 @@ import { useNavigate } from "react-router-dom"
 import { Border, Coral, Cream, Ink, Surface } from "../../assets/Colors"
 import { useTypingPlaceholder } from "../../hooks/useTypingPlaceholder"
 
+// Só opacidade e escala: o navegador anima na GPU, sem repintar a página a cada quadro.
 const glow = keyframes`
-    0%, 100% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(227, 96, 101, 0.45); }
-    50% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 8px rgba(227, 96, 101, 0); }
+    0% { opacity: 0.55; transform: scale(1); }
+    70%, 100% { opacity: 0; transform: scale(1.04, 1.3); }
 `
 
 const animatedStyles = css`
-    animation: ${glow} 3s ease-in-out infinite;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        background-color: rgba(227, 96, 101, 0.6);
+        animation: ${glow} 3s ease-out 1.5s infinite;
+        pointer-events: none;
+    }
     &:focus-within {
-        animation: none;
         transform: translateY(-3px) scale(1.015);
         box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(227, 96, 101, 0.55);
+    }
+    &:focus-within::before {
+        animation: none;
+        opacity: 0;
     }
 `
 
