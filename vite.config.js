@@ -31,7 +31,7 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/**/*.{js,jsx}'],
       exclude: ['src/**/*.test.{js,jsx}', 'src/test/**', 'src/main.jsx'],
-      reporter: ['text-summary', 'html'],
+      reporter: ['text-summary', 'html', 'json-summary'],
     },
   },
 })

@@ -4,17 +4,80 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+# Um push novo na mesma branch cancela a execução anterior, que ficou desatualizada.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  check:
+  qualidade:
+    name: Lint, testes e build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - run: npm test
+      - run: npm run test:coverage
+      - name: Resumo da cobertura
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            if (!fs.existsSync("coverage/coverage-summary.json")) process.exit(0);
+            const { total } = JSON.parse(fs.readFileSync("coverage/coverage-summary.json", "utf8"));
+            const rows = ["lines", "statements", "functions", "branches"]
+              .map((key) => `| ${key} | ${total[key].pct}% | ${total[key].covered}/${total[key].total} |`);
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, ["## Cobertura de testes", "", "| Métrica | % | Cobertos |", "| --- | --- | --- |", ...rows, ""].join("\n"));
+          '
       - run: npm run build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: build-e-cobertura
+          path: |
+            dist
+            coverage
+          retention-days: 7
+
+  e2e:
+    name: Testes E2E e acessibilidade
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: relatorio-playwright
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+
+  seguranca:
+    name: Auditoria de dependências
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      # Falha só com vulnerabilidades altas ou críticas; as menores aparecem no log.
+      - run: npm audit --audit-level=high
