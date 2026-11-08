@@ -26,6 +26,7 @@ export default defineConfig({
     testTimeout: 15000,
     unstubGlobals: true,
     setupFiles: './src/test/setup.js',
+    include: ['src/**/*.test.{js,jsx}'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{js,jsx}'],
