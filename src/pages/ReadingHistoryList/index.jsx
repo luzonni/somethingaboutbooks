@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState } from "../../components/Feedback";
+import GoalCard from "../../components/GoalCard";
 import ProgressBar from "../../components/ProgressBar";
 import { useLibrary } from "../../context/LibraryContext";
 import { useToast } from "../../context/ToastContext";
@@ -110,6 +111,10 @@ const ReadingHistoryList = () => {
         <div><dt>Neste ano</dt><dd>{stats.readThisYear}</dd></div>
         <div><dt>Tempo de leitura</dt><dd>{formatMinutes(stats.minutes)}</dd></div>
       </dl>
+
+      <div className={styles.insights}>
+        <GoalCard />
+      </div>
 
       <div className={styles.filters} role="group" aria-label="Filtrar por estante">
         {Object.entries(FILTERS).map(([key, label]) => (

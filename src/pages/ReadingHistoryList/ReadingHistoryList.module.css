@@ -190,3 +190,10 @@
   max-width: 16rem;
   margin-top: 0.25rem;
 }
+
+.insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
