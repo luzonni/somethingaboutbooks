@@ -42,6 +42,9 @@ const LayoutStyle = styled.div`
     main {
         flex: 1;
         width: 100%;
+        /* Mantém o rodapé abaixo da dobra enquanto a página carrega: sem isso ele aparecia no meio
+           da tela e era empurrado quando o conteúdo chegava (CLS de 0,36 no celular). */
+        min-height: 100vh;
         background-color: var(--color-surface);
     }
     main:focus {
