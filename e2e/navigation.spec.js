@@ -10,7 +10,7 @@ test.describe('navegação e busca', () => {
 
   test('busca leva para a página de livros com a URL compartilhável', async ({ page }) => {
     await page.goto('/')
-    await page.locator('main').getByRole('searchbox').fill('duna')
+    await page.locator('main').getByRole('combobox', { name: 'Buscar livros' }).fill('duna')
     await page.keyboard.press('Enter')
     await expect(page).toHaveURL(/\/books\?q=duna/)
     await expect(page.getByRole('heading', { name: 'Duna', exact: true })).toBeVisible()
@@ -29,9 +29,9 @@ test.describe('navegação e busca', () => {
 
   test('atalho / foca a busca da página', async ({ page }) => {
     await page.goto('/books')
-    await expect(page.locator('main').getByRole('searchbox')).toBeVisible()
+    await expect(page.locator('main').getByRole('combobox', { name: 'Buscar livros' })).toBeVisible()
     await page.keyboard.press('/')
-    await expect(page.locator('main').getByRole('searchbox')).toBeFocused()
+    await expect(page.locator('main').getByRole('combobox', { name: 'Buscar livros' })).toBeFocused()
   })
 
   test('primeiro Tab oferece pular para o conteúdo', async ({ page }) => {
