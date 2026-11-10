@@ -47,6 +47,20 @@ test.describe('navegação e busca', () => {
     await expect(page.locator('main').getByRole('combobox', { name: 'Buscar livros' })).toBeFocused()
   })
 
+  test('? abre a lista de atalhos, que também abre pelo rodapé', async ({ page }) => {
+    await page.goto('/')
+    const dialog = page.getByRole('dialog', { name: 'Atalhos de teclado' })
+    await page.keyboard.press('?')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByText('Ir para a busca')).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
+    await page.getByRole('button', { name: 'Atalhos de teclado' }).click()
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('button', { name: 'Fechar' }).click()
+    await expect(dialog).toBeHidden()
+  })
+
   test('primeiro Tab oferece pular para o conteúdo', async ({ page }) => {
     await page.goto('/')
     await page.keyboard.press('Tab')

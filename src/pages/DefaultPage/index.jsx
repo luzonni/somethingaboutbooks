@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import BackToTop from "../../components/BackToTop";
@@ -7,6 +7,7 @@ import { Spinner } from "../../components/Feedback";
 import MyFooter from "../../components/MyFooter";
 import MyHeader from "../../components/MyHeader";
 import OfflineBanner from "../../components/OfflineBanner";
+import ShortcutsDialog from "../../components/ShortcutsDialog";
 import { useAuth } from "../../context/AuthContext";
 import { useShortcut } from "../../hooks/useShortcut";
 
@@ -57,7 +58,10 @@ const DefaultPage = () => {
         if (signedOut && pathname === "/") acknowledgeSignOut()
     }, [signedOut, pathname, acknowledgeSignOut])
 
+    const [shortcutsOpen, setShortcutsOpen] = useState(false)
+
     useShortcut("/", focusSearch)
+    useShortcut("?", () => setShortcutsOpen(true))
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -75,8 +79,9 @@ const DefaultPage = () => {
                     </Suspense>
                 </ErrorBoundary>
             </main>
-            <MyFooter />
+            <MyFooter onShowShortcuts={() => setShortcutsOpen(true)} />
             <BackToTop />
+            <ShortcutsDialog open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
         </LayoutStyle>
     )
 }
