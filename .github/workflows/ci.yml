@@ -70,6 +70,28 @@ jobs:
             test-results
           retention-days: 7
 
+  lighthouse:
+    name: Lighthouse (performance e boas práticas)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # Perfil mobile (4G simulado e CPU mais lenta). Performance e LCP só avisam, porque variam entre
+      # máquinas do CI; acessibilidade, boas práticas, SEO, CLS e tamanho do JavaScript reprovam.
+      - run: npm run test:lighthouse
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: relatorio-lighthouse
+          path: lighthouse
+          retention-days: 7
+
   seguranca:
     name: Auditoria de dependências
     runs-on: ubuntu-latest

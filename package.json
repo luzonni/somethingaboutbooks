@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "check": "npm run lint && npm test",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:lighthouse": "npx -y @lhci/cli@0.14.0 autorun"
   },
   "dependencies": {
     "react": "^18.3.1",
