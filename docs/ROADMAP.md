@@ -55,8 +55,3 @@ e um caminho sugerido. Ao começar um item, abra uma issue com o modelo "Sugerir
 - Internacionalização (inglês e espanhol), começando por extrair os textos da interface.
 - Revisão com leitores de tela reais (NVDA e VoiceOver); a checagem automática do axe já passa.
 - Atalhos de teclado configuráveis e uma tela de ajuda com todos eles (`?`).
-
-## Limpeza
-
-- `public/imgs/IMG-20230207-WA0021.jpg` não é usada no código e parece uma foto pessoal. Remover se a equipe
-  concordar.
