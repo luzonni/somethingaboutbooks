@@ -10,10 +10,23 @@ test.describe('navegação e busca', () => {
 
   test('busca leva para a página de livros com a URL compartilhável', async ({ page }) => {
     await page.goto('/')
-    await page.locator('main').getByRole('searchbox').fill('duna')
+    await page.locator('main').getByRole('combobox', { name: 'Buscar livros' }).fill('duna')
     await page.keyboard.press('Enter')
     await expect(page).toHaveURL(/\/books\?q=duna/)
     await expect(page.getByRole('heading', { name: 'Duna', exact: true })).toBeVisible()
+  })
+
+  test('sugestões levam ao livro e a busca fica no histórico', async ({ page }) => {
+    await page.goto('/')
+    const field = page.locator('main').getByRole('combobox', { name: 'Buscar livros' })
+    await field.pressSequentially('dun')
+    await page.getByRole('option', { name: /Duna/ }).click()
+    await expect(page).toHaveURL(/\/books\/OL\w+W$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Duna' })).toBeVisible()
+
+    await page.goto('/books')
+    await page.locator('main').getByRole('combobox', { name: 'Buscar livros' }).focus()
+    await expect(page.getByRole('option', { name: 'dun' })).toBeVisible()
   })
 
   test('ordenação vai para a URL e a rolagem carrega mais resultados', async ({ page }) => {
@@ -29,9 +42,23 @@ test.describe('navegação e busca', () => {
 
   test('atalho / foca a busca da página', async ({ page }) => {
     await page.goto('/books')
-    await expect(page.locator('main').getByRole('searchbox')).toBeVisible()
+    await expect(page.locator('main').getByRole('combobox', { name: 'Buscar livros' })).toBeVisible()
     await page.keyboard.press('/')
-    await expect(page.locator('main').getByRole('searchbox')).toBeFocused()
+    await expect(page.locator('main').getByRole('combobox', { name: 'Buscar livros' })).toBeFocused()
+  })
+
+  test('? abre a lista de atalhos, que também abre pelo rodapé', async ({ page }) => {
+    await page.goto('/')
+    const dialog = page.getByRole('dialog', { name: 'Atalhos de teclado' })
+    await page.keyboard.press('?')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByText('Ir para a busca')).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
+    await page.getByRole('button', { name: 'Atalhos de teclado' }).click()
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('button', { name: 'Fechar' }).click()
+    await expect(dialog).toBeHidden()
   })
 
   test('primeiro Tab oferece pular para o conteúdo', async ({ page }) => {

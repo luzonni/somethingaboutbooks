@@ -14,12 +14,11 @@ e um caminho sugerido. Ao começar um item, abra uma issue com o modelo "Sugerir
 - **Depende disso:** recuperação de senha, login com Google e sincronização entre aparelhos.
 
 ### Pré-renderização para carregar mais rápido
-- **Problema:** no Lighthouse mobile a home tem performance 63 e LCP de 5,2 s. O site é uma SPA, então nada aparece
-  antes de o JavaScript (cerca de 200 KB) ser baixado e executado.
-- **Caminho:** pré-renderizar as páginas públicas no build (modo framework do React Router com `prerender`, ou
-  `vite-plugin-ssr`) e trocar o styled-components, que gera CSS em tempo de execução, por CSS modules, já usados
-  em parte do projeto.
-- **Meta:** LCP abaixo de 2,5 s e TBT abaixo de 200 ms.
+- **Situação:** o Lighthouse mobile da home subiu de 63 para 98 depois de corrigir o LCP que o Chrome não conseguia
+  medir e o CLS do rodapé. O site continua sendo uma SPA, então nada aparece antes de o JavaScript ser baixado.
+- **Caminho:** pré-renderizar as páginas públicas no build (modo framework do React Router com `prerender`) e trocar o
+  styled-components, que gera CSS em tempo de execução, por CSS modules, já usados em parte do projeto.
+- **Meta:** manter LCP abaixo de 2,5 s em redes lentas também no primeiro acesso, sem cache.
 
 ### Agrupar edições e traduções da mesma obra
 - **Problema:** a Open Library cadastra traduções como obras separadas ("Atomic Habits", "Hábitos Atômicos",
@@ -34,9 +33,7 @@ e um caminho sugerido. Ao começar um item, abra uma issue com o modelo "Sugerir
 - Perfil público com URL compartilhável e prévia bonita em redes sociais.
 
 ### Busca
-- Sugestões enquanto digita, com debounce de 300 ms.
 - Filtros por idioma, ano de publicação e número de páginas.
-- Guardar as últimas buscas.
 
 ### Leitura
 - Lembretes da meta anual e da sequência de dias com Web Push (service worker já existe).
@@ -44,9 +41,8 @@ e um caminho sugerido. Ao começar um item, abra uma issue com o modelo "Sugerir
 - Sinopses traduzidas para português quando a Open Library só tiver em inglês.
 
 ### Qualidade
-- Cobertura de testes unitários de 53% para 70%, priorizando páginas (`src/pages`).
+- Cobertura de testes unitários de 66% para 75%: faltam BookPreview, AuthorPage, UserProfile e ReadingHistoryList.
 - Testes de regressão visual com capturas do Playwright, nos dois temas.
-- Lighthouse CI no pipeline com orçamento de performance, para barrar regressões.
 - Previews de deploy por pull request (Netlify ou Vercel gratuitos).
 
 ## Prioridade baixa
@@ -54,9 +50,4 @@ e um caminho sugerido. Ao começar um item, abra uma issue com o modelo "Sugerir
 - Monitoramento de erros em produção (Sentry, plano gratuito) e coleta de Web Vitals reais.
 - Internacionalização (inglês e espanhol), começando por extrair os textos da interface.
 - Revisão com leitores de tela reais (NVDA e VoiceOver); a checagem automática do axe já passa.
-- Atalhos de teclado configuráveis e uma tela de ajuda com todos eles (`?`).
-
-## Limpeza
-
-- `public/imgs/IMG-20230207-WA0021.jpg` não é usada no código e parece uma foto pessoal. Remover se a equipe
-  concordar.
+- Atalhos de teclado configuráveis (a tela de ajuda com `?` já existe).

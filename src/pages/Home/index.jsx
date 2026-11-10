@@ -52,6 +52,9 @@ const HomeStyle = styled.div`
         animation: ${riseIn} 600ms ease both;
     }
     .hero__search {
+        /* A animação cria uma camada própria: sem z-index, a lista de sugestões ficaria atrás dos cards. */
+        position: relative;
+        z-index: 5;
         width: 100%;
         animation-delay: 120ms;
     }

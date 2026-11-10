@@ -62,6 +62,26 @@ const MyFooterStyle = styled.footer`
     .footer__bottom a {
         text-decoration: underline;
     }
+    .footer__shortcuts {
+        padding: 0;
+        background: none;
+        border: none;
+        color: inherit;
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    .footer__shortcuts:hover {
+        color: ${White};
+        text-decoration-color: ${Coral};
+    }
+    .footer__shortcuts kbd {
+        margin-left: 0.35rem;
+        padding: 0 0.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        font-family: inherit;
+    }
 `
 
 const LINKS = [
@@ -71,7 +91,7 @@ const LINKS = [
     { to: "/suporte", label: "Suporte" },
 ]
 
-const MyFooter = () => (
+const MyFooter = ({ onShowShortcuts }) => (
     <MyFooterStyle>
         <div className="footer__content">
             <div className="footer__brand">
@@ -86,6 +106,11 @@ const MyFooter = () => (
         </div>
         <div className="footer__bottom">
             <p>© {new Date().getFullYear()} SAB. Todos os direitos reservados.</p>
+            {onShowShortcuts && (
+                <button type="button" className="footer__shortcuts" aria-keyshortcuts="?" onClick={onShowShortcuts}>
+                    Atalhos de teclado<kbd aria-hidden="true">?</kbd>
+                </button>
+            )}
             <p>
                 Dados e capas de livros: <a href="https://openlibrary.org" target="_blank" rel="noreferrer">Open Library</a>
             </p>

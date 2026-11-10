@@ -87,8 +87,9 @@ const ListCardStyle = styled.section`
         gap: 1rem;
         padding: 0.5rem 0.25rem 1.25rem;
         overflow-x: auto;
+        /* Sem scroll-behavior: smooth aqui. Com o snap, o navegador reajusta a posição com rolagem
+           suave quando os livros substituem os skeletons, e o Chrome para de medir o LCP da página. */
         scroll-snap-type: x proximity;
-        scroll-behavior: smooth;
         scrollbar-width: none;
     }
     .list--carousel::-webkit-scrollbar {
@@ -134,7 +135,8 @@ const useCarousel = () => {
 
     const scroll = (direction) => {
         const list = listRef.current
-        list?.scrollBy({ left: direction * list.clientWidth * 0.8 })
+        const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+        list?.scrollBy({ left: direction * list.clientWidth * 0.8, behavior: reduceMotion ? "auto" : "smooth" })
     }
 
     return { listRef, scroll, ...position }
