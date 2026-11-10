@@ -51,6 +51,8 @@ export default defineConfig({
       include: ['src/**/*.{js,jsx}'],
       exclude: ['src/**/*.test.{js,jsx}', 'src/test/**', 'src/main.jsx'],
       reporter: ['text-summary', 'html', 'json-summary'],
+      // Piso abaixo do valor atual: barra quedas grandes sem travar mudanças pequenas.
+      thresholds: { lines: 62, statements: 62, functions: 57, branches: 53 },
     },
   },
 })
