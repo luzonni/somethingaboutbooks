@@ -1,11 +1,22 @@
-# 📚 SAB PROJECT (SomethingAboutBooks)
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-dark.png">
+  <img src="docs/assets/logo-light.png" alt="SAB: Something About Books" width="220">
+</picture>
+
+# Something About Books
+
+Encontre livros, organize suas estantes e crie o hábito de ler com o Pomodoro.
 
 [![CI](https://github.com/luzonni/somethingaboutbooks/actions/workflows/ci.yml/badge.svg)](https://github.com/luzonni/somethingaboutbooks/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/luzonni/somethingaboutbooks/actions/workflows/codeql.yml/badge.svg)](https://github.com/luzonni/somethingaboutbooks/actions/workflows/codeql.yml)
 [![Deploy](https://github.com/luzonni/somethingaboutbooks/actions/workflows/deploy.yml/badge.svg)](https://github.com/luzonni/somethingaboutbooks/actions/workflows/deploy.yml)
-<img width="300" alt="Screen Shot 2024-11-10 at 18 27 25" src="https://github.com/user-attachments/assets/9add98d2-1b72-49ff-838d-cd5a30e8b6f2">
+[![Licença](https://img.shields.io/github/license/luzonni/somethingaboutbooks)](LICENSE)
 
-## Projeto de Engenharia de Software desenvolvido pela turma de Ciencia da Computacao da Unima Afya - AL.
+Projeto de Engenharia de Software da turma de Ciência da Computação da Unima Afya (AL).
+
+</div>
 
 ---
 
