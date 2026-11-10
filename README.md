@@ -32,6 +32,7 @@ Projeto de Engenharia de Software da turma de Ciência da Computação da Unima 
 ## ✨ Funcionalidades
 
 - **Busca de livros** por título, autor ou assunto, com filtro por gênero e URL compartilhável
+- **Sugestões na busca**: livros aparecem enquanto você digita, junto com as buscas recentes
 - **Página do livro** com sinopse, autor, notas e assuntos
 - **Estantes**: Lendo, Quero ler e Lido, além de favoritos
 - **Listas personalizadas** para organizar os livros
@@ -42,7 +43,8 @@ Projeto de Engenharia de Software da turma de Ciência da Computação da Unima 
 - **Meta anual** de leitura, gráfico dos últimos 7 dias e sequência de dias lendo
 - **Progresso por páginas** nos livros em leitura
 - **Backup**: exportar e importar a biblioteca em JSON
-- **Tema claro e escuro**, avisos na tela, atalhos de teclado e modo offline
+- **Tema claro e escuro**, avisos na tela e modo offline
+- **Atalhos de teclado**, com a lista completa ao apertar `?`
 - **App instalável** (PWA)
 - **Layout responsivo**, com navbar para desktop e menu lateral para mobile
 
@@ -77,6 +79,7 @@ npm run dev
 | `npm test` | Roda os testes unitários |
 | `npm run test:coverage` | Testes unitários com relatório de cobertura em `coverage/` |
 | `npm run test:e2e` | Testes ponta a ponta e de acessibilidade com Playwright |
+| `npm run test:lighthouse` | Lighthouse no build de produção (rode `npm run build` antes) |
 | `npm run lint` | Verifica o código com ESLint |
 | `npm run check` | Lint e testes unitários, o que o CI exige |
 
@@ -116,7 +119,7 @@ Tudo roda com recursos gratuitos do GitHub:
 
 | Workflow | Quando | O que faz |
 | --- | --- | --- |
-| **CI** | Toda PR e push na `main` | Lint, testes com resumo de cobertura, build, testes E2E com acessibilidade e auditoria de dependências |
+| **CI** | Toda PR e push na `main` | Lint, testes com piso de cobertura, build, testes E2E com acessibilidade, Lighthouse e auditoria de dependências |
 | **Deploy** | Depois que o CI passa na `main` | Publica no GitHub Pages em `/<repositório>/` |
 | **CodeQL** | PRs, `main` e toda segunda | Análise de segurança do código |
 | **Dependabot** | Toda segunda | PRs agrupadas de atualização de pacotes e actions |
