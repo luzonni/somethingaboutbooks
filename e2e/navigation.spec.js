@@ -16,6 +16,19 @@ test.describe('navegação e busca', () => {
     await expect(page.getByRole('heading', { name: 'Duna', exact: true })).toBeVisible()
   })
 
+  test('sugestões levam ao livro e a busca fica no histórico', async ({ page }) => {
+    await page.goto('/')
+    const field = page.locator('main').getByRole('combobox', { name: 'Buscar livros' })
+    await field.pressSequentially('dun')
+    await page.getByRole('option', { name: /Duna/ }).click()
+    await expect(page).toHaveURL(/\/books\/OL\w+W$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Duna' })).toBeVisible()
+
+    await page.goto('/books')
+    await page.locator('main').getByRole('combobox', { name: 'Buscar livros' }).focus()
+    await expect(page.getByRole('option', { name: 'dun' })).toBeVisible()
+  })
+
   test('ordenação vai para a URL e a rolagem carrega mais resultados', async ({ page }) => {
     await page.goto('/books?q=o')
     await page.getByLabel('Ordenar por').selectOption('rating')

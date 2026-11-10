@@ -1,8 +1,10 @@
-import { useId, useState } from "react"
+import { useEffect, useId, useState } from "react"
 import styled, { css, keyframes } from "styled-components"
 import { FaHistory, FaSearch } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
 import { Black, Border, BrandText, Coral, Cream, DarkGray, Ink, Surface } from "../../assets/Colors"
+import { searchBooks } from "../../api/openLibrary"
+import { useDebouncedValue } from "../../hooks/useDebouncedValue"
 import { useTypingPlaceholder } from "../../hooks/useTypingPlaceholder"
 import { addRecentSearch, clearRecentSearches, getRecentSearches } from "../../services/recentSearches"
 
@@ -60,7 +62,7 @@ const SearchStyle = styled.form`
     input:focus {
         outline: none;
     }
-    button {
+    > button {
         display: flex;
         align-items: center;
         padding: ${({ $compact }) => ($compact ? "0 0.75rem" : "0 1.25rem")};
@@ -71,16 +73,16 @@ const SearchStyle = styled.form`
         font-size: ${({ $compact }) => ($compact ? "1rem" : "1.25rem")};
         transition: filter 150ms ease;
     }
-    button:hover {
+    > button:hover {
         filter: brightness(0.92);
     }
-    button svg {
+    > button svg {
         transition: transform 200ms ease;
     }
-    button:hover svg {
+    > button:hover svg {
         transform: scale(1.2) rotate(-8deg);
     }
-    button:active svg {
+    > button:active svg {
         transform: scale(0.9);
     }
 `
@@ -143,6 +145,39 @@ const Option = styled.div`
     }
 `
 
+const BookOption = styled(Option)`
+    img,
+    .sem-capa {
+        flex-shrink: 0;
+        width: 28px;
+        height: 42px;
+        object-fit: cover;
+        border-radius: 3px;
+        background-color: ${Cream};
+    }
+    span {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    strong,
+    small {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    strong {
+        font-weight: 500;
+    }
+    small {
+        color: ${DarkGray};
+        font-size: 0.8125rem;
+    }
+`
+
+const SUGGESTION_MIN_LENGTH = 3
+const SUGGESTION_LIMIT = 5
+
 const SUGGESTIONS = ["O Hobbit", "Machado de Assis", "Duna", "Clarice Lispector", "Harry Potter", "ficção científica"]
 const DEFAULT_PLACEHOLDER = "Título, autor ou assunto"
 
@@ -160,11 +195,33 @@ const Search = ({ initialValue = "", extraParams = "", compact = false, animated
         fallback: DEFAULT_PLACEHOLDER,
     })
 
-    const typed = value.trim().toLowerCase()
+    const query = value.trim()
+    const debouncedQuery = useDebouncedValue(query, 300)
+    const [books, setBooks] = useState({ query: "", items: [] })
+
+    useEffect(() => {
+        if (!focused || debouncedQuery.length < SUGGESTION_MIN_LENGTH) return undefined
+        const controller = new AbortController()
+        searchBooks({ query: debouncedQuery, limit: SUGGESTION_LIMIT, signal: controller.signal })
+            .then(({ books: items }) => setBooks({ query: debouncedQuery, items }))
+            // Sugestão é um extra: sem internet ou com a API fora, a busca normal continua funcionando.
+            .catch(() => {})
+        return () => controller.abort()
+    }, [debouncedQuery, focused])
+
+    const typed = query.toLowerCase()
     const recentOptions = recent
         .filter((item) => item.toLowerCase().includes(typed) && item.toLowerCase() !== typed)
         .map((item, index) => ({ id: `${id}-recente-${index}`, label: item, run: () => go(item) }))
-    const options = recentOptions
+    const bookOptions =
+        query.length >= SUGGESTION_MIN_LENGTH && books.query === query
+            ? books.items.map((book, index) => ({
+                  id: `${id}-livro-${index}`,
+                  book,
+                  run: () => openBook(book),
+              }))
+            : []
+    const options = [...recentOptions, ...bookOptions]
     const expanded = open && options.length > 0
     const activeOption = expanded ? options[active] : undefined
 
@@ -184,6 +241,12 @@ const Search = ({ initialValue = "", extraParams = "", compact = false, animated
         close()
         const search = params.toString()
         navigate(search ? `/books?${search}` : "/books")
+    }
+
+    function openBook(book) {
+        setRecent(addRecentSearch(query))
+        close()
+        navigate(`/books/${book.id}`)
     }
 
     const handleSubmit = (event) => {
@@ -270,6 +333,31 @@ const Search = ({ initialValue = "", extraParams = "", compact = false, animated
                                     <FaHistory aria-hidden="true" />
                                     {option.label}
                                 </Option>
+                            ))}
+                        </div>
+                    )}
+                    {bookOptions.length > 0 && (
+                        <div role="group" aria-labelledby={`${id}-livros`}>
+                            <GroupLabel id={`${id}-livros`}>Livros</GroupLabel>
+                            {bookOptions.map((option) => (
+                                <BookOption
+                                    key={option.id}
+                                    id={option.id}
+                                    role="option"
+                                    aria-selected={option === activeOption}
+                                    onMouseDown={keepFocus}
+                                    onClick={option.run}
+                                >
+                                    {option.book.cover ? (
+                                        <img src={option.book.cover.replace("-M.jpg", "-S.jpg")} alt="" loading="lazy" />
+                                    ) : (
+                                        <div className="sem-capa" aria-hidden="true" />
+                                    )}
+                                    <span>
+                                        <strong>{option.book.title}</strong>
+                                        <small>{option.book.author}</small>
+                                    </span>
+                                </BookOption>
                             ))}
                         </div>
                     )}
