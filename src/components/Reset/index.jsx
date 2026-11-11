@@ -22,6 +22,8 @@ const Reset = createGlobalStyle`
 	--shadow-soft: rgba(41, 20, 16, 0.05);
 	color-scheme: light;
 
+	/* Títulos de destaque (home e seções de livros). Georgia aparece até a Lora carregar. */
+	--font-display: "Lora", Georgia, "Times New Roman", serif;
 	font-family: "Roboto", sans-serif;
 	font-optical-sizing: auto;
 	font-weight: 400;
@@ -162,6 +164,15 @@ table {
 	* {
 		scrollbar-color: ${Coral} ${Cream};
 		scrollbar-width: thin;
+	}
+}
+
+/* Rolagem suave da página para links internos e para o "voltar ao topo". Vale só para a janela:
+   os carrosséis não usam, porque com o snap o navegador reajusta a posição e o Chrome deixava de medir o LCP.
+   A troca de página usa behavior: "instant" no DefaultPage. */
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		scroll-behavior: smooth;
 	}
 }
 

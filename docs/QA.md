@@ -1,5 +1,44 @@
 # Relatório de QA
 
+## Atualização: nova tela inicial
+
+Data: 11/11/2026 · Branch: `feat/tela-inicial`
+
+| Área | Situação |
+| --- | --- |
+| Testes unitários e de componentes | ✅ 201 passando (8 novos da home) |
+| Testes ponta a ponta (desktop e celular) | ✅ 45 passando, com axe nos dois temas |
+| Lint | ✅ sem erros |
+| Vulnerabilidades em dependências (`npm audit`) | ✅ 0 |
+| Lighthouse mobile: performance | ✅ home 98 (LCP 1,97 s, CLS 0) e /sobre 96 (LCP 2,50 s), mediana de 5 execuções |
+| Lighthouse mobile: acessibilidade / boas práticas / SEO | ✅ 100 / 100 / 92 |
+| Rolagem horizontal no celular | ✅ nenhuma na home e na busca |
+
+### Como foi testado
+
+- **Unitários:** os três estados do destaque (visitante, conta sem leitura, livro em leitura com e sem página
+  marcada), os botões de gênero, a ordem das seções e o leque de capas (lista Quero ler ou mais bem avaliados, com a
+  lista carregada uma vez só).
+- **Visual:** prints antes e depois em desktop (1440 px) e celular (Pixel 7), nos temas claro e escuro, também na busca,
+  que usa o novo card de livro.
+- **Performance:** maior elemento da tela (LCP) acompanhado com `PerformanceObserver` no Chrome, na largura do celular.
+
+### Bugs encontrados e corrigidos
+
+| # | Problema | Gravidade | Correção |
+| --- | --- | --- | --- |
+| 1 | Sem o banner antigo, a primeira capa do "Em alta" virou o LCP no celular: nota de 97 para 81, LCP de 2,4 s para 4,5 s | Alta | Prateleira de lombadas local na base do destaque; nota 98 e LCP 1,97 s |
+| 2 | Linhas de contorno como fundo não resolviam o item 1: o Chrome ignora imagens com pouco conteúdo visual para o LCP | Média | Mantidas só como decoração; a prateleira passou a cumprir esse papel |
+| 3 | Capas do leque empilhadas: a animação de entrada sobrescrevia a posição e a rotação | Média | Animação só de opacidade |
+| 4 | Cartão do livro em leitura sem sombra: `--shadow-soft` é uma cor, não uma sombra | Baixa | Sombra completa |
+| 5 | Leque e "Em alta" carregavam a mesma lista ao mesmo tempo | Baixa | Carregamento compartilhado (depois o leque passou a usar os mais bem avaliados) |
+
+### Pendências e riscos conhecidos
+
+- **Prateleira e LCP:** retirar ou encolher a prateleira no celular faz a capa do "Em alta" voltar a ser o LCP.
+- **Gênero Biografia:** a Open Library traz livros pouco conhecidos e em outros idiomas para as etiquetas usadas.
+- **Títulos das outras páginas** (busca, autor, livro) ainda em Roboto; a Lora está só na home e nos títulos de seção.
+
 ## Atualização: Google Books
 
 Data: 11/11/2026 · Branch: `feat/google-books-api`

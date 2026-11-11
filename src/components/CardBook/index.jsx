@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import BookCover from "../BookCover"
 import ProgressBar from "../ProgressBar"
 import Stars from "../Stars"
-import { Black, Coral, Cream, DarkGray, Ink, Surface } from "../../assets/Colors"
+import { Black, BrandText, Coral, Cream, DarkGray, Ink, Surface } from "../../assets/Colors"
 import { useLibrary } from "../../context/LibraryContext"
 import { SHELVES, readingProgress } from "../../services/library"
 
@@ -11,40 +11,41 @@ const CardBookStyle = styled.article`
     position: relative;
     width: 100%;
     height: 100%;
-    /* Capa, título e autor no mesmo cartão: deixa claro o que pertence a cada livro. */
+    /* Sem moldura: a capa com sombra é o destaque, e título e autor ficam logo abaixo. */
     a {
         display: flex;
         flex-direction: column;
         gap: 0.375rem;
         height: 100%;
-        padding: 0.5rem 0.5rem 0.75rem;
-        border: 1px solid var(--color-border-soft);
-        border-radius: 12px;
-        background-color: var(--color-surface-soft);
+        border-radius: 8px;
         color: ${Black};
         text-decoration: none;
-        transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease, background-color 250ms ease;
     }
-    a:hover {
-        border-color: var(--color-border);
-        background-color: var(--color-surface);
-        box-shadow: 0 10px 24px rgba(41, 20, 16, 0.12);
-        transform: translateY(-3px);
+    a:focus-visible {
+        outline: 2px solid ${BrandText};
+        outline-offset: 4px;
     }
     .card__cover {
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.375rem;
+        box-shadow: 0 6px 14px rgba(41, 20, 16, 0.18);
+        transition: transform 250ms ease, box-shadow 250ms ease;
     }
-    h3, p {
-        padding: 0 0.125rem;
+    a:hover .card__cover {
+        box-shadow: 0 14px 28px rgba(41, 20, 16, 0.26);
+        transform: translateY(-4px);
     }
     h3 {
         font-size: 1rem;
         font-weight: 500;
         line-height: 1.25;
+        transition: color 150ms ease;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+    a:hover h3 {
+        color: ${BrandText};
     }
     p {
         font-size: 0.875rem;
@@ -55,8 +56,9 @@ const CardBookStyle = styled.article`
     }
     .card__badge {
         position: absolute;
-        top: 0.875rem;
-        left: 0.875rem;
+        top: 0.5rem;
+        left: 0.5rem;
+        z-index: 1;
         padding: 0.125rem 0.5rem;
         border-radius: 4px;
         background-color: ${Coral};

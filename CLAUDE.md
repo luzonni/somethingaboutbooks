@@ -35,7 +35,11 @@ npm run build && npm run test:lighthouse
 
 **Book page** (`src/pages/BookPreview`) renders immediately from the card's data passed in router `state.book` (or the saved library entry), then fills in `getWork`/`getBookExtras`. Anything that links to a book should pass `state: { book }`.
 
-**Theming:** colors come from `src/assets/Colors.jsx`, which points to CSS variables defined in `src/components/Reset`. No loose hex colors in components (breaks the dark theme). Styling mixes styled-components and CSS modules.
+**Theming:** colors come from `src/assets/Colors.jsx`, which points to CSS variables defined in `src/components/Reset`. No loose hex colors in components (breaks the dark theme). Styling mixes styled-components and CSS modules. `--shadow-soft` is only a color: write the full `box-shadow`. Display headings use `var(--font-display)` (Lora, loaded with Roboto in `index.html`).
+
+**Breakpoints:** new and reworked screens use `media.celular` (640 px) and `media.tablet` (below 900 px) from `src/assets/breakpoints.js`. Older screens still have ad hoc values (roadmap item). 900 px is also where the header hides "Criar conta" and switches to the mobile menu.
+
+**Home LCP:** on mobile, the shelf strip at the bottom of the home hero (`public/imgs/hero-shelf.svg`) is the LCP element on purpose. Without it, the first "Em alta" cover, which waits on two API calls, becomes LCP and Lighthouse drops from ~98 to ~81. Low-detail images (e.g. `hero-pattern.svg`) are ignored for LCP by Chrome. Re-measure with Lighthouse after changing the hero.
 
 **Service worker** (`public/sw.js`): registered with `?mode=covers` in dev (caches only `covers.openlibrary.org`) and `?mode=app` in prod (offline app shell).
 
