@@ -76,6 +76,7 @@ const HomeStyle = styled.div`
     }
     h1 {
         color: ${Black};
+        font-family: var(--font-display);
         font-size: clamp(2rem, 4vw, 3rem);
         font-weight: 700;
         line-height: 1.1;
@@ -130,7 +131,7 @@ const HomeStyle = styled.div`
         padding: 1.5rem;
         border-radius: 18px;
         background-color: ${Surface};
-        box-shadow: var(--shadow-soft);
+        box-shadow: 0 8px 24px rgba(41, 20, 16, 0.08);
         animation: ${riseIn} 600ms ease 120ms both;
     }
     .reading__cover {
@@ -152,6 +153,7 @@ const HomeStyle = styled.div`
     }
     .reading__title {
         color: ${Black};
+        font-family: var(--font-display);
         font-size: 1.25rem;
         font-weight: 700;
         line-height: 1.2;
@@ -224,7 +226,8 @@ const HomeStyle = styled.div`
         padding-top: 1.5rem;
     }
     .genres__head h2 {
-        font-size: 1.5rem;
+        font-family: var(--font-display);
+        font-size: clamp(1.25rem, 3vw, 1.75rem);
         font-weight: 700;
     }
     .genres__chips {
@@ -259,7 +262,14 @@ const HomeStyle = styled.div`
         color: var(--color-on-brand);
     }
 
+    .hero__signup {
+        display: none;
+    }
+
     ${media.tablet} {
+        .hero__signup {
+            display: inline-flex;
+        }
         .hero {
             grid-template-columns: 1fr;
             gap: 2rem;
@@ -412,8 +422,9 @@ function Hero({ user, current, wanted, topRated }) {
                         <Link to="/books" className="button button--primary">Explorar livros</Link>
                     ) : (
                         <>
-                            <Link to="/signup" className="button button--primary">Criar conta</Link>
-                            <Link to="/books" className="button">Explorar livros</Link>
+                            <Link to="/books" className="button button--primary">Explorar livros</Link>
+                            {/* No desktop a barra do topo já tem "Criar conta"; abaixo de 900 px ela só mostra "Entrar". */}
+                            <Link to="/signup" className="button hero__signup">Criar conta</Link>
                         </>
                     )}
                 </div>

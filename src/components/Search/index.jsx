@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from "react"
-import styled, { css, keyframes } from "styled-components"
+import styled, { css } from "styled-components"
 import { FaHistory, FaSearch } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
 import { Black, Border, BrandText, Coral, Cream, DarkGray, Ink, Surface } from "../../assets/Colors"
@@ -8,32 +8,13 @@ import { useDebouncedValue } from "../../hooks/useDebouncedValue"
 import { useTypingPlaceholder } from "../../hooks/useTypingPlaceholder"
 import { addRecentSearch, clearRecentSearches, getRecentSearches } from "../../services/recentSearches"
 
-// Só opacidade e escala: o navegador anima na GPU, sem repintar a página a cada quadro.
-const glow = keyframes`
-    0% { opacity: 0.55; transform: scale(1); }
-    70%, 100% { opacity: 0; transform: scale(1.04, 1.3); }
-`
-
+// Busca de destaque da home: sombra leve sobre o cartão claro e um leve destaque ao focar.
 const animatedStyles = css`
     position: relative;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    &::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        border-radius: inherit;
-        background-color: rgba(227, 96, 101, 0.6);
-        animation: ${glow} 3s ease-out 1.5s infinite;
-        pointer-events: none;
-    }
+    box-shadow: 0 4px 14px rgba(41, 20, 16, 0.1);
     &:focus-within {
-        transform: translateY(-3px) scale(1.015);
-        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(227, 96, 101, 0.55);
-    }
-    &:focus-within::before {
-        animation: none;
-        opacity: 0;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(41, 20, 16, 0.16), 0 0 0 3px rgba(227, 96, 101, 0.45);
     }
 `
 

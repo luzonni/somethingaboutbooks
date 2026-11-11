@@ -37,11 +37,14 @@ describe("Home", () => {
         trendingList.mockImplementation(() => ({ peek: () => null, load: async () => TRENDING }))
     })
 
-    it("convida o visitante a buscar e criar conta", async () => {
+    it("convida o visitante a buscar e explorar, sem repetir o Criar conta da barra no desktop", async () => {
         renderWithProviders(<Home />)
         expect(screen.getByRole("heading", { level: 1, name: "Encontre a sua próxima história!" })).toBeTruthy()
-        expect(screen.getByRole("link", { name: "Criar conta" }).getAttribute("href")).toBe("/signup")
+        expect(screen.getByRole("link", { name: "Explorar livros" }).getAttribute("href")).toBe("/books")
         expect(screen.getByRole("combobox", { name: "Buscar livros" })).toBeTruthy()
+        // Fora de telas pequenas o botão fica escondido: a barra do topo já oferece "Criar conta".
+        expect(screen.queryByRole("link", { name: "Criar conta" })).toBeNull()
+        expect(document.querySelector('main a[href="/signup"], a.hero__signup')?.textContent).toBe("Criar conta")
     })
 
     it("cumprimenta quem entrou e ainda não está lendo nada", async () => {
