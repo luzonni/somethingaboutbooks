@@ -1,8 +1,54 @@
 # Relatório de QA
 
+## Atualização: Google Books
+
+Data: 11/11/2026 · Branch: `feat/google-books-api`
+
+| Área | Situação |
+| --- | --- |
+| Testes unitários e de componentes | ✅ 193 passando, cobertura de 67% das linhas |
+| Testes ponta a ponta (desktop e celular) | ✅ 45 passando, com o Google Books desligado |
+| Lint | ✅ sem erros |
+| Vulnerabilidades em dependências (`npm audit`) | ✅ 0 |
+| Lighthouse | Não medido de novo: a home não mudou de fonte |
+
+### Como foi testado
+
+- **Unitários:** cliente do Google Books (filtros, capas, sinopse, edição sem capa), escolha da fonte em
+  `src/api/books.js` (Google na busca, Open Library nos gêneros, volta para a Open Library se o Google falhar ou não
+  houver chave), ordenação dos resultados e crédito das fontes no rodapé. Os testes nunca chamam o Google: a chave é forçada vazia no Vitest e no
+  Playwright.
+- **Exploratório com as APIs reais:** buscas em português e inglês ("Quarta Asa", "A hipótese do amor",
+  "Corte de Espinhos e Rosas", "Os Sete Maridos de Evelyn Hugo", "The Great Gatsby", "Fourth Wing", "ali hazelwood"),
+  página do livro, sugestões e "Mais de" um autor.
+- **Segurança da chave:** chamada de outro site recusada (403), chave fora dos arquivos versionados e do `dist/`
+  gerado pelos testes.
+
+### Bugs encontrados e corrigidos
+
+| # | Problema | Gravidade | Correção |
+| --- | --- | --- | --- |
+| 1 | Livros traduzidos recentemente não eram encontrados pelo título em português ("Quarta Asa"): a Open Library não tem essas edições | Alta | Google Books na busca e na página do livro |
+| 2 | Página do livro aberta pela sugestão, recarregada ou por link mostrava título e capa em inglês | Média | Sugestão passa os dados do livro; a obra usa a edição em português |
+| 3 | Edição em português na Open Library com foto pessoal no lugar da capa ("A hipótese do amor") | Média | Capas do Google Books, enviadas pelas editoras |
+| 4 | Sugestões traziam cadastros sem capa, sem autor ou sem relação com a busca antes do livro certo | Média | Ordenação por correspondência com a busca, capa e autor |
+| 5 | Lista "Em alta" com títulos em inglês | Baixa | Títulos e capas da edição em português, numa consulta a mais |
+
+### Pendências e riscos conhecidos
+
+- **Site publicado sem Google Books:** o deploy não recebe chave e continua só com a Open Library (ver
+  [roadmap](ROADMAP.md)).
+- **Cota diária:** cada chave tem 1.000 consultas por dia por projeto, divididas entre todos que a usam. Ao acabar,
+  o app volta para a Open Library.
+- **Dados do Google Books:** imitações de títulos famosos, edições de Portugal misturadas às brasileiras e poucas
+  notas de leitores.
+- **Offline:** o service worker guarda só as capas da Open Library.
+
+## Versão anterior: melhorias v3
+
 Data: 10/11/2026 · Branch: `feat/melhorias-v3` (atualiza o relatório da `feat/melhorias-v2`)
 
-## Resumo
+### Resumo
 
 | Área | Situação |
 | --- | --- |
@@ -16,7 +62,7 @@ Data: 10/11/2026 · Branch: `feat/melhorias-v3` (atualiza o relatório da `feat/
 
 Aprovado para merge, com as pendências documentadas abaixo e no [roadmap](ROADMAP.md).
 
-## Como foi testado
+### Como foi testado
 
 - **Unitários (Vitest + Testing Library):** regras de negócio (biblioteca, metas, sequência de dias, backup, Pomodoro,
   validações, limpeza de dados da API) e componentes com estado (navbar, tema, avisos, meta anual, gráfico,
@@ -31,7 +77,7 @@ Aprovado para merge, com as pendências documentadas abaixo e no [roadmap](ROADM
 - **Performance:** Lighthouse mobile (4G simulado e CPU 4× mais lenta) no build de produção, agora também no CI
   (`npm run test:lighthouse`). As causas do LCP ausente e do CLS foram confirmadas com `PerformanceObserver` no Chrome.
 
-## Bugs encontrados e corrigidos
+### Bugs encontrados e corrigidos
 
 | # | Problema | Gravidade | Correção |
 | --- | --- | --- | --- |
@@ -51,12 +97,12 @@ Aprovado para merge, com as pendências documentadas abaixo e no [roadmap](ROADM
 Os itens 2, 3 e 4 foram introduzidos durante o desenvolvimento da `feat/melhorias-v2` e corrigidos antes do merge. Os itens 10 e 11 foram
 encontrados com o Lighthouse CI adicionado na `feat/melhorias-v3`.
 
-## Pendências e riscos conhecidos
+### Pendências e riscos conhecidos
 
 - **Performance:** medida localmente com a API real; no CI, performance e LCP só geram aviso, porque variam entre
   máquinas. A pré-renderização continua no roadmap para o primeiro acesso em redes lentas.
 - **Contas só no navegador:** não é autenticação real. Documentado em `SECURITY.md` e na política de privacidade.
-- **Dados da Open Library:** sinopses muitas vezes em inglês e traduções cadastradas como obras diferentes.
+- **Dados da Open Library:** sinopses muitas vezes em inglês e traduções cadastradas como obras diferentes (atacado na atualização do Google Books, acima).
 - **GitHub Pages:** o deploy só roda depois que alguém com acesso de admin ativar o Pages
   (Settings > Pages > Source: GitHub Actions). Até lá o workflow apenas avisa e não falha.
 - **Cobertura de testes unitários:** 66% das linhas, com piso de 62% no Vitest. Ainda faltam BookPreview, AuthorPage,

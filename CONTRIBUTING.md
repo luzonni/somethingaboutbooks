@@ -9,6 +9,9 @@ npm install
 npm run dev
 ```
 
+Opcional: com uma chave própria do Google Books no `.env.local`, a busca traz as edições brasileiras.
+Veja "Chave do Google Books" no README. Cada pessoa usa a sua chave; nunca a coloque em arquivos versionados.
+
 ## Antes de abrir uma PR
 
 ```bash
