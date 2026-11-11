@@ -44,7 +44,10 @@ export default defineConfig({
     // Testes com a árvore inteira de providers podem passar de 5 s em máquinas de CI mais lentas.
     testTimeout: 15000,
     unstubGlobals: true,
+    unstubEnvs: true,
     setupFiles: './src/test/setup.js',
+    // O Vite também carrega o .env.local nos testes: sem isto, eles chamariam o Google Books de verdade.
+    env: { VITE_GOOGLE_BOOKS_KEY: '' },
     include: ['src/**/*.test.{js,jsx}'],
     coverage: {
       provider: 'v8',

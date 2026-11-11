@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { hasGoogleBooks } from "../../api/googleBooks";
 import styled from "styled-components";
 import { Coral, Ink, White } from "../../assets/Colors";
 import { asset } from "../../utils/asset";
@@ -112,7 +113,13 @@ const MyFooter = ({ onShowShortcuts }) => (
                 </button>
             )}
             <p>
-                Dados e capas de livros: <a href="https://openlibrary.org" target="_blank" rel="noreferrer">Open Library</a>
+                Dados e capas de livros:{" "}
+                {hasGoogleBooks() && (
+                    <>
+                        <a href="https://books.google.com" target="_blank" rel="noreferrer">Google Books</a> e{" "}
+                    </>
+                )}
+                <a href="https://openlibrary.org" target="_blank" rel="noreferrer">Open Library</a>
             </p>
         </div>
     </MyFooterStyle>

@@ -3,7 +3,7 @@ import styled, { css, keyframes } from "styled-components"
 import { FaHistory, FaSearch } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
 import { Black, Border, BrandText, Coral, Cream, DarkGray, Ink, Surface } from "../../assets/Colors"
-import { searchBooks } from "../../api/openLibrary"
+import { suggestBooks } from "../../api/books"
 import { useDebouncedValue } from "../../hooks/useDebouncedValue"
 import { useTypingPlaceholder } from "../../hooks/useTypingPlaceholder"
 import { addRecentSearch, clearRecentSearches, getRecentSearches } from "../../services/recentSearches"
@@ -202,8 +202,8 @@ const Search = ({ initialValue = "", extraParams = "", compact = false, animated
     useEffect(() => {
         if (!focused || debouncedQuery.length < SUGGESTION_MIN_LENGTH) return undefined
         const controller = new AbortController()
-        searchBooks({ query: debouncedQuery, limit: SUGGESTION_LIMIT, signal: controller.signal })
-            .then(({ books: items }) => setBooks({ query: debouncedQuery, items }))
+        suggestBooks({ query: debouncedQuery, limit: SUGGESTION_LIMIT, signal: controller.signal })
+            .then((items) => setBooks({ query: debouncedQuery, items }))
             // Sugestão é um extra: sem internet ou com a API fora, a busca normal continua funcionando.
             .catch(() => {})
         return () => controller.abort()
@@ -246,7 +246,7 @@ const Search = ({ initialValue = "", extraParams = "", compact = false, animated
     function openBook(book) {
         setRecent(addRecentSearch(query))
         close()
-        navigate(`/books/${book.id}`)
+        navigate(`/books/${book.id}`, { state: { book } })
     }
 
     const handleSubmit = (event) => {

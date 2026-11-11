@@ -55,7 +55,7 @@ Projeto de Engenharia de Software da turma de Ciência da Computação da Unima 
 | Área | Ferramentas |
 | --- | --- |
 | Interface | React 18, Vite, React Router e styled-components |
-| Dados de livros | [Open Library API](https://openlibrary.org/developers/api), aberta e sem chave |
+| Dados de livros | [Google Books API](https://developers.google.com/books) (busca e página do livro, com chave opcional) e [Open Library API](https://openlibrary.org/developers/api) (home, gêneros, autores e plano B, sem chave) |
 | Dados do usuário | `localStorage` do navegador (back-end com Firebase planejado) |
 | Testes | Vitest, Testing Library, Playwright e axe-core |
 | Qualidade | ESLint, GitHub Actions, CodeQL e Dependabot |
@@ -83,7 +83,35 @@ npm run dev
 | `npm run lint` | Verifica o código com ESLint |
 | `npm run check` | Lint e testes unitários, o que o CI exige |
 
-Não é preciso configurar chaves: a API usada é aberta.
+### Chave do Google Books (opcional)
+
+O app roda sem nenhuma chave, só com a Open Library. Com a chave do Google Books, a busca e a página do livro
+passam a trazer as edições brasileiras, com título, capa e sinopse em português (por exemplo, "Quarta Asa").
+
+**Cada pessoa cria a própria chave.** Não compartilhe a sua por chat, e-mail ou commit. É gratuito e não precisa
+de cartão:
+
+1. Em [console.cloud.google.com](https://console.cloud.google.com), crie um projeto novo.
+   **Não aceite** a avaliação gratuita nem ative o faturamento: sem conta de faturamento, não há cobrança.
+2. Em **APIs e serviços → Biblioteca**, ative a **Books API**.
+3. Em **APIs e serviços → Credenciais → Criar credenciais → Chave de API**, configure antes de salvar:
+   - **Restrições de API:** só a **Books API**.
+   - **Restrições de aplicativo → Sites:** `http://localhost:5173/*`
+4. Opcional: em **Books API → Cotas e limites do sistema**, reduza *Queries per day* (padrão 1.000).
+5. Copie o modelo e cole a chave no `.env.local`, que o Git ignora:
+
+   ```bash
+   cp .env.example .env.local
+   # VITE_GOOGLE_BOOKS_KEY=sua_chave
+   ```
+
+6. Reinicie o `npm run dev` e abra `http://localhost:5173` (não `127.0.0.1`, que a restrição de site recusa).
+
+Se a chave faltar, for recusada ou a cota do dia acabar, o app volta sozinho para a Open Library.
+Os testes unitários e ponta a ponta sempre desligam o Google Books, então não gastam a cota.
+
+> A chave vai junto no código do site gerado pelo `npm run build`. Não publique um `dist/` gerado com a sua chave:
+> as restrições de site e de API limitam o uso, mas ela continua visível.
 
 Como o site usa rotas no navegador, a hospedagem precisa redirecionar todas as URLs para o `index.html`.
 O repositório já traz essa configuração para Vercel (`vercel.json`), Netlify (`public/_redirects`) e GitHub Pages
@@ -95,7 +123,7 @@ O repositório já traz essa configuração para Vercel (`vercel.json`), Netlify
 
 | Pasta | Conteúdo |
 | --- | --- |
-| `src/api` | Cliente da [Open Library](https://openlibrary.org/developers/api), com cache e tratamento de erros |
+| `src/api` | Clientes do [Google Books](https://developers.google.com/books) e da [Open Library](https://openlibrary.org/developers/api), com cache e tratamento de erros; `books.js` escolhe a fonte |
 | `src/services` | Contas, biblioteca e acesso ao `localStorage` |
 | `src/context` | Estado global: autenticação, biblioteca, Pomodoro, tema e avisos |
 | `src/hooks` | Hooks reutilizáveis |
@@ -103,7 +131,7 @@ O repositório já traz essa configuração para Vercel (`vercel.json`), Netlify
 | `src/components` | Componentes compartilhados |
 | `src/pages` | Páginas da aplicação |
 | `public/sw.js` | Service worker: guarda capas e arquivos do site para abrir offline |
-| `e2e` | Testes ponta a ponta com a Open Library simulada |
+| `e2e` | Testes ponta a ponta com a Open Library simulada (o Google Books fica desligado) |
 
 ### Armazenamento local
 
@@ -151,7 +179,7 @@ criar e manter o hábito.
 | **Para quem** | Leitores em geral que querem organizar leituras e descobrir livros |
 | **Onde** | Navegador, no computador ou no celular (iOS e Android), e instalável como app |
 | **Quando** | Primeira versão entregue em novembro de 2024, com melhorias contínuas desde então |
-| **Como** | React no front-end e Open Library como fonte de dados; back-end com Firebase planejado |
+| **Como** | React no front-end, Google Books e Open Library como fontes de dados; back-end com Firebase planejado |
 | **Quanto** | Gratuito, usando apenas serviços com plano grátis |
 
 ---

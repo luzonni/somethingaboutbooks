@@ -30,6 +30,8 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run build && npm run preview -- --port ${PORT} --strictPort`,
+    // Os testes simulam só a Open Library: mesmo com a chave no .env.local, o Google Books fica desligado.
+    env: { VITE_GOOGLE_BOOKS_KEY: '' },
     port: PORT,
     reuseExistingServer: !isCI,
     timeout: 120_000,

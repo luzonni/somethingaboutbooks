@@ -19,8 +19,13 @@ import {
     FiTrash2,
 } from "react-icons/fi"
 import { Border, BrandText, Cream, DarkGray, DarkRed, Sand, White } from "../../assets/Colors"
+import { hasGoogleBooks } from "../../api/googleBooks"
 import { useDocumentTitle } from "../../hooks/useDocumentTitle"
 import { asset } from "../../utils/asset"
+
+// O Google Books só é usado quando o build tem a chave: os textos dizem a fonte que está de fato ativa.
+const usesGoogleBooks = hasGoogleBooks()
+const SOURCES = usesGoogleBooks ? "do Google Books e da Open Library" : "da Open Library"
 
 const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
@@ -277,10 +282,20 @@ const PAGES = {
                 </section>
                 <section className="info__section">
                     <h2>De onde vêm os livros</h2>
-                    <p>
-                        As informações e capas vêm da <a href="https://openlibrary.org" target="_blank" rel="noreferrer">Open Library</a>,
-                        um catálogo aberto mantido pelo Internet Archive.
-                    </p>
+                    {usesGoogleBooks ? (
+                        <p>
+                            A busca e as páginas dos livros usam o{" "}
+                            <a href="https://books.google.com" target="_blank" rel="noreferrer">Google Books</a>, que tem as
+                            edições brasileiras. As listas da página inicial e as páginas de autores vêm da{" "}
+                            <a href="https://openlibrary.org" target="_blank" rel="noreferrer">Open Library</a>, um catálogo
+                            aberto mantido pelo Internet Archive.
+                        </p>
+                    ) : (
+                        <p>
+                            As informações e capas vêm da <a href="https://openlibrary.org" target="_blank" rel="noreferrer">Open Library</a>,
+                            um catálogo aberto mantido pelo Internet Archive.
+                        </p>
+                    )}
                 </section>
             </>
         ),
@@ -295,7 +310,7 @@ const PAGES = {
                 <div className="info__cards">
                     <Card icon={FiInfo} title="Projeto acadêmico">O SAB é gratuito e oferecido como está, sem garantia de disponibilidade.</Card>
                     <Card icon={FiEdit3} title="Suas reviews">Você é responsável pelo que escreve nas suas reviews e listas.</Card>
-                    <Card icon={FiDatabase} title="Dados dos livros">Títulos, sinopses e capas vêm da Open Library e podem conter erros ou estar incompletos.</Card>
+                    <Card icon={FiDatabase} title="Dados dos livros">Títulos, sinopses e capas vêm {SOURCES} e podem conter erros ou estar incompletos.</Card>
                 </div>
             </section>
         ),
@@ -313,7 +328,7 @@ const PAGES = {
                 <section className="info__section">
                     <div className="info__cards">
                         <Card icon={FiLock} title="Senha protegida">Sua senha é guardada como um hash, nunca em texto puro.</Card>
-                        <Card icon={FiGlobe} title="Serviços externos">Para mostrar os livros, o navegador consulta a Open Library, incluindo os termos que você busca.</Card>
+                        <Card icon={FiGlobe} title="Serviços externos">Para mostrar os livros, o navegador consulta {usesGoogleBooks ? "o Google Books e a Open Library" : "a Open Library"}, incluindo os termos que você busca.</Card>
                         <Card icon={FiDatabase} title="Cache local">Listas e capas ficam guardadas no navegador para o site carregar mais rápido.</Card>
                         <Card icon={FiTrash2} title="Apagar seus dados">Exclua sua conta em Configurações ou limpe os dados deste site no navegador. Não há como recuperá-los depois.</Card>
                     </div>
@@ -338,7 +353,9 @@ const PAGES = {
                             Seus dados não acompanham você entre navegadores ou aparelhos, e são apagados ao limpar os dados do site.
                         </Faq>
                         <Faq question="Por que algumas sinopses estão em inglês?">
-                            Os textos vêm da Open Library, que nem sempre tem a versão em português.
+                            {usesGoogleBooks
+                                ? "Algumas edições cadastradas no Google Books e na Open Library só têm sinopse no idioma original."
+                                : "Os textos vêm da Open Library, que nem sempre tem a versão em português."}
                         </Faq>
                     </div>
                 </section>

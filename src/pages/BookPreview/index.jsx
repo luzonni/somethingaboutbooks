@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiArrowRight, FiCalendar, FiExternalLink } from "react-icons/fi";
-import { authorBooksList, getBookExtras, getWork, similarBooksList } from "../../api/openLibrary";
+import { authorBooksList, getBookExtras, getWork } from "../../api/books";
+import { similarBooksList } from "../../api/openLibrary";
 import BookActions from "../../components/BookActions";
 import BookCover from "../../components/BookCover";
 import BookReviews from "../../components/BookReviews";
@@ -28,7 +29,8 @@ const MAX_HERO_TAGS = 3;
 const MAX_TAG_LENGTH = 24;
 
 const searchLink = (term) => `/books?q=${encodeURIComponent(term)}`;
-const largerCover = (cover = "") => cover.replace("-M.jpg", "-L.jpg");
+// Open Library troca o sufixo do tamanho; Google Books troca o zoom.
+const largerCover = (cover = "") => cover.replace("-M.jpg", "-L.jpg").replace(/([?&]zoom=)1\b/, "$13");
 
 function Book3D({ cover, lowRes, title, author }) {
   const bookRef = useRef(null);
@@ -116,8 +118,12 @@ function RatingBreakdown({ rating, count, counts }) {
 }
 
 function DetailsTab({ work }) {
+  const fromGoogle = work.source === "google";
   const rows = [
-    ["Primeira publicação", formatApiDate(work.firstPublished)],
+    // No Google cada livro é uma edição: a data é a desta edição, não a da obra original.
+    [fromGoogle ? "Publicação" : "Primeira publicação", formatApiDate(work.firstPublished)],
+    ["Editora", work.publisher],
+    ["Páginas", work.pages ? String(work.pages) : ""],
     ["Lugares", work.places.join(", ")],
     ["Personagens", work.characters.join(", ")],
   ].filter(([, value]) => value);
@@ -137,7 +143,7 @@ function DetailsTab({ work }) {
         <p className={styles.muted}>Não há mais detalhes sobre esta obra.</p>
       )}
       <a className={styles.externalLink} href={work.url} target="_blank" rel="noreferrer">
-        Ver na Open Library <FiExternalLink aria-hidden="true" />
+        {fromGoogle ? "Ver no Google Livros" : "Ver na Open Library"} <FiExternalLink aria-hidden="true" />
       </a>
     </>
   );
