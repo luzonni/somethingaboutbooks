@@ -22,6 +22,8 @@ const Reset = createGlobalStyle`
 	--shadow-soft: rgba(41, 20, 16, 0.05);
 	color-scheme: light;
 
+	/* Títulos de destaque (home e seções de livros). Georgia aparece até a Lora carregar. */
+	--font-display: "Lora", Georgia, "Times New Roman", serif;
 	font-family: "Roboto", sans-serif;
 	font-optical-sizing: auto;
 	font-weight: 400;

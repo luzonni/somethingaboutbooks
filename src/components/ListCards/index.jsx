@@ -17,6 +17,7 @@ const ListCardStyle = styled.section`
         margin-bottom: 1rem;
     }
     h2 {
+        font-family: var(--font-display);
         font-weight: 700;
         font-size: clamp(1.25rem, 3vw, 1.75rem);
     }
