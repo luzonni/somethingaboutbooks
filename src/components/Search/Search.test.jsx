@@ -2,16 +2,21 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter, useLocation } from "react-router-dom"
-import { searchBooks } from "../../api/openLibrary"
+import { suggestBooks } from "../../api/openLibrary"
 import Search from "."
 
-vi.mock("../../api/openLibrary", () => ({ searchBooks: vi.fn() }))
+vi.mock("../../api/openLibrary", () => ({ suggestBooks: vi.fn() }))
 
 const DUNE = { id: "OL893415W", title: "Duna", author: "Frank Herbert", cover: "https://covers.openlibrary.org/b/id/1-M.jpg" }
 
 const Location = () => {
     const location = useLocation()
-    return <output>{`${location.pathname}${location.search}`}</output>
+    return (
+        <>
+            <output>{`${location.pathname}${location.search}`}</output>
+            <span data-testid="estado">{location.state?.book?.title ?? ""}</span>
+        </>
+    )
 }
 
 const renderSearch = (props) =>
@@ -27,8 +32,8 @@ const field = () => screen.getByRole("combobox", { name: "Buscar livros" })
 describe("Search", () => {
     beforeEach(() => {
         localStorage.clear()
-        searchBooks.mockReset()
-        searchBooks.mockResolvedValue({ books: [], total: 0, hasMore: false })
+        suggestBooks.mockReset()
+        suggestBooks.mockResolvedValue([])
     })
 
     it("leva a busca para a URL da página de livros", async () => {
@@ -94,29 +99,30 @@ describe("Search", () => {
         expect(localStorage.getItem("sab:recent-searches")).toBeNull()
     })
 
-    it("sugere livros enquanto a pessoa digita", async () => {
-        searchBooks.mockResolvedValue({ books: [DUNE], total: 1, hasMore: false })
+    it("sugere livros enquanto a pessoa digita e leva os dados do livro", async () => {
+        suggestBooks.mockResolvedValue([DUNE])
         renderSearch()
         await userEvent.type(field(), "dun")
         const option = await screen.findByRole("option", { name: /Duna.*Frank Herbert/ })
-        expect(searchBooks).toHaveBeenCalledTimes(1)
-        expect(searchBooks.mock.calls[0][0]).toMatchObject({ query: "dun", limit: 5 })
+        expect(suggestBooks).toHaveBeenCalledTimes(1)
+        expect(suggestBooks.mock.calls[0][0]).toMatchObject({ query: "dun", limit: 5 })
         await userEvent.click(option)
         expect(screen.getByRole("status").textContent).toBe("/books/OL893415W")
+        expect(screen.getByTestId("estado").textContent).toBe("Duna")
     })
 
     it("não busca sugestões com menos de 3 letras", async () => {
         renderSearch()
         await userEvent.type(field(), "du")
         await new Promise((resolve) => setTimeout(resolve, 400))
-        expect(searchBooks).not.toHaveBeenCalled()
+        expect(suggestBooks).not.toHaveBeenCalled()
     })
 
     it("continua funcionando se as sugestões falharem", async () => {
-        searchBooks.mockRejectedValue(new Error("offline"))
+        suggestBooks.mockRejectedValue(new Error("offline"))
         renderSearch()
         await userEvent.type(field(), "duna")
-        await waitFor(() => expect(searchBooks).toHaveBeenCalled())
+        await waitFor(() => expect(suggestBooks).toHaveBeenCalled())
         expect(screen.queryAllByRole("option")).toHaveLength(0)
         await userEvent.keyboard("{Enter}")
         expect(screen.getByRole("status").textContent).toBe("/books?q=duna")

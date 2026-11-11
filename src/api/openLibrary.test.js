@@ -19,6 +19,7 @@ import {
     idFromKey,
     similarBooksList,
     searchBooks,
+    suggestBooks,
 } from "./openLibrary"
 
 const mockFetch = (handler) => {
@@ -86,6 +87,90 @@ describe("openLibrary", () => {
         expect(result.hasMore).toBe(true)
         expect(result.books[0]).toMatchObject({ id: "OL1W", title: "O Hobbit", author: "J.R.R. Tolkien" })
         expect(result.books[0].cover).toContain("/b/id/2-M.jpg")
+    })
+
+    it("sobe livros com capa e autor sem mudar a ordem entre eles", async () => {
+        mockFetch(() => ({
+            body: {
+                numFound: 3,
+                docs: [
+                    { key: "/works/OL1W", title: "Orgulho e Preconceito" },
+                    { key: "/works/OL2W", title: "Orgulho e preconceito", author_name: ["Jane Austen"] },
+                    {
+                        key: "/works/OL3W",
+                        title: "Pride and Prejudice",
+                        author_name: ["Jane Austen"],
+                        cover_i: 9,
+                        editions: { docs: [{ title: "Orgulho e Preconceito", language: ["por"] }] },
+                    },
+                ],
+            },
+        }))
+        const { books } = await searchBooks({ query: "orgulho e preconceito" })
+        expect(books.map((book) => book.id)).toEqual(["OL3W", "OL2W", "OL1W"])
+    })
+
+    it("não deixa livro com capa mas sem relação com a busca passar à frente", async () => {
+        mockFetch(() => ({
+            body: {
+                numFound: 2,
+                docs: [
+                    { key: "/works/OL1W", title: "Avivamentos Falsos", author_name: ["X"], cover_i: 1 },
+                    { key: "/works/OL2W", title: "Orgulho e Preconceito", author_name: ["Jane Austen"] },
+                ],
+            },
+        }))
+        const { books } = await searchBooks({ query: "Orgulho e Preconceito" })
+        expect(books.map((book) => book.id)).toEqual(["OL2W", "OL1W"])
+    })
+
+    it("aceita a busca pelo nome do autor", async () => {
+        mockFetch(() => ({
+            body: {
+                numFound: 2,
+                docs: [
+                    { key: "/works/OL1W", title: "Estudo", author_name: ["Fulano"], cover_i: 1 },
+                    { key: "/works/OL2W", title: "Dom Casmurro", author_name: ["Machado de Assis"], cover_i: 2 },
+                ],
+            },
+        }))
+        const { books } = await searchBooks({ query: "machado de assis" })
+        expect(books.map((book) => book.id)).toEqual(["OL2W", "OL1W"])
+    })
+
+    it("respeita a ordenação escolhida pela pessoa", async () => {
+        mockFetch(() => ({
+            body: {
+                numFound: 2,
+                docs: [
+                    { key: "/works/OL1W", title: "Sem capa" },
+                    { key: "/works/OL2W", title: "Com capa", author_name: ["A"], cover_i: 1 },
+                ],
+            },
+        }))
+        const { books } = await searchBooks({ query: "capa", sort: "rating" })
+        expect(books.map((book) => book.id)).toEqual(["OL1W", "OL2W"])
+    })
+
+    it("sugere os melhores livros entre mais resultados, sem repetidos", async () => {
+        const fetchMock = mockFetch(() => ({
+            body: {
+                numFound: 4,
+                docs: [
+                    { key: "/works/OL1W", title: "A Revolução dos Bichos", author_name: ["Orwell"] },
+                    { key: "/works/OL2W", title: "Cordel", author_name: ["B"] },
+                    { key: "/works/OL3W", title: "Animal Farm", author_name: ["Orwell"], cover_i: 1, editions: { docs: [{ title: "A revolução dos bichos", language: ["por"], cover_i: 2 }] } },
+                    { key: "/works/OL4W", title: "Outro", author_name: ["C"], cover_i: 3 },
+                ],
+            },
+        }))
+
+        const books = await suggestBooks({ query: "a revolução dos bichos", limit: 2 })
+
+        expect(new URL(fetchMock.mock.calls[0][0]).searchParams.get("limit")).toBe("20")
+        // OL1W tem o mesmo título e autor da edição em português de OL3W: sai como repetido.
+        expect(books.map((book) => book.id)).toEqual(["OL3W", "OL4W"])
+        expect(books[0].title).toBe("A revolução dos bichos")
     })
 
     it("aplica só ordenações conhecidas", async () => {
@@ -199,11 +284,100 @@ describe("openLibrary", () => {
         const fetchMock = mockFetch(() => ({ body: { works } }))
 
         await getTrendingBooks()
+        const callsOnFirstVisit = fetchMock.mock.calls.length
         clearApiCache()
         const books = await getTrendingBooks()
 
-        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(fetchMock).toHaveBeenCalledTimes(callsOnFirstVisit)
         expect(books[0].id).toBe("OL1W")
+    })
+
+    it("mostra os mais lidos com título e capa da edição em português", async () => {
+        const fetchMock = mockFetch((url) =>
+            url.includes("/trending/")
+                ? {
+                      body: {
+                          works: [
+                              { key: "/works/OL1W", title: "Atomic Habits", author_name: ["James Clear"], cover_i: 1 },
+                              { key: "/works/OL2W", title: "Only English", author_name: ["B"], cover_i: 3 },
+                          ],
+                      },
+                  }
+                : {
+                      body: {
+                          docs: [
+                              { key: "/works/OL1W", editions: { docs: [{ title: "Hábitos Atômicos", language: ["por"], cover_i: 2 }] } },
+                              { key: "/works/OL2W", editions: { docs: [{ title: "Only English", language: ["eng"], cover_i: 4 }] } },
+                          ],
+                      },
+                  }
+        )
+
+        const books = await getTrendingBooks()
+
+        const search = new URL(fetchMock.mock.calls[1][0])
+        expect(search.searchParams.get("q")).toBe("key:(/works/OL1W OR /works/OL2W)")
+        expect(search.searchParams.get("lang")).toBe("pt")
+        expect(books[0]).toMatchObject({ title: "Hábitos Atômicos", author: "James Clear" })
+        expect(books[0].cover).toContain("/b/id/2-M.jpg")
+        expect(books[1]).toMatchObject({ title: "Only English" })
+        expect(books[1].cover).toContain("/b/id/3-M.jpg")
+    })
+
+    it("mantém os mais lidos originais se a busca das edições falhar", async () => {
+        mockFetch((url) =>
+            url.includes("/trending/")
+                ? { body: { works: [{ key: "/works/OL1W", title: "Atomic Habits", cover_i: 1 }] } }
+                : { status: 503 }
+        )
+        const books = await getTrendingBooks()
+        expect(books[0]).toMatchObject({ title: "Atomic Habits" })
+    })
+
+    it("abre a obra com título e capa da edição em português", async () => {
+        mockFetch((url) =>
+            url.includes("/search.json")
+                ? {
+                      body: {
+                          docs: [
+                              {
+                                  number_of_pages_median: 320,
+                                  editions: { docs: [{ title: "Hábitos Atômicos", language: ["por"], cover_i: 2 }] },
+                              },
+                          ],
+                      },
+                  }
+                : { body: { key: "/works/OL1W", title: "Atomic Habits", covers: [1] } }
+        )
+
+        const work = await getWork("OL1W")
+
+        expect(work.title).toBe("Hábitos Atômicos")
+        expect(work.cover).toContain("/b/id/2-L.jpg")
+    })
+
+    it("abre a obra no idioma original quando não há edição em português", async () => {
+        mockFetch((url) =>
+            url.includes("/search.json")
+                ? { status: 503 }
+                : { body: { key: "/works/OL1W", title: "Atomic Habits", covers: [1] } }
+        )
+        const work = await getWork("OL1W")
+        expect(work.title).toBe("Atomic Habits")
+        expect(work.cover).toContain("/b/id/1-L.jpg")
+    })
+
+    it("reaproveita a busca da obra para o número de páginas", async () => {
+        const fetchMock = mockFetch((url) =>
+            url.includes("/search.json")
+                ? { body: { docs: [{ number_of_pages_median: 320 }] } }
+                : { body: { key: "/works/OL1W", title: "Livro" } }
+        )
+        const work = await getWork("OL1W")
+        const extras = await getBookExtras(work)
+        const searches = fetchMock.mock.calls.filter(([url]) => url.toString().includes("/search.json"))
+        expect(searches).toHaveLength(1)
+        expect(extras.pages).toBe(320)
     })
 
     it("permite ler a lista guardada sem esperar a rede", async () => {

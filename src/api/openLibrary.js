@@ -250,14 +250,40 @@ const normalizeBook = ({ key, title, authors, coverId, year, rating, ratingCount
     ...(pages > 0 ? { pages } : {}),
 })
 
+// Com lang=pt, a Open Library põe a edição em português (se houver) como primeira edição da obra.
+const portugueseEdition = (doc) => {
+    const edition = doc?.editions?.docs?.[0]
+    return edition?.language?.includes("por") ? edition : null
+}
+
+const EDITION_FIELDS = "key,number_of_pages_median,editions,editions.title,editions.language,editions.cover_i"
+
+// Edições em português de várias obras numa requisição só. Se falhar, os livros ficam como vieram.
+const portugueseEditions = async (keys, signal) => {
+    if (keys.length === 0) return new Map()
+    try {
+        const data = await request("/search.json", {
+            params: { q: `key:(${keys.join(" OR ")})`, lang: "pt", limit: keys.length, fields: EDITION_FIELDS },
+            signal,
+        })
+        return new Map((data.docs ?? []).map((doc) => [doc.key, portugueseEdition(doc)]))
+    } catch (error) {
+        if (error.name === "AbortError") throw error
+        return new Map()
+    }
+}
+
+// Mesma URL na página do livro e nos extras: a segunda chamada sai do cache.
+const workSearch = (id, signal) =>
+    request("/search.json", { params: { q: `key:/works/${id}`, lang: "pt", fields: EDITION_FIELDS }, signal })
+
 const normalizeSearchDoc = (doc) => {
-    const edition = doc.editions?.docs?.[0]
-    const isPortuguese = edition?.language?.includes("por")
+    const edition = portugueseEdition(doc)
     return normalizeBook({
         key: doc.key,
-        title: (isPortuguese && edition.title) || doc.title,
+        title: edition?.title || doc.title,
         authors: doc.author_name,
-        coverId: (isPortuguese && edition.cover_i) || doc.cover_i,
+        coverId: edition?.cover_i || doc.cover_i,
         year: doc.first_publish_year,
         rating: doc.ratings_average,
         ratingCount: doc.ratings_count,
@@ -290,24 +316,55 @@ export const searchBooks = async ({ query = "", genre = "", sort = "", page = 1,
         signal,
     })
     return {
-        books: text || sort ? books : curateBooks(books, { maxPerAuthor: 3 }),
+        books: text && !sort ? rankBooks(books, text) : text || sort ? books : curateBooks(books, { maxPerAuthor: 3 }),
         total,
         hasMore: page * limit < total,
     }
 }
 
+// Buscas em português trazem cadastros soltos (sem capa, sem autor ou sem relação com o texto)
+// antes da obra principal. Sobe os livros completos que batem com a busca, sem mexer na ordem
+// de relevância entre livros igualmente bons.
+const UNKNOWN_AUTHOR = /^(autor desconhecido|\[.*\])$/i
+const queryWords = (query) => normalize(query).split(" ").filter((word) => word.length > 2)
+const bookScore = (book, words) => {
+    const text = ` ${normalize(`${book.title} ${book.author}`)} `
+    const matches = words.every((word) => text.includes(` ${word} `))
+    return (matches ? 0 : 4) + (book.cover ? 0 : 2) + (UNKNOWN_AUTHOR.test(book.author) ? 1 : 0)
+}
+export const rankBooks = (books, query = "") => {
+    const words = queryWords(query)
+    return books
+        .map((book, index) => ({ book, index, score: bookScore(book, words) }))
+        .sort((a, b) => a.score - b.score || a.index - b.index)
+        .map(({ book }) => book)
+}
+
+const SUGGESTION_POOL = 20
+
+// As sugestões mostram poucos itens: busca mais, junta repetidos e fica com os melhores.
+export const suggestBooks = async ({ query, limit = 5, signal } = {}) => {
+    const terms = query.trim()
+    const { books } = await runSearch({ terms, limit: SUGGESTION_POOL, signal })
+    return dedupeBooks(rankBooks(books, terms)).slice(0, limit)
+}
+
 export const trendingList = ({ period = "weekly", limit = 12 } = {}) =>
-    listSource(`trending:${period}:${limit}`, async (signal) => {
+    listSource(`trending-pt:${period}:${limit}`, async (signal) => {
         const data = await request(`/trending/${period}.json`, { params: { limit }, signal })
-        return (data.works ?? []).map((work) =>
-            normalizeBook({
+        const works = data.works ?? []
+        // A lista de mais lidos não aceita idioma: troca título e capa pelos da edição em português.
+        const editions = await portugueseEditions(works.map((work) => work.key).filter(Boolean), signal)
+        return works.map((work) => {
+            const edition = editions.get(work.key)
+            return normalizeBook({
                 key: work.key,
-                title: work.title,
+                title: edition?.title || work.title,
                 authors: work.author_name,
-                coverId: work.cover_i,
+                coverId: edition?.cover_i || work.cover_i,
                 year: work.first_publish_year,
             })
-        )
+        })
     })
 
 export const genreList = (genre, { limit = 12 } = {}) =>
@@ -385,12 +442,17 @@ export const getAuthorWorks = async (authorId, { page = 1, limit = PAGE_SIZE, si
 const valueOrNull = (result) => (result.status === "fulfilled" ? result.value : null)
 
 export const getWork = async (workId, { signal } = {}) => {
-    const work = await requestRecord(`/works/${workId}.json`, { signal })
+    // A obra vem no idioma original: a edição em português, se existir, dá o título e a capa.
+    const [work, info] = await Promise.all([
+        requestRecord(`/works/${workId}.json`, { signal }),
+        workSearch(workId, signal).catch(() => null),
+    ])
     if (!work.title) throw new ApiError("Conteúdo não encontrado.", 404)
-    const coverId = work.covers?.find((cover) => cover > 0)
+    const edition = portugueseEdition(info?.docs?.[0])
+    const coverId = edition?.cover_i || work.covers?.find((cover) => cover > 0)
     return {
         id: idFromKey(work.key) || workId,
-        title: cleanTitle(work.title),
+        title: cleanTitle(edition?.title || work.title),
         description: cleanText(work.description),
         cover: coverUrl(coverId, "L"),
         coverThumb: coverUrl(coverId),
@@ -411,7 +473,7 @@ export const getBookExtras = async ({ id, authorIds }, { signal } = {}) => {
     const [ratings, edition, ...authors] = await Promise.allSettled([
         request(`/works/${id}/ratings.json`, { signal }),
         // O número de páginas fica nas edições: a busca devolve a mediana entre elas.
-        request("/search.json", { params: { q: `key:/works/${id}`, fields: "number_of_pages_median" }, signal }),
+        workSearch(id, signal),
         ...authorIds.map((authorId) => getAuthor(authorId, { signal })),
     ])
 
