@@ -10,7 +10,8 @@ Data: 11/11/2026 · Branch: `feat/google-books-api`
 | Testes ponta a ponta (desktop e celular) | ✅ 45 passando, com o Google Books desligado |
 | Lint | ✅ sem erros |
 | Vulnerabilidades em dependências (`npm audit`) | ✅ 0 |
-| Lighthouse | Não medido de novo: a home não mudou de fonte |
+| Lighthouse mobile: acessibilidade / boas práticas / SEO | ✅ 100 / 100 / 92 |
+| Lighthouse mobile: performance | ✅ home e /sobre entre 96 e 97, iguais à `main` medida no mesmo computador (2 rodadas, 3 e 5 execuções) |
 
 ### Como foi testado
 
