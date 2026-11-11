@@ -29,6 +29,8 @@ e um caminho sugerido. Ao começar um item, abra uma issue com o modelo "Sugerir
   compartilhadas e migrar as telas para eles. Decidir junto se as telas novas e reformadas usam CSS modules, que
   também atende à pré-renderização abaixo. Registrar as decisões num guia de interface (`docs/UI.md`).
 - **Quando:** antes ou junto do redesenho das telas, para não espalhar valores novos.
+- **Andamento:** 640 px (celular) e 900 px (tablet) definidos em `src/assets/breakpoints.js` e usados na nova tela
+  inicial. Faltam as outras telas e a decisão entre styled-components e CSS modules.
 
 ### Google Books no site publicado
 - **Situação:** a busca e a página do livro usam o Google Books quando há chave no `.env.local`, o que traz as
