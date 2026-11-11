@@ -66,8 +66,9 @@ const DefaultPage = () => {
     useShortcut("/", focusSearch)
     useShortcut("?", () => setShortcutsOpen(true))
 
+    // Nova página começa no topo na hora: sem "instant", a rolagem suave do site animaria a subida.
     useEffect(() => {
-        window.scrollTo(0, 0)
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" })
     }, [pathname])
 
     return (
