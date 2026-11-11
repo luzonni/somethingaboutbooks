@@ -433,6 +433,15 @@ export const getAuthor = async (authorId, { signal } = {}) => {
     }
 }
 
+// Livros de outras fontes só trazem o nome do autor: procura o cadastro dele aqui para ter foto e biografia.
+// Só aceita quando o nome bate, para não mostrar a biografia de outra pessoa.
+export const findAuthorByName = async (name, { signal } = {}) => {
+    if (!name) return null
+    const data = await request("/search/authors.json", { params: { q: name, limit: 3 }, signal })
+    const match = (data.docs ?? []).find((doc) => normalize(doc.name) === normalize(name))
+    return match?.key ? getAuthor(idFromKey(match.key), { signal }) : null
+}
+
 // Obras do autor, das mais lidas para as menos lidas.
 export const getAuthorWorks = async (authorId, { page = 1, limit = PAGE_SIZE, signal } = {}) => {
     const { books, total } = await runSearch({ terms: `author_key:${authorId}`, sort: "readinglog", page, limit, signal })

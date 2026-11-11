@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./AllBooksPage.module.css";
-import { GENRES, SORT_OPTIONS, dedupeBooks, getTrendingBooks, searchBooks } from "../../api/openLibrary";
+import { searchBooks } from "../../api/books";
+import { GENRES, SORT_OPTIONS, dedupeBooks, getTrendingBooks } from "../../api/openLibrary";
 import { CardBook } from "../../components/CardBook";
 import { EmptyState, ErrorState, Spinner } from "../../components/Feedback";
 import Search from "../../components/Search";
