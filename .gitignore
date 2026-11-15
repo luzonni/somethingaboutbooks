@@ -27,3 +27,5 @@ playwright-report
 test-results
 lighthouse
 .lighthouseci
+.impeccable/config.local.json
+.claude/
