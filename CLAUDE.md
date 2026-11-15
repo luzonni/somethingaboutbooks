@@ -35,6 +35,8 @@ npm run build && npm run test:lighthouse
 
 **Book page** (`src/pages/BookPreview`) renders immediately from the card's data passed in router `state.book` (or the saved library entry), then fills in `getWork`/`getBookExtras`. Anything that links to a book should pass `state: { book }`.
 
+**Product and design docs:** `PRODUCT.md` (who the users are, positioning: reading habit, not a social network; principles; open decisions) and `DESIGN.md` (tokens in the YAML frontmatter, named rules, Do's and Don'ts) are the reference for any UI work. `.impeccable/design.json` extends `DESIGN.md` with shadows, motion and component snippets. Update them when the visual system or product scope changes; section headings in `DESIGN.md` stay in English because tooling parses them.
+
 **Theming:** colors come from `src/assets/Colors.jsx`, which points to CSS variables defined in `src/components/Reset`. No loose hex colors in components (breaks the dark theme). Styling mixes styled-components and CSS modules. `--shadow-soft` is only a color: write the full `box-shadow`. Display headings use `var(--font-display)` (Lora, loaded with Roboto in `index.html`).
 
 **Breakpoints:** new and reworked screens use `media.celular` (640 px) and `media.tablet` (below 900 px) from `src/assets/breakpoints.js`. Older screens still have ad hoc values (roadmap item). 900 px is also where the header hides "Criar conta" and switches to the mobile menu.
@@ -54,6 +56,7 @@ npm run build && npm run test:lighthouse
 ## Conventions
 
 - One commit per change, `tipo(escopo): descrição` in Portuguese. Types: `feat`, `fix`, `perf`, `refactor`, `style`, `test`, `docs`, `ci`, `cd`, `build`, `chore`.
+- Local tool files (`.claude/`, `.impeccable/config.local.json`) are gitignored; each developer installs their own tooling.
 - PR checklist (`.github/pull_request_template.md`): `npm run check`, `npm run test:e2e` for UI changes, light and dark themes, mobile without horizontal scroll.
 - CI (`.github/workflows/ci.yml`) runs lint, coverage floors, build, e2e + axe, Lighthouse and `npm audit`. Deploy to GitHub Pages runs after CI passes on `main`.
 - `docs/QA.md` (test report, known risks) and `docs/ROADMAP.md` (prioritized improvements) are kept up to date with each feature branch.
