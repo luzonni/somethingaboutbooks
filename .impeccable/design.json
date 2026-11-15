@@ -1,0 +1,472 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T15:00:53.057Z",
+  "title": "Design System: Something About Books",
+  "extensions": {
+    "colorMeta": {
+      "vinho-encadernado": {
+        "role": "primary",
+        "displayName": "Vinho Encadernado",
+        "canonical": "#620000",
+        "darkTheme": "Escuro: #c2454b",
+        "tonalRamp": [
+          "#3d0f0f",
+          "#850000",
+          "#bd0000",
+          "#f50000",
+          "#ff3333",
+          "#ff7070",
+          "#ffadad",
+          "#faebeb"
+        ]
+      },
+      "vinho-encadernado-hover": {
+        "role": "primary",
+        "displayName": "Vinho Encadernado (hover)",
+        "canonical": "#7a0000",
+        "darkTheme": "Escuro: #d4565c",
+        "tonalRamp": [
+          "#3d0f0f",
+          "#850000",
+          "#bd0000",
+          "#f50000",
+          "#ff3333",
+          "#ff7070",
+          "#ffadad",
+          "#faebeb"
+        ]
+      },
+      "coral-marcador": {
+        "role": "secondary",
+        "displayName": "Coral Marcador",
+        "canonical": "#E36065",
+        "darkTheme": "Fixo nos dois temas",
+        "tonalRamp": [
+          "#361617",
+          "#711417",
+          "#a01c21",
+          "#d0252b",
+          "#e05257",
+          "#ea8689",
+          "#f3babc",
+          "#f8eded"
+        ]
+      },
+      "papel": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "#ffffff",
+        "darkTheme": "Escuro: #171312",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5e5e5e",
+          "#7a7a7a",
+          "#999999",
+          "#b8b8b8",
+          "#d6d6d6",
+          "#f2f2f2"
+        ]
+      },
+      "papel-suave": {
+        "role": "neutral",
+        "displayName": "Papel Suave",
+        "canonical": "#faf9f4",
+        "darkTheme": "Escuro: #1e1917",
+        "tonalRamp": [
+          "#2f2c1e",
+          "#5b5329",
+          "#82763b",
+          "#a8994d",
+          "#bfb273",
+          "#d2c99d",
+          "#e5e0c7",
+          "#f5f4ef"
+        ]
+      },
+      "creme-estante": {
+        "role": "neutral",
+        "displayName": "Creme de Estante",
+        "canonical": "#f0eee2",
+        "darkTheme": "Escuro: #2a2321",
+        "tonalRamp": [
+          "#2e2b1f",
+          "#57512d",
+          "#7c7440",
+          "#a19653",
+          "#b9b079",
+          "#cec8a1",
+          "#e3dfc9",
+          "#f5f4f0"
+        ]
+      },
+      "creme-hover": {
+        "role": "neutral",
+        "displayName": "Creme Hover",
+        "canonical": "#e5e2d2",
+        "darkTheme": "Escuro: #362d2a",
+        "tonalRamp": [
+          "#2c2a20",
+          "#544e31",
+          "#787045",
+          "#9b915a",
+          "#b4ac7e",
+          "#cbc5a4",
+          "#e1decb",
+          "#f4f4f0"
+        ]
+      },
+      "borda-linho": {
+        "role": "neutral",
+        "displayName": "Borda de Linho",
+        "canonical": "#d9d5c7",
+        "darkTheme": "Escuro: #3d3431",
+        "tonalRamp": [
+          "#2b2922",
+          "#4f4936",
+          "#70684c",
+          "#928763",
+          "#ada485",
+          "#c5bfaa",
+          "#dedbce",
+          "#f4f3f1"
+        ]
+      },
+      "borda-suave": {
+        "role": "neutral",
+        "displayName": "Borda Suave",
+        "canonical": "#ebe8dc",
+        "darkTheme": "Escuro: #2f2826",
+        "tonalRamp": [
+          "#2d2a20",
+          "#544d30",
+          "#786e45",
+          "#9c8e59",
+          "#b5aa7d",
+          "#cbc3a4",
+          "#e1ddcb",
+          "#f4f4f0"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#292929",
+        "darkTheme": "Escuro: #ece7e2",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5e5e5e",
+          "#7a7a7a",
+          "#999999",
+          "#b8b8b8",
+          "#d6d6d6",
+          "#f2f2f2"
+        ]
+      },
+      "tinta-esmaecida": {
+        "role": "neutral",
+        "displayName": "Tinta Esmaecida",
+        "canonical": "#6b6b6b",
+        "darkTheme": "Escuro: #a9a19b",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5e5e5e",
+          "#7a7a7a",
+          "#999999",
+          "#b8b8b8",
+          "#d6d6d6",
+          "#f2f2f2"
+        ]
+      },
+      "cinza": {
+        "role": "neutral",
+        "displayName": "Cinza",
+        "canonical": "#dddddd",
+        "darkTheme": "Escuro: #4a4240",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5e5e5e",
+          "#7a7a7a",
+          "#999999",
+          "#b8b8b8",
+          "#d6d6d6",
+          "#f2f2f2"
+        ]
+      },
+      "texto-sobre-marca": {
+        "role": "neutral",
+        "displayName": "Texto sobre Marca",
+        "canonical": "#f5f5f5",
+        "darkTheme": "Fixo nos dois temas",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5e5e5e",
+          "#7a7a7a",
+          "#999999",
+          "#b8b8b8",
+          "#d6d6d6",
+          "#f2f2f2"
+        ]
+      },
+      "perigo": {
+        "role": "error",
+        "displayName": "Perigo",
+        "canonical": "#b3261e",
+        "darkTheme": "Escuro: #f2786f",
+        "tonalRamp": [
+          "#371816",
+          "#721813",
+          "#a2221b",
+          "#d22d23",
+          "#e25850",
+          "#eb8a85",
+          "#f3bcb9",
+          "#f8eded"
+        ]
+      },
+      "sucesso": {
+        "role": "success",
+        "displayName": "Sucesso",
+        "canonical": "#2e7d4f",
+        "darkTheme": "Escuro: #5cc48a",
+        "tonalRamp": [
+          "#1c3125",
+          "#24613d",
+          "#338a57",
+          "#42b371",
+          "#6ac891",
+          "#97d9b2",
+          "#c3e9d3",
+          "#eff6f2"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Lora)",
+        "purpose": "h1 do hero e das páginas principais."
+      },
+      "headline": {
+        "displayName": "Headline (Lora)",
+        "purpose": "Títulos de seção: Em alta, gêneros, listas."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Título no card de livro, até duas linhas."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corrido, chips e campos."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Rótulos de formulário, autor no card, pílula do Pomodoro."
+      },
+      "eyebrow": {
+        "displayName": "Eyebrow",
+        "purpose": "Chamada em maiúsculas acima do h1 do hero."
+      }
+    },
+    "shadows": [
+      {
+        "name": "capa-repouso",
+        "value": "0 6px 14px rgba(41, 20, 16, 0.18)",
+        "purpose": "Capa no card de livro."
+      },
+      {
+        "name": "capa-levantada",
+        "value": "0 14px 28px rgba(41, 20, 16, 0.26)",
+        "purpose": "Hover do card, junto com translateY(-4px)."
+      },
+      {
+        "name": "capa-destaque",
+        "value": "0 16px 32px rgba(0, 0, 0, 0.28)",
+        "purpose": "Capas do leque e do livro em leitura no hero."
+      },
+      {
+        "name": "painel",
+        "value": "0 8px 24px rgba(41, 20, 16, 0.08)",
+        "purpose": "Card do livro em leitura dentro do hero."
+      },
+      {
+        "name": "cabecalho-rolado",
+        "value": "0 6px 20px rgba(0, 0, 0, 0.12)",
+        "purpose": "Cabeçalho depois de rolar 8px."
+      },
+      {
+        "name": "suave",
+        "value": "0 2px 10px var(--shadow-soft)",
+        "purpose": "Elementos pequenos que precisam se descolar do fundo."
+      },
+      {
+        "name": "foco-campo",
+        "value": "0 0 0 3px rgba(98, 0, 0, 0.15)",
+        "purpose": "Halo de foco dos campos."
+      }
+    ],
+    "motion": [
+      {
+        "name": "estado-rapido",
+        "value": "150ms ease",
+        "purpose": "Cor, borda e fundo de botões, chips, links e campos."
+      },
+      {
+        "name": "capa-hover",
+        "value": "250ms ease",
+        "purpose": "Capa levantando no hover do card."
+      },
+      {
+        "name": "entrada-hero",
+        "value": "600ms ease",
+        "purpose": "Texto e livro do hero sobem 16px e aparecem; capas do leque só aparecem."
+      },
+      {
+        "name": "tema",
+        "value": "250ms ease",
+        "purpose": "Troca de cor de fundo e texto ao mudar de tema."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "celular",
+        "value": "640px"
+      },
+      {
+        "name": "tablet",
+        "value": "899px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação principal de página, em pílula vinho.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Explorar livros</a>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;min-height:2.75rem;padding:0.625rem 1.25rem;border:1px solid var(--color-brand);border-radius:999px;background:var(--color-brand);color:var(--color-on-brand);font-family:Roboto,sans-serif;font-weight:500;text-decoration:none;transition:background-color 150ms ease}.ds-btn-primary:hover{background:var(--color-brand-hover)}.ds-btn-primary:focus-visible{outline:3px solid #E36065;outline-offset:2px}"
+    },
+    {
+      "name": "Botão secundário",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ação secundária, pílula com borda de linho.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">Criar conta</a>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:2.75rem;padding:0.625rem 1.25rem;border:1px solid var(--color-border);border-radius:999px;background:transparent;color:var(--color-text);font-family:Roboto,sans-serif;font-weight:500;text-decoration:none;transition:border-color 150ms ease}.ds-btn-secondary:hover{border-color:var(--color-brand)}.ds-btn-secondary:focus-visible{outline:3px solid #E36065;outline-offset:2px}"
+    },
+    {
+      "name": "Botão de formulário",
+      "kind": "button",
+      "refersTo": "button-form",
+      "description": "Envio de formulário, retângulo de 8px em largura total.",
+      "html": "<button class=\"ds-btn-form\">Entrar</button>",
+      "css": ".ds-btn-form{display:flex;align-items:center;justify-content:center;width:100%;height:2.875rem;padding:0 1rem;border:none;border-radius:8px;background:var(--color-brand);color:#F5F5F5;font-family:Roboto,sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:background-color 150ms ease}.ds-btn-form:hover:not(:disabled){background:var(--color-brand-hover)}.ds-btn-form:disabled{opacity:0.7}.ds-btn-form:focus-visible{outline:3px solid #E36065;outline-offset:2px}"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Campo com rótulo acima e halo vinho no foco.",
+      "html": "<label class=\"ds-field\"><span>E-mail</span><input class=\"ds-input\" placeholder=\"voce@exemplo.com\"></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:0.25rem;font-family:Roboto,sans-serif}.ds-field span{color:var(--color-text);font-size:0.875rem;font-weight:500}.ds-input{height:2.75rem;padding:0 0.75rem;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface);color:var(--color-text);font:inherit;font-size:0.9375rem;transition:border-color 150ms ease,box-shadow 150ms ease}.ds-input::placeholder{color:#8a8a8a}.ds-input:focus{outline:none;border-color:var(--color-brand);box-shadow:0 0 0 3px rgba(98,0,0,0.15)}"
+    },
+    {
+      "name": "Chip de gênero",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filtro em pílula; selecionado fica vinho.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\">Romance</button><button class=\"ds-chip\" aria-pressed=\"false\">Fantasia</button><button class=\"ds-chip\" aria-pressed=\"false\">Clássicos</button></div>",
+      "css": ".ds-chips{display:flex;gap:0.5rem}.ds-chip{padding:0.5rem 1rem;border:1px solid var(--color-border);border-radius:999px;background:transparent;color:var(--color-text);font-family:Roboto,sans-serif;font-size:0.9375rem;cursor:pointer;transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease}.ds-chip:hover{border-color:var(--color-brand)}.ds-chip[aria-pressed=\"true\"]{border-color:var(--color-brand);background:var(--color-brand);color:var(--color-on-brand)}.ds-chip:focus-visible{outline:3px solid #E36065;outline-offset:2px}"
+    },
+    {
+      "name": "Card de capa",
+      "kind": "card",
+      "refersTo": "card-badge",
+      "description": "A capa com sombra é o card; título e autor embaixo; selo coral e progresso.",
+      "html": "<a class=\"ds-card\" href=\"#\"><span class=\"ds-card__badge\">Lendo</span><span class=\"ds-card__cover\"></span><span class=\"ds-card__bar\"><span></span></span><strong>Dom Casmurro</strong><small>Machado de Assis</small></a>",
+      "css": ".ds-card{position:relative;display:flex;flex-direction:column;gap:0.375rem;width:9rem;color:var(--color-text);font-family:Roboto,sans-serif;text-decoration:none}.ds-card__cover{display:block;aspect-ratio:2/3;margin-bottom:0.375rem;border-radius:6px;background:linear-gradient(160deg,#620000,#3a0a0a);box-shadow:0 6px 14px rgba(41,20,16,0.18);transition:transform 250ms ease,box-shadow 250ms ease}.ds-card:hover .ds-card__cover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(41,20,16,0.26)}.ds-card__badge{position:absolute;top:0.5rem;left:0.5rem;z-index:1;padding:0.125rem 0.5rem;border-radius:4px;background:#E36065;color:#292929;font-size:0.75rem;font-weight:500}.ds-card__bar{display:block;height:0.375rem;border-radius:999px;background:var(--color-surface-muted)}.ds-card__bar span{display:block;width:40%;height:100%;border-radius:inherit;background:#E36065}.ds-card strong{font-size:1rem;font-weight:500;line-height:1.25;transition:color 150ms ease}.ds-card:hover strong{color:var(--color-link)}.ds-card small{font-size:0.875rem;color:var(--color-text-muted)}.ds-card:focus-visible{outline:2px solid var(--color-link);outline-offset:4px;border-radius:8px}"
+    },
+    {
+      "name": "Card em linha",
+      "kind": "card",
+      "refersTo": "card-row",
+      "description": "Card de grade: fundo creme, capa colada à esquerda.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span class=\"ds-row__cover\"></span><span class=\"ds-row__body\"><strong>Vidas Secas</strong><small>Graciliano Ramos</small></span></a>",
+      "css": ".ds-row{display:flex;min-height:9rem;max-width:22rem;border-radius:6px;overflow:hidden;background:var(--color-surface-muted);color:var(--color-text);font-family:Roboto,sans-serif;text-decoration:none;transition:background-color 200ms ease}.ds-row:hover{background:var(--color-surface)}.ds-row__cover{flex:0 0 6rem;background:linear-gradient(160deg,#6b5a3a,#3a2e1c)}.ds-row__body{display:flex;flex-direction:column;justify-content:center;gap:0.5rem;padding:1rem}.ds-row strong{font-size:1.125rem;font-weight:700;line-height:1.25}.ds-row small{font-weight:300}.ds-row:focus-visible{outline:3px solid #E36065;outline-offset:2px}"
+    },
+    {
+      "name": "Navegação do cabeçalho",
+      "kind": "nav",
+      "refersTo": "header",
+      "description": "Cabeçalho creme em vidro fosco; link ativo vinho com barra de 3px.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav__link is-active\" href=\"#\">Início</a><a class=\"ds-nav__link\" href=\"#\">Livros</a><a class=\"ds-nav__link\" href=\"#\">Pomodoro</a><span class=\"ds-nav__timer\">24:13</span></nav>",
+      "css": ".ds-nav{display:flex;align-items:stretch;gap:0.25rem;height:4.25rem;padding:0 1rem;background:var(--color-surface-muted);border-bottom:1px solid var(--color-border);font-family:Roboto,sans-serif}.ds-nav__link{position:relative;display:flex;align-items:center;padding:0 0.75rem;color:var(--color-text);font-weight:500;text-decoration:none;transition:color 150ms ease}.ds-nav__link::after{content:\"\";position:absolute;right:0.75rem;bottom:0;left:0.75rem;height:3px;border-radius:3px 3px 0 0;background:var(--color-brand);transform:scaleX(0);transition:transform 180ms ease}.ds-nav__link:hover,.ds-nav__link.is-active{color:var(--color-link)}.ds-nav__link:hover::after,.ds-nav__link.is-active::after{transform:scaleX(1)}.ds-nav__link:focus-visible{outline:3px solid #E36065;outline-offset:2px}.ds-nav__timer{align-self:center;margin-left:auto;padding:0.25rem 0.625rem;border-radius:999px;background:var(--color-brand);color:#F5F5F5;font-size:0.875rem;font-weight:500;font-variant-numeric:tabular-nums}"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Estante de Casa",
+    "overview": "O SAB tem que parecer a estante de quem lê: papel creme, vinho de capa encadernada, livros que se destacam pela própria capa. Não é livraria nem vitrine. É um lugar pessoal e acolhedor, que convida a pegar o livro de volta. As capas são o conteúdo principal; a interface fica em volta delas, em tons de papel, e cede o protagonismo.\n\nA densidade é média: carrosséis de capas, um destaque (hero) por página e listas com bastante respiro. Os títulos de destaque em Lora dão o tom de livro; todo o resto (navegação, rótulos, formulários) é Roboto, funcional e discreto. As formas são macias (pílulas e cantos de 8px), as sombras são quentes e baixas, e só as capas \"levantam\" da página.\n\nExistem dois temas, claro e escuro, com os mesmos papéis de cor. O escuro troca o papel por madeira escura (`#171312`) e clareia o vinho para manter o contraste. Fica de fora: cara de SaaS genérico (gradientes roxo-azul, cards de vidro, dashboard frio) e cara de loja (preços, selos de oferta, vitrine de e-commerce).",
+    "keyCharacteristics": [
+      "Capas como protagonistas, com sombra quente e elevação no hover.",
+      "Fundo creme de papel, nunca branco frio em áreas grandes de destaque.",
+      "Vinho como única cor de ação; coral só como marcador (foco, progresso, selos).",
+      "Lora só em títulos de destaque; Roboto em todo o resto.",
+      "Formas macias: pílulas para ações e filtros, 8px para campos, 24px para o hero.",
+      "Prateleira de lombadas (`public/imgs/hero-shelf.svg`) como assinatura da home."
+    ],
+    "rules": [
+      {
+        "name": "A Regra da Variável",
+        "section": "colors",
+        "body": "Componentes usam as cores de `src/assets/Colors.jsx` (que apontam para as variáveis de `src/components/Reset`) ou `var(--color-*)` nos CSS modules. Hex solto em componente quebra o tema escuro. Cor nova entra nos dois blocos do Reset, e o teste `Reset.test.jsx` confere isso."
+      },
+      {
+        "name": "A Regra da Única Ação",
+        "section": "colors",
+        "body": "O vinho é a única cor de ação. Coral marca posição e estado, nunca é botão ou link."
+      },
+      {
+        "name": "A Regra da Lora Rara",
+        "section": "typography",
+        "body": "Lora só em h1, títulos de seção e no título do livro em leitura. Nunca em botões, rótulos, navegação ou parágrafos."
+      },
+      {
+        "name": "A Regra dos Dois Cortes",
+        "section": "layout",
+        "body": "Telas novas e reformadas usam só `media.celular` e `media.tablet`. Nenhum valor de breakpoint novo. Os valores antigos estão listados no `docs/ROADMAP.md` para migração."
+      },
+      {
+        "name": "A Regra do LCP da Prateleira",
+        "section": "layout",
+        "body": "No celular, a prateleira de lombadas do hero é o LCP de propósito. Mudou o hero, mede de novo com Lighthouse."
+      },
+      {
+        "name": "A Regra da Capa que Levanta",
+        "section": "elevation",
+        "body": "Só a capa sobe no hover. Cards, chips e botões mudam cor ou borda, nunca posição."
+      }
+    ],
+    "dos": [
+      "**Do** pegar cores de `src/assets/Colors.jsx` ou `var(--color-*)` e conferir os dois temas.",
+      "**Do** usar Lora 700 só em h1 e títulos de seção, via `var(--font-display)`.",
+      "**Do** usar pílula (999px) em ações e filtros e 8px em campos e botões de formulário.",
+      "**Do** deixar a capa ser o destaque do card, com a sombra quente de repouso e de hover.",
+      "**Do** usar `media.celular` e `media.tablet` em telas novas e reformadas.",
+      "**Do** escrever o `box-shadow` inteiro com `var(--shadow-soft)` como cor.",
+      "**Do** passar `state: { book }` em todo link para livro."
+    ],
+    "donts": [
+      "**Don't** usar hex solto em componente (só as cores fixas de `Colors.jsx` sobre fundos fixos).",
+      "**Don't** usar coral como botão ou link; ele é marcador de foco, progresso e selo.",
+      "**Don't** usar vinho de fundo (`--color-brand`) como cor de texto; use `--color-link`.",
+      "**Don't** criar breakpoint novo.",
+      "**Don't** colocar moldura, borda ou fundo no card de capa.",
+      "**Don't** deixar com cara de SaaS genérico: gradientes roxo-azul, cards de vidro, dashboard frio.",
+      "**Don't** deixar com cara de loja: preços, selos de oferta ou vitrine de e-commerce."
+    ]
+  }
+}
